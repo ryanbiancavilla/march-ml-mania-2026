@@ -5,6 +5,7 @@ ESPN/KenPom-style stats, head-to-head odds, tournament odds, and bracket.
 
 import os
 import math
+import hmac
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,44 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+
+# ──────────────────────────── Password Gate ────────────────────────────
+def check_password():
+    """Block access until the correct password is entered."""
+    if st.session_state.get("authenticated"):
+        return True
+
+    st.markdown(
+        "<h1 style='text-align:center;'>&#127936; March ML Mania 2026</h1>"
+        "<p style='text-align:center;color:#888;'>Enter access code to continue</p>",
+        unsafe_allow_html=True,
+    )
+    # CSS to disable copy/paste/select on the password field
+    st.markdown(
+        """<style>
+        input[type="password"] {
+            -webkit-user-select: none; -moz-user-select: none;
+            -ms-user-select: none; user-select: none;
+        }
+        </style>""",
+        unsafe_allow_html=True,
+    )
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        pwd = st.text_input("Access Code", type="password", key="pwd_input")
+        if st.button("Enter", use_container_width=True):
+            if hmac.compare_digest(pwd, st.secrets["app_password"]):
+                st.session_state["authenticated"] = True
+                st.rerun()
+            else:
+                st.error("Incorrect access code.")
+        st.caption("Do not share this access code with others.")
+    return False
+
+
+if not check_password():
+    st.stop()
 
 # ──────────────────────────── Custom CSS ────────────────────────────
 st.markdown("""
