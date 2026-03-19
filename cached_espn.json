@@ -4,9 +4,9 @@
       "game_id": "401856483",
       "name": "North Dakota State Bison at Michigan State Spartans",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:49 - 2nd",
+      "status_detail": "3:10 - 2nd",
       "home_team": "Michigan State Spartans",
-      "home_score": 79,
+      "home_score": 82,
       "home_id": "127",
       "away_team": "North Dakota State Bison",
       "away_score": 61,
@@ -16,9 +16,9 @@
       "game_id": "401856481",
       "name": "Hawai'i Rainbow Warriors at Arkansas Razorbacks",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:17 - 2nd",
+      "status_detail": "2:50 - 2nd",
       "home_team": "Arkansas Razorbacks",
-      "home_score": 89,
+      "home_score": 91,
       "home_id": "8",
       "away_team": "Hawai'i Rainbow Warriors",
       "away_score": 71,
@@ -193,5 +193,5 @@
       "away_id": "70"
     }
   ],
-  "fetched_at": "2026-03-19T22:21:34.958248+00:00"
+  "fetched_at": "2026-03-19T22:22:09.982876+00:00"
 }
