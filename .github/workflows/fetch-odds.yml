@@ -2,8 +2,10 @@ name: Fetch Odds & Scores
 
 on:
   schedule:
-    # Every 2 hours to stay under 500 credits/month (~360 requests)
-    - cron: '0 */2 * * *'
+    # Hourly during game hours: noon-1AM EDT (16:00-05:00 UTC)
+    # ~14 calls/day × 31 days = 434/month (under 500 free tier)
+    # Off from 1AM-noon EDT (05:00-16:00 UTC) — no games
+    - cron: '0 0-5,16-23 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
