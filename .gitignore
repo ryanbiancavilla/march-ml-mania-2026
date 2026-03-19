@@ -4,5 +4,4 @@ __pycache__/
 .env
 *.zip
 catboost_info/
-submission.csv
-submission_v2.csv
+live_results.json
