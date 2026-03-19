@@ -1339,6 +1339,78 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
             st.dataframe(pd.DataFrame(game_rows), use_container_width=True, hide_index=True)
         st.markdown("")
 
+    # ── Championship Odds (Monte Carlo) ──
+    st.markdown("---")
+    st.subheader("Championship Odds")
+    st.caption("Based on 10,000 simulated tournaments. For entertainment purposes only.")
+
+    with st.spinner("Running 10,000 tournament simulations..."):
+        probs, round_labels = monte_carlo_odds(seeds_df, slots_df, preds)
+
+    team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
+    elo = compute_elo(prefix)
+
+    odds_rows = []
+    for tid, p_list in probs.items():
+        odds_rows.append({
+            "Team": tname(teams, tid),
+            "Seed": team_seeds.get(tid, 99),
+            "Elo": int(elo.get(tid, 1500)),
+            "R32": f"{p_list[1]*100:.1f}%",
+            "S16": f"{p_list[2]*100:.1f}%",
+            "E8": f"{p_list[3]*100:.1f}%",
+            "FF": f"{p_list[4]*100:.1f}%",
+            "CG": f"{p_list[5]*100:.1f}%",
+            "Champ": f"{p_list[6]*100:.1f}%",
+            "_champ_pct": p_list[6],
+        })
+
+    odds_df = pd.DataFrame(odds_rows).sort_values("_champ_pct", ascending=False).reset_index(drop=True)
+    odds_df.index = odds_df.index + 1
+    odds_df.index.name = "#"
+
+    # Top 20 futures board styled like a sportsbook
+    futures_rows = []
+    for _, row in odds_df.iterrows():
+        cp = row["_champ_pct"]
+        if cp > 0:
+            ml = prob_to_moneyline(cp)
+        else:
+            ml = "+99999"
+        futures_rows.append({
+            "Team": row["Team"],
+            "Seed": row["Seed"],
+            "Champ %": f"{cp*100:.1f}%",
+            "Futures Odds": ml,
+            "_cp": cp,
+        })
+
+    futures_df = pd.DataFrame(futures_rows).sort_values("_cp", ascending=False).reset_index(drop=True)
+    top_futures = futures_df.head(20)
+    board_html = '<div style="max-width:700px; margin:auto;">'
+    for _, fr in top_futures.iterrows():
+        seed_txt = f'<span style="color:#888; margin-right:6px;">({int(fr["Seed"])})</span>'
+        odds_color = "#4ade80" if fr["_cp"] >= 0.10 else "#fbbf24" if fr["_cp"] >= 0.03 else "#e2e8f0"
+        board_html += (
+            f'<div style="display:flex; justify-content:space-between; align-items:center; '
+            f'padding:8px 16px; border-bottom:1px solid #2a2d34; background:#1a1d24; margin:1px 0;">'
+            f'<span>{seed_txt}{fr["Team"]}</span>'
+            f'<div style="display:flex; gap:24px; align-items:center;">'
+            f'<span style="color:#aaa; font-size:13px;">{fr["Champ %"]}</span>'
+            f'<span style="font-weight:700; font-size:16px; color:{odds_color}; min-width:80px; text-align:right;">'
+            f'{fr["Futures Odds"]}</span>'
+            f'</div></div>'
+        )
+    board_html += '</div>'
+    st.markdown(board_html, unsafe_allow_html=True)
+
+    st.markdown("")
+    st.subheader("Full Round-by-Round Advancement Odds")
+    st.dataframe(
+        odds_df.drop(columns=["_champ_pct"]),
+        use_container_width=True, height=600,
+    )
+
 
 # ──────────────────────────── Page: Model Backtest ────────────────────────────
 
@@ -1839,86 +1911,6 @@ def page_backtest(prefix, teams):
         with cc2:
             st.dataframe(cal_df, use_container_width=True, hide_index=True)
 
-    # ── Live Scores & Odds (from cached files, updated by GitHub Actions) ──
-    st.markdown("---")
-    st.subheader("Live Scores & Odds")
-    st.caption("Auto-updated every 2 hours via GitHub Actions.")
-
-    espn_data = _load_cached_espn()
-    odds_data = _load_cached_odds()
-
-    if espn_data and espn_data.get("games"):
-        espn_games = espn_data["games"]
-        fetched_at = espn_data.get("fetched_at", "")
-        if fetched_at:
-            st.caption(f"Scores last updated: {fetched_at[:16].replace('T', ' ')} UTC")
-
-        final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
-        live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
-        scheduled = [g for g in espn_games if g["status"] == "STATUS_SCHEDULED"]
-
-        if live_games:
-            st.markdown("**In Progress**")
-            for g in live_games:
-                st.markdown(
-                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                    f'<span style="color:#fbbf24;">{g["status_detail"]}</span>'
-                    f'</div>', unsafe_allow_html=True)
-
-        if final_games:
-            st.markdown("**Final Scores**")
-            for g in final_games:
-                st.markdown(
-                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                    f'<span style="color:#4ade80;">FINAL</span>'
-                    f'</div>', unsafe_allow_html=True)
-
-        if scheduled:
-            st.markdown(f"**Upcoming:** {len(scheduled)} games scheduled")
-
-        if not espn_games:
-            st.info("No NCAA tournament games on today's schedule.")
-    else:
-        st.info("No live scores available yet. Data updates automatically every 2 hours.")
-
-    if odds_data and odds_data.get("games"):
-        fetched_at = odds_data.get("fetched_at", "")
-        st.markdown("---")
-        st.markdown("**Current Vegas Odds**")
-        if fetched_at:
-            st.caption(f"Odds last updated: {fetched_at[:16].replace('T', ' ')} UTC")
-
-        for game in odds_data["games"][:20]:
-            home = game.get("home_team", "")
-            away = game.get("away_team", "")
-            bookmakers = game.get("bookmakers", [])
-            if not bookmakers:
-                continue
-            bk = bookmakers[0]
-            markets = {m["key"]: m for m in bk.get("markets", [])}
-
-            line_parts = [f"**{away} @ {home}** ({bk['title']})"]
-            if "h2h" in markets:
-                outcomes = {o["name"]: o["price"] for o in markets["h2h"]["outcomes"]}
-                ml_str = " | ".join(f"{k}: {'+' if v > 0 else ''}{v}" for k, v in outcomes.items())
-                line_parts.append(f"ML: {ml_str}")
-            if "spreads" in markets:
-                outcomes = markets["spreads"]["outcomes"]
-                sp_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                    for o in outcomes)
-                line_parts.append(f"Spread: {sp_str}")
-            if "totals" in markets:
-                outcomes = markets["totals"]["outcomes"]
-                tot_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                     for o in outcomes)
-                line_parts.append(f"Total: {tot_str}")
-
-            st.markdown(" | ".join(line_parts[:1]) + "\n" + " | ".join(line_parts[1:]))
-
     # ── Live Results Tracker ──
     live_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "live_results.json")
     if os.path.exists(live_path):
@@ -2032,7 +2024,87 @@ def _edge_label(score):
 
 
 def page_picks(prefix, teams, seeds_df, preds):
-    st.header("Betting Picks")
+    st.header("Today's Games & Picks")
+    st.caption("Live scores, Vegas odds, and our model's best bets.")
+
+    # ── Live Scores & Odds (from cached files, updated by GitHub Actions) ──
+    espn_data = _load_cached_espn()
+    odds_data = _load_cached_odds()
+
+    if espn_data and espn_data.get("games"):
+        espn_games = espn_data["games"]
+        fetched_at = espn_data.get("fetched_at", "")
+        if fetched_at:
+            st.caption(f"Scores last updated: {fetched_at[:16].replace('T', ' ')} UTC")
+
+        final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
+        live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
+        scheduled = [g for g in espn_games if g["status"] == "STATUS_SCHEDULED"]
+
+        if live_games:
+            st.markdown("**In Progress**")
+            for g in live_games:
+                st.markdown(
+                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
+                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
+                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
+                    f'<span style="color:#fbbf24;">{g["status_detail"]}</span>'
+                    f'</div>', unsafe_allow_html=True)
+
+        if final_games:
+            st.markdown("**Final Scores**")
+            for g in final_games:
+                st.markdown(
+                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
+                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
+                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
+                    f'<span style="color:#4ade80;">FINAL</span>'
+                    f'</div>', unsafe_allow_html=True)
+
+        if scheduled:
+            st.markdown(f"**Upcoming:** {len(scheduled)} games scheduled")
+
+        if not espn_games:
+            st.info("No NCAA tournament games on today's schedule.")
+    else:
+        st.info("No live scores available yet. Data updates automatically every 2 hours.")
+
+    if odds_data and odds_data.get("games"):
+        fetched_at = odds_data.get("fetched_at", "")
+        st.markdown("---")
+        st.markdown("**Current Vegas Odds**")
+        if fetched_at:
+            st.caption(f"Odds last updated: {fetched_at[:16].replace('T', ' ')} UTC")
+
+        for game in odds_data["games"][:20]:
+            home = game.get("home_team", "")
+            away = game.get("away_team", "")
+            bookmakers = game.get("bookmakers", [])
+            if not bookmakers:
+                continue
+            bk = bookmakers[0]
+            markets = {m["key"]: m for m in bk.get("markets", [])}
+
+            line_parts = [f"**{away} @ {home}** ({bk['title']})"]
+            if "h2h" in markets:
+                outcomes = {o["name"]: o["price"] for o in markets["h2h"]["outcomes"]}
+                ml_str = " | ".join(f"{k}: {'+' if v > 0 else ''}{v}" for k, v in outcomes.items())
+                line_parts.append(f"ML: {ml_str}")
+            if "spreads" in markets:
+                outcomes = markets["spreads"]["outcomes"]
+                sp_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
+                                    for o in outcomes)
+                line_parts.append(f"Spread: {sp_str}")
+            if "totals" in markets:
+                outcomes = markets["totals"]["outcomes"]
+                tot_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
+                                     for o in outcomes)
+                line_parts.append(f"Total: {tot_str}")
+
+            st.markdown(" | ".join(line_parts[:1]) + "\n" + " | ".join(line_parts[1:]))
+
+    st.markdown("---")
+    st.subheader("Model Picks")
     st.caption(
         "Find edges where our model disagrees with Vegas. "
         "Bets are ranked by a composite score of expected value, Kelly sizing, and historical accuracy."
@@ -2467,6 +2539,66 @@ def page_picks(prefix, teams, seeds_df, preds):
 """)
 
 
+# ──────────────────────────── Page: About ────────────────────────────
+
+def page_about():
+    st.header("About This Dashboard")
+    st.markdown("""
+This dashboard uses **machine learning** to predict NCAA tournament outcomes and help you
+find smart betting opportunities during March Madness.
+
+---
+
+### How It Works
+
+We look at every team's full season of data — points scored, rebounds, shooting percentages,
+turnovers, assists, steals, blocks, and more. On top of that, we factor in:
+
+- **Strength of schedule** — beating good teams matters more than running up the score on weak ones
+- **Historical tournament performance** — some teams (and coaches) just know how to win in March
+- **Elo ratings** — a chess-style rating system that tracks how good each team really is, game by game
+- **Coaching track records** — tenure, tournament wins, and overall postseason experience
+
+Our model learns patterns from **20+ years of tournament games** to estimate win probabilities
+for every possible matchup.
+
+### The Secret Sauce
+
+We combine **three different AI models** and average their predictions to get the best possible
+accuracy. Think of it like asking three expert analysts for their opinion and going with the
+consensus. (For the nerds: XGBoost, CatBoost, and LightGBM in an ensemble.)
+
+---
+
+### Key Features
+
+- **Elo Ratings** — Live power rankings that update after every game
+- **Efficiency Metrics** — Points per possession, offensive/defensive ratings
+- **Similar Opponent Analysis** — How did teams perform against opponents that play like their next matchup?
+- **Historical Betting Performance** — Backtested against 20+ years of real tournament results
+- **Monte Carlo Simulations** — 10,000 simulated tournaments to estimate championship odds
+
+---
+
+### What Do the Betting Numbers Mean?
+
+| Term | What It Means | Example |
+|------|--------------|---------|
+| **Spread** | How many points the favorite is expected to win by. Negative = favored. | Duke -5.5 means Duke is favored by 5.5 points |
+| **Moneyline (ML)** | Odds to win straight up. Negative = favorite, positive = underdog. | -200 means bet $200 to win $100. +150 means bet $100 to win $150 |
+| **Over/Under (Total)** | The predicted combined score of both teams. | O/U 145.5 means the game is expected to have about 145 total points |
+| **Edge Rating** | Our confidence in a bet, from 0-100. Higher = stronger pick. | 70+ is a strong pick, below 25 is a skip |
+
+---
+
+### Disclaimer
+
+*For entertainment purposes only. Past performance does not guarantee future results.
+This is a student project for the Kaggle March Machine Learning Mania competition —
+not professional financial advice. Please gamble responsibly.*
+    """)
+
+
 # ──────────────────────────── Main ────────────────────────────
 
 teams = load_teams()
@@ -2488,26 +2620,26 @@ gender_slots = m_slots if prefix == "M" else w_slots
 
 page = st.sidebar.radio(
     "Navigate",
-    ["\U0001f4ca Rankings", "\U0001f93c Head-to-Head", "\U0001f4c8 Tournament Odds",
-     "\U0001f3c6 Bracket", "\U0001f4b0 Betting Picks", "\U0001f9ea Backtest"],
+    ["\U0001f4b0 Betting Picks", "\U0001f93c Head-to-Head", "\U0001f4ca Rankings",
+     "\U0001f3c6 Bracket", "\U0001f9ea Backtest", "\u2139\ufe0f About"],
 )
 
 st.sidebar.markdown("---")
 st.sidebar.caption("For entertainment purposes only. Not financial advice.")
 
-if "Rankings" in page:
-    page_rankings(prefix, teams, gender_seeds, conferences)
+if "Betting Picks" in page:
+    page_picks(prefix, teams, gender_seeds, preds)
 elif "Head-to-Head" in page:
     coach_info = load_coach_data() if prefix == "M" else {}
     knn_data = build_knn_lookup(prefix)
     h2h_history = build_h2h_history(prefix)
     seed_history = build_seed_history(prefix)
     page_h2h(prefix, teams, gender_seeds, preds, coach_info, knn_data, h2h_history, seed_history)
-elif "Tournament Odds" in page:
-    page_odds(prefix, teams, gender_seeds, gender_slots, preds)
+elif "Rankings" in page:
+    page_rankings(prefix, teams, gender_seeds, conferences)
 elif "Bracket" in page:
     page_bracket(prefix, teams, gender_seeds, gender_slots, preds)
-elif "Betting Picks" in page:
-    page_picks(prefix, teams, gender_seeds, preds)
 elif "Backtest" in page:
     page_backtest(prefix, teams)
+elif "About" in page:
+    page_about()
