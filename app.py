@@ -2023,9 +2023,15 @@ def _edge_label(score):
         return "SKIP", "#666"
 
 
-def _build_odds_name_map(teams):
+def _build_odds_name_map(teams, prefix="M"):
     """Build a mapping from odds API team names to our team IDs.
-    Odds API uses 'Duke Blue Devils', our data uses 'Duke'."""
+    Odds API uses 'Duke Blue Devils', our data uses 'Duke'.
+    Filter to only men's (1xxx) or women's (3xxx) teams based on prefix."""
+    # Filter teams to the correct gender to avoid M/W ID collisions
+    if prefix == "M":
+        teams = {tid: name for tid, name in teams.items() if tid < 3000}
+    else:
+        teams = {tid: name for tid, name in teams.items() if tid >= 3000}
     # Explicit overrides for tricky names (odds API -> our data)
     OVERRIDES = {
         "hawai'i rainbow warriors": "Hawaii",
@@ -2176,9 +2182,9 @@ def _resolve_odds_team(odds_name, odds_map, name_to_tid):
     return None
 
 
-def _match_odds_teams(teams, stats, odds_cache):
+def _match_odds_teams(teams, stats, odds_cache, prefix="M"):
     """Match odds API team names to our team IDs and extract Vegas lines."""
-    odds_map, name_to_tid = _build_odds_name_map(teams)
+    odds_map, name_to_tid = _build_odds_name_map(teams, prefix)
     matched = []
 
     for game in odds_cache.get("games", []):
@@ -2316,7 +2322,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     has_live_odds = odds_data and odds_data.get("games")
     odds_matched = []
     if has_live_odds:
-        odds_matched = _match_odds_teams(teams, stats, odds_data)
+        odds_matched = _match_odds_teams(teams, stats, odds_data, prefix)
 
     if odds_matched:
         # We have live odds — default to those, but allow switching
