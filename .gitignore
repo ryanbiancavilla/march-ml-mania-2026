@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .env
 *.zip
+catboost_info/
+submission.csv
+submission_v2.csv
