@@ -1545,79 +1545,31 @@ def _render_summary_cards(bt):
             f'</div>', unsafe_allow_html=True)
 
 
-def _fetch_espn_scores():
-    """Fetch live NCAA tournament scores from ESPN's free API."""
-    import requests as rq
+
+def _load_cached_odds():
+    """Load pre-fetched odds from cached_odds.json (updated by GitHub Actions)."""
+    import json
+    cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cached_odds.json")
+    if not os.path.exists(cache_path):
+        return None
     try:
-        url = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard"
-        resp = rq.get(url, params={"groups": 100, "limit": 200}, timeout=10)
-        if resp.status_code != 200:
-            return None, f"ESPN API returned {resp.status_code}"
-        data = resp.json()
-        games = []
-        for ev in data.get("events", []):
-            status = ev.get("status", {}).get("type", {}).get("name", "")
-            comps = ev.get("competitions", [{}])
-            if not comps:
-                continue
-            comp = comps[0]
-            competitors = comp.get("competitors", [])
-            if len(competitors) < 2:
-                continue
-
-            home = competitors[0]
-            away = competitors[1]
-            games.append({
-                "game_id": ev.get("id"),
-                "name": ev.get("name", ""),
-                "status": status,
-                "status_detail": ev.get("status", {}).get("type", {}).get("shortDetail", ""),
-                "home_team": home.get("team", {}).get("displayName", ""),
-                "home_score": int(home.get("score", 0)),
-                "home_id": home.get("team", {}).get("id", ""),
-                "away_team": away.get("team", {}).get("displayName", ""),
-                "away_score": int(away.get("score", 0)),
-                "away_id": away.get("team", {}).get("id", ""),
-            })
-        return games, None
-    except Exception as e:
-        return None, str(e)
+        with open(cache_path) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
-def _get_odds_key():
-    """Get Odds API key from session state, env var, or hardcoded fallback."""
-    if "odds_api_key" in st.session_state and st.session_state["odds_api_key"]:
-        return st.session_state["odds_api_key"]
-    return os.environ.get("ODDS_API_KEY", "")
-
-
-def _fetch_odds():
-    """Fetch NCAAB odds from The Odds API (free tier, 500 req/month).
-    Caches in session state to avoid burning credits on re-renders."""
-    import requests as rq
-    api_key = _get_odds_key()
-    if not api_key:
-        return None, "No API key set. Add one in Settings (sidebar)."
+def _load_cached_espn():
+    """Load pre-fetched ESPN scores from cached_espn.json (updated by GitHub Actions)."""
+    import json
+    cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cached_espn.json")
+    if not os.path.exists(cache_path):
+        return None
     try:
-        url = "https://api.the-odds-api.com/v4/sports/basketball_ncaab/odds"
-        resp = rq.get(url, params={
-            "apiKey": api_key, "regions": "us",
-            "markets": "h2h,spreads,totals", "oddsFormat": "american",
-        }, timeout=10)
-        if resp.status_code == 401:
-            return None, "Invalid API key. Check your key in Settings."
-        if resp.status_code == 429:
-            return None, "Monthly credit limit reached. Resets next month."
-        if resp.status_code != 200:
-            return None, f"Odds API returned {resp.status_code}"
-        remaining = resp.headers.get("x-requests-remaining", "?")
-        data = resp.json()
-        # Cache in session state so re-renders don't burn credits
-        result = {"games": data, "remaining": remaining}
-        st.session_state["cached_odds"] = result
-        return result, None
-    except Exception as e:
-        return None, str(e)
+        with open(cache_path) as f:
+            return json.load(f)
+    except Exception:
+        return None
 
 
 def page_backtest(prefix, teams):
@@ -1848,89 +1800,85 @@ def page_backtest(prefix, teams):
         with cc2:
             st.dataframe(cal_df, use_container_width=True, hide_index=True)
 
-    # ── Live Scores & Odds ──
+    # ── Live Scores & Odds (from cached files, updated by GitHub Actions) ──
     st.markdown("---")
     st.subheader("Live Scores & Odds")
+    st.caption("Auto-updated every 2 hours via GitHub Actions.")
 
-    live_col1, live_col2 = st.columns(2)
-    with live_col1:
-        fetch_scores = st.button("Refresh Live Scores")
-    with live_col2:
-        fetch_odds = st.button("Refresh Vegas Odds")
+    espn_data = _load_cached_espn()
+    odds_data = _load_cached_odds()
 
-    if fetch_scores:
-        with st.spinner("Loading scores..."):
-            espn_games, err = _fetch_espn_scores()
-        if err:
-            st.error(f"Could not load scores: {err}")
-        elif espn_games:
-            final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
-            live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
-            scheduled = [g for g in espn_games if g["status"] == "STATUS_SCHEDULED"]
+    if espn_data and espn_data.get("games"):
+        espn_games = espn_data["games"]
+        fetched_at = espn_data.get("fetched_at", "")
+        if fetched_at:
+            st.caption(f"Scores last updated: {fetched_at[:16].replace('T', ' ')} UTC")
 
-            if live_games:
-                st.markdown("**In Progress**")
-                for g in live_games:
-                    st.markdown(
-                        f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                        f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                        f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                        f'<span style="color:#fbbf24;">{g["status_detail"]}</span>'
-                        f'</div>', unsafe_allow_html=True)
+        final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
+        live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
+        scheduled = [g for g in espn_games if g["status"] == "STATUS_SCHEDULED"]
 
-            if final_games:
-                st.markdown("**Final Scores**")
-                for g in final_games:
-                    winner = g["home_team"] if g["home_score"] > g["away_score"] else g["away_team"]
-                    st.markdown(
-                        f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                        f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                        f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                        f'<span style="color:#4ade80;">FINAL</span>'
-                        f'</div>', unsafe_allow_html=True)
+        if live_games:
+            st.markdown("**In Progress**")
+            for g in live_games:
+                st.markdown(
+                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
+                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
+                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
+                    f'<span style="color:#fbbf24;">{g["status_detail"]}</span>'
+                    f'</div>', unsafe_allow_html=True)
 
-            if scheduled:
-                st.markdown(f"**Upcoming:** {len(scheduled)} games scheduled")
+        if final_games:
+            st.markdown("**Final Scores**")
+            for g in final_games:
+                st.markdown(
+                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
+                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
+                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
+                    f'<span style="color:#4ade80;">FINAL</span>'
+                    f'</div>', unsafe_allow_html=True)
 
-            if not espn_games:
-                st.info("No NCAA tournament games found on today's schedule.")
-        else:
-            st.info("No games returned from ESPN.")
+        if scheduled:
+            st.markdown(f"**Upcoming:** {len(scheduled)} games scheduled")
 
-    if fetch_odds:
-        with st.spinner("Loading odds..."):
-            odds_data, err = _fetch_odds()
-        if err:
-            st.warning(f"Could not load odds: {err}")
-        elif odds_data:
-            st.success(f"Loaded {len(odds_data['games'])} games. "
-                       f"API requests remaining: {odds_data['remaining']}")
-            for game in odds_data["games"][:20]:
-                home = game.get("home_team", "")
-                away = game.get("away_team", "")
-                bookmakers = game.get("bookmakers", [])
-                if not bookmakers:
-                    continue
-                bk = bookmakers[0]  # first bookmaker
-                markets = {m["key"]: m for m in bk.get("markets", [])}
+        if not espn_games:
+            st.info("No NCAA tournament games on today's schedule.")
+    else:
+        st.info("No live scores available yet. Data updates automatically every 2 hours.")
 
-                line_parts = [f"**{away} @ {home}** ({bk['title']})"]
-                if "h2h" in markets:
-                    outcomes = {o["name"]: o["price"] for o in markets["h2h"]["outcomes"]}
-                    ml_str = " | ".join(f"{k}: {'+' if v > 0 else ''}{v}" for k, v in outcomes.items())
-                    line_parts.append(f"ML: {ml_str}")
-                if "spreads" in markets:
-                    outcomes = markets["spreads"]["outcomes"]
-                    sp_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                        for o in outcomes)
-                    line_parts.append(f"Spread: {sp_str}")
-                if "totals" in markets:
-                    outcomes = markets["totals"]["outcomes"]
-                    tot_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                         for o in outcomes)
-                    line_parts.append(f"Total: {tot_str}")
+    if odds_data and odds_data.get("games"):
+        fetched_at = odds_data.get("fetched_at", "")
+        st.markdown("---")
+        st.markdown("**Current Vegas Odds**")
+        if fetched_at:
+            st.caption(f"Odds last updated: {fetched_at[:16].replace('T', ' ')} UTC")
 
-                st.markdown(" | ".join(line_parts[:1]) + "\n" + " | ".join(line_parts[1:]))
+        for game in odds_data["games"][:20]:
+            home = game.get("home_team", "")
+            away = game.get("away_team", "")
+            bookmakers = game.get("bookmakers", [])
+            if not bookmakers:
+                continue
+            bk = bookmakers[0]
+            markets = {m["key"]: m for m in bk.get("markets", [])}
+
+            line_parts = [f"**{away} @ {home}** ({bk['title']})"]
+            if "h2h" in markets:
+                outcomes = {o["name"]: o["price"] for o in markets["h2h"]["outcomes"]}
+                ml_str = " | ".join(f"{k}: {'+' if v > 0 else ''}{v}" for k, v in outcomes.items())
+                line_parts.append(f"ML: {ml_str}")
+            if "spreads" in markets:
+                outcomes = markets["spreads"]["outcomes"]
+                sp_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
+                                    for o in outcomes)
+                line_parts.append(f"Spread: {sp_str}")
+            if "totals" in markets:
+                outcomes = markets["totals"]["outcomes"]
+                tot_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
+                                     for o in outcomes)
+                line_parts.append(f"Total: {tot_str}")
+
+            st.markdown(" | ".join(line_parts[:1]) + "\n" + " | ".join(line_parts[1:]))
 
     # ── Live Results Tracker ──
     live_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "live_results.json")
@@ -2080,7 +2028,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     st.markdown("---")
     data_source = st.radio(
         "Where are the odds coming from?",
-        ["Tournament Bracket", "Enter Odds Manually", "Live Odds (API)"],
+        ["Tournament Bracket", "Enter Odds Manually", "Live Vegas Odds"],
         horizontal=True,
     )
 
@@ -2162,43 +2110,29 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "region": "",
             })
 
-    elif data_source == "Live Odds (API)":
-        bc1, bc2 = st.columns([1, 2])
-        with bc1:
-            fetch_btn = st.button("Fetch Live Odds")
-        with bc2:
-            if "cached_odds" in st.session_state:
-                st.caption(f"Using cached odds ({len(st.session_state.get('odds_data', []))} games) "
-                           f"| Credits remaining: {st.session_state['cached_odds'].get('remaining', '?')}/500")
+    elif data_source == "Live Vegas Odds":
+        odds_cache = _load_cached_odds()
+        if not odds_cache or not odds_cache.get("games"):
+            st.warning("No cached odds available yet. Odds are auto-updated every 2 hours.")
+        else:
+            fetched_at = odds_cache.get("fetched_at", "")
+            st.success(f"Using odds for {len(odds_cache['games'])} games"
+                       + (f" (updated {fetched_at[:16].replace('T', ' ')} UTC)" if fetched_at else ""))
 
-        if fetch_btn:
-            with st.spinner("Loading live odds..."):
-                odds_data, err = _fetch_odds()
-            if err:
-                st.error(err)
-            elif odds_data and odds_data["games"]:
-                st.success(f"Loaded odds for {len(odds_data['games'])} games")
-                st.session_state["odds_data"] = odds_data["games"]
-            else:
-                st.warning("No games with odds available right now.")
-
-        if "odds_data" in st.session_state:
-            # Try to match odds games to our teams
-            # Build a fuzzy name map
+            # Build fuzzy name map to match odds team names to our IDs
             all_team_names = {tname(teams, tid).lower(): tid for tid in teams}
 
-            for game in st.session_state["odds_data"]:
+            for game in odds_cache["games"]:
                 home = game.get("home_team", "")
                 away = game.get("away_team", "")
                 bookmakers = game.get("bookmakers", [])
                 if not bookmakers:
                     continue
 
-                # Try to find team IDs by name matching
                 home_tid = all_team_names.get(home.lower())
                 away_tid = all_team_names.get(away.lower())
 
-                # Try partial matching if exact fails
+                # Partial matching fallback
                 if not home_tid:
                     for name, tid in all_team_names.items():
                         if home.lower() in name or name in home.lower():
@@ -2213,7 +2147,6 @@ def page_picks(prefix, teams, seeds_df, preds):
                 if not home_tid or not away_tid or home_tid not in stats.index or away_tid not in stats.index:
                     continue
 
-                # Get consensus odds (average across bookmakers or use first)
                 bk = bookmakers[0]
                 markets = {m["key"]: m for m in bk.get("markets", [])}
 
@@ -2510,15 +2443,6 @@ st.sidebar.caption("2026 NCAA Tournament Predictions & Betting")
 gender = st.sidebar.radio("Tournament", ["Men's", "Women's"], horizontal=True)
 prefix = "M" if gender == "Men's" else "W"
 
-# Settings
-with st.sidebar.expander("Settings"):
-    st.text_input(
-        "Odds API Key", value=_get_odds_key(), key="odds_api_key", type="password",
-        help="Get a free key at the-odds-api.com (500 requests/month)",
-    )
-    if "cached_odds" in st.session_state:
-        remaining = st.session_state["cached_odds"].get("remaining", "?")
-        st.caption(f"API credits remaining: {remaining}/500")
 
 gender_seeds = seeds[seeds.TeamID < 3000] if prefix == "M" else seeds[seeds.TeamID >= 3000]
 gender_slots = m_slots if prefix == "M" else w_slots
