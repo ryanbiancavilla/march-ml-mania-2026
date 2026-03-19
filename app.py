@@ -2023,23 +2023,120 @@ def _edge_label(score):
         return "SKIP", "#666"
 
 
+def _match_odds_teams(teams, stats, odds_cache):
+    """Match odds API team names to our team IDs and extract Vegas lines."""
+    all_team_names = {tname(teams, tid).lower(): tid for tid in teams}
+    matched = []
+
+    for game in odds_cache.get("games", []):
+        home = game.get("home_team", "")
+        away = game.get("away_team", "")
+        bookmakers = game.get("bookmakers", [])
+        if not bookmakers:
+            continue
+
+        home_tid = all_team_names.get(home.lower())
+        away_tid = all_team_names.get(away.lower())
+
+        # Partial matching fallback
+        if not home_tid:
+            for name, tid in all_team_names.items():
+                if home.lower() in name or name in home.lower():
+                    home_tid = tid
+                    break
+        if not away_tid:
+            for name, tid in all_team_names.items():
+                if away.lower() in name or name in away.lower():
+                    away_tid = tid
+                    break
+
+        if not home_tid or not away_tid or home_tid not in stats.index or away_tid not in stats.index:
+            continue
+
+        bk = bookmakers[0]
+        markets = {m["key"]: m for m in bk.get("markets", [])}
+
+        v_ml1, v_ml2, v_spread, v_total = None, None, None, None
+
+        t1, t2 = min(home_tid, away_tid), max(home_tid, away_tid)
+        home_is_t1 = (home_tid == t1)
+
+        if "h2h" in markets:
+            for o in markets["h2h"]["outcomes"]:
+                if o["name"] == home:
+                    if home_is_t1:
+                        v_ml1 = o["price"]
+                    else:
+                        v_ml2 = o["price"]
+                elif o["name"] == away:
+                    if home_is_t1:
+                        v_ml2 = o["price"]
+                    else:
+                        v_ml1 = o["price"]
+
+        if "spreads" in markets:
+            for o in markets["spreads"]["outcomes"]:
+                if o["name"] == home:
+                    pt = o.get("point", 0)
+                    v_spread = pt if home_is_t1 else -pt
+                    break
+
+        if "totals" in markets:
+            for o in markets["totals"]["outcomes"]:
+                if o["name"] == "Over":
+                    v_total = o.get("point")
+                    break
+
+        matched.append({
+            "t1": t1, "t2": t2,
+            "home": home, "away": away, "bk_title": bk.get("title", ""),
+            "v_ml1": v_ml1, "v_ml2": v_ml2,
+            "v_spread": v_spread, "v_total": v_total,
+        })
+
+    return matched
+
+
 def page_picks(prefix, teams, seeds_df, preds):
     st.header("Today's Games & Picks")
     st.caption("Live scores, Vegas odds, and our model's best bets.")
 
-    # ── Live Scores & Odds (from cached files, updated by GitHub Actions) ──
+    # ── Load data ──
     espn_data = _load_cached_espn()
     odds_data = _load_cached_odds()
+    stats = compute_season_stats(prefix)
+    elo = compute_elo(prefix)
+    team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
 
+    # Load backtest for historical accuracy by confidence tier
+    bt = run_backtest(prefix)
+    bt_tiers = {}
+    for lo in range(50, 100, 5):
+        hi = lo + 5
+        tier = bt[(bt.Fav_Prob * 100 >= lo) & (bt.Fav_Prob * 100 < hi)]
+        if len(tier) >= 5:
+            bt_tiers[(lo, hi)] = {
+                "ml_pct": tier.ML_Correct.mean() * 100,
+                "ats_pct": tier[~tier.ATS_Push].ATS_Correct.mean() * 100 if len(tier[~tier.ATS_Push]) > 0 else 50,
+                "games": len(tier),
+            }
+
+    def get_bt_pct(prob, bet_type="ml"):
+        pct_val = prob * 100
+        for (lo, hi), data in bt_tiers.items():
+            if lo <= pct_val < hi:
+                return data[f"{bet_type}_pct"]
+        return 50.0
+
+    # ── Live Scores ──
     if espn_data and espn_data.get("games"):
         espn_games = espn_data["games"]
         fetched_at = espn_data.get("fetched_at", "")
         if fetched_at:
             st.caption(f"Scores last updated: {fetched_at[:16].replace('T', ' ')} UTC")
 
-        final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
         live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
-        scheduled = [g for g in espn_games if g["status"] == "STATUS_SCHEDULED"]
+        final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
         if live_games:
             st.markdown("**In Progress**")
@@ -2061,98 +2158,67 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<span style="color:#4ade80;">FINAL</span>'
                     f'</div>', unsafe_allow_html=True)
 
-        if scheduled:
-            st.markdown(f"**Upcoming:** {len(scheduled)} games scheduled")
-
-        if not espn_games:
-            st.info("No NCAA tournament games on today's schedule.")
-    else:
-        st.info("No live scores available yet. Data updates automatically every 2 hours.")
-
-    if odds_data and odds_data.get("games"):
-        fetched_at = odds_data.get("fetched_at", "")
-        st.markdown("---")
-        st.markdown("**Current Vegas Odds**")
-        if fetched_at:
-            st.caption(f"Odds last updated: {fetched_at[:16].replace('T', ' ')} UTC")
-
-        for game in odds_data["games"][:20]:
-            home = game.get("home_team", "")
-            away = game.get("away_team", "")
-            bookmakers = game.get("bookmakers", [])
-            if not bookmakers:
-                continue
-            bk = bookmakers[0]
-            markets = {m["key"]: m for m in bk.get("markets", [])}
-
-            line_parts = [f"**{away} @ {home}** ({bk['title']})"]
-            if "h2h" in markets:
-                outcomes = {o["name"]: o["price"] for o in markets["h2h"]["outcomes"]}
-                ml_str = " | ".join(f"{k}: {'+' if v > 0 else ''}{v}" for k, v in outcomes.items())
-                line_parts.append(f"ML: {ml_str}")
-            if "spreads" in markets:
-                outcomes = markets["spreads"]["outcomes"]
-                sp_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                    for o in outcomes)
-                line_parts.append(f"Spread: {sp_str}")
-            if "totals" in markets:
-                outcomes = markets["totals"]["outcomes"]
-                tot_str = " | ".join(f"{o['name']}: {o.get('point', '')} ({'+' if o['price'] > 0 else ''}{o['price']})"
-                                     for o in outcomes)
-                line_parts.append(f"Total: {tot_str}")
-
-            st.markdown(" | ".join(line_parts[:1]) + "\n" + " | ".join(line_parts[1:]))
-
+    # ── Model Picks vs Vegas ──
     st.markdown("---")
     st.subheader("Model Picks")
     st.caption(
-        "Find edges where our model disagrees with Vegas. "
-        "Bets are ranked by a composite score of expected value, Kelly sizing, and historical accuracy."
+        "Our model vs Vegas for every upcoming game. "
+        "Picks are ranked by edge strength — the bigger the disagreement, the stronger the play."
     )
 
-    stats = compute_season_stats(prefix)
-    elo = compute_elo(prefix)
-    team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
+    # Try to auto-load live odds first
+    has_live_odds = odds_data and odds_data.get("games")
+    odds_matched = []
+    if has_live_odds:
+        odds_matched = _match_odds_teams(teams, stats, odds_data)
 
-    # Load backtest for historical accuracy by confidence tier
-    bt = run_backtest(prefix)
-    bt_tiers = {}
-    for lo in range(50, 100, 5):
-        hi = lo + 5
-        tier = bt[(bt.Fav_Prob * 100 >= lo) & (bt.Fav_Prob * 100 < hi)]
-        if len(tier) >= 5:
-            bt_tiers[(lo, hi)] = {
-                "ml_pct": tier.ML_Correct.mean() * 100,
-                "ats_pct": tier[~tier.ATS_Push].ATS_Correct.mean() * 100 if len(tier[~tier.ATS_Push]) > 0 else 50,
-                "games": len(tier),
-            }
+    if odds_matched:
+        # We have live odds — default to those, but allow switching
+        data_source = st.radio(
+            "Odds source",
+            ["Live Vegas Odds", "Enter Odds Manually", "Tournament Bracket"],
+            horizontal=True,
+        )
+    else:
+        data_source = st.radio(
+            "Odds source",
+            ["Tournament Bracket", "Enter Odds Manually"],
+            horizontal=True,
+        )
 
-    def get_bt_pct(prob, bet_type="ml"):
-        """Get historical backtest accuracy for this confidence level."""
-        pct_val = prob * 100
-        for (lo, hi), data in bt_tiers.items():
-            if lo <= pct_val < hi:
-                return data[f"{bet_type}_pct"]
-        return 50.0
+    picks = []
 
-    # ── Data Source Selection ──
-    st.markdown("---")
-    data_source = st.radio(
-        "Where are the odds coming from?",
-        ["Tournament Bracket", "Enter Odds Manually", "Live Vegas Odds"],
-        horizontal=True,
-    )
+    if data_source == "Live Vegas Odds" and odds_matched:
+        fetched_at = odds_data.get("fetched_at", "")
+        st.success(f"Comparing model vs Vegas for {len(odds_matched)} games"
+                   + (f" (odds updated {fetched_at[:16].replace('T', ' ')} UTC)" if fetched_at else ""))
 
-    picks = []  # list of dicts with all pick data
+        for gm in odds_matched:
+            t1, t2 = gm["t1"], gm["t2"]
+            p = get_pred(preds, t1, t2)
+            lines = compute_betting_lines(stats, preds, t1, t2)
 
-    if data_source == "Tournament Bracket":
-        # Generate picks for all R1 tournament matchups using model lines as "Vegas" baseline
+            picks.append({
+                "t1": t1, "t2": t2,
+                "model_prob_t1": p,
+                "model_spread": lines["spread"],
+                "model_total": lines["total"],
+                "model_ml_t1": lines["t1_ml"],
+                "model_ml_t2": lines["t2_ml"],
+                "model_t1_pts": lines["t1_pts"],
+                "model_t2_pts": lines["t2_pts"],
+                "vegas_ml_t1": gm["v_ml1"], "vegas_ml_t2": gm["v_ml2"],
+                "vegas_spread": gm["v_spread"], "vegas_total": gm["v_total"],
+                "region": "",
+            })
+
+    elif data_source == "Tournament Bracket":
         m_slots_df, w_slots_df = load_slots()
         slots_df = m_slots_df if prefix == "M" else w_slots_df
         sim_results, _ = simulate_bracket(seeds_df, slots_df, preds, deterministic=True)
 
         st.info("Showing model projections for all Round 1 games. "
-                "Switch to 'Enter Odds Manually' or 'Live Odds' to compare against real Vegas lines.")
+                "Switch to 'Live Vegas Odds' to compare against real lines.")
 
         for region in ["W", "X", "Y", "Z"]:
             for n in [1, 8, 5, 4, 6, 3, 7, 2]:
@@ -2174,7 +2240,6 @@ def page_picks(prefix, teams, seeds_df, preds):
                     "model_ml_t2": lines["t2_ml"],
                     "model_t1_pts": lines["t1_pts"],
                     "model_t2_pts": lines["t2_pts"],
-                    # Use model lines as default "vegas" — user can override
                     "vegas_ml_t1": None, "vegas_ml_t2": None,
                     "vegas_spread": None, "vegas_total": None,
                     "region": region,
@@ -2221,103 +2286,14 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "region": "",
             })
 
-    elif data_source == "Live Vegas Odds":
-        odds_cache = _load_cached_odds()
-        if not odds_cache or not odds_cache.get("games"):
-            st.warning("No cached odds available yet. Odds are auto-updated every 2 hours.")
-        else:
-            fetched_at = odds_cache.get("fetched_at", "")
-            st.success(f"Using odds for {len(odds_cache['games'])} games"
-                       + (f" (updated {fetched_at[:16].replace('T', ' ')} UTC)" if fetched_at else ""))
-
-            # Build fuzzy name map to match odds team names to our IDs
-            all_team_names = {tname(teams, tid).lower(): tid for tid in teams}
-
-            for game in odds_cache["games"]:
-                home = game.get("home_team", "")
-                away = game.get("away_team", "")
-                bookmakers = game.get("bookmakers", [])
-                if not bookmakers:
-                    continue
-
-                home_tid = all_team_names.get(home.lower())
-                away_tid = all_team_names.get(away.lower())
-
-                # Partial matching fallback
-                if not home_tid:
-                    for name, tid in all_team_names.items():
-                        if home.lower() in name or name in home.lower():
-                            home_tid = tid
-                            break
-                if not away_tid:
-                    for name, tid in all_team_names.items():
-                        if away.lower() in name or name in away.lower():
-                            away_tid = tid
-                            break
-
-                if not home_tid or not away_tid or home_tid not in stats.index or away_tid not in stats.index:
-                    continue
-
-                bk = bookmakers[0]
-                markets = {m["key"]: m for m in bk.get("markets", [])}
-
-                v_ml1, v_ml2, v_spread, v_total = None, None, None, None
-
-                t1, t2 = min(home_tid, away_tid), max(home_tid, away_tid)
-                home_is_t1 = (home_tid == t1)
-
-                if "h2h" in markets:
-                    for o in markets["h2h"]["outcomes"]:
-                        if o["name"] == home:
-                            if home_is_t1:
-                                v_ml1 = o["price"]
-                            else:
-                                v_ml2 = o["price"]
-                        elif o["name"] == away:
-                            if home_is_t1:
-                                v_ml2 = o["price"]
-                            else:
-                                v_ml1 = o["price"]
-
-                if "spreads" in markets:
-                    for o in markets["spreads"]["outcomes"]:
-                        if o["name"] == home:
-                            pt = o.get("point", 0)
-                            v_spread = pt if home_is_t1 else -pt
-                            break
-
-                if "totals" in markets:
-                    for o in markets["totals"]["outcomes"]:
-                        if o["name"] == "Over":
-                            v_total = o.get("point")
-                            break
-
-                p = get_pred(preds, t1, t2)
-                lines = compute_betting_lines(stats, preds, t1, t2)
-
-                picks.append({
-                    "t1": t1, "t2": t2,
-                    "model_prob_t1": p,
-                    "model_spread": lines["spread"],
-                    "model_total": lines["total"],
-                    "model_ml_t1": lines["t1_ml"],
-                    "model_ml_t2": lines["t2_ml"],
-                    "model_t1_pts": lines["t1_pts"],
-                    "model_t2_pts": lines["t2_pts"],
-                    "vegas_ml_t1": v_ml1, "vegas_ml_t2": v_ml2,
-                    "vegas_spread": v_spread, "vegas_total": v_total,
-                    "region": "",
-                })
-
     # ── Render Picks ──
     if not picks:
-        st.info("Select a data source above to generate picks.")
+        st.info("No games found. Check back when odds are posted or use 'Tournament Bracket' mode.")
         return
 
-    st.markdown("---")
-    st.subheader("Recommended Bets")
-
-    all_bets = []  # collect all bets for summary table
+    # ── Build game cards with all three bet types per game ──
+    all_bets = []  # for summary table
+    game_cards = []  # for game-by-game display
 
     for pick in picks:
         t1, t2 = pick["t1"], pick["t2"]
@@ -2329,15 +2305,23 @@ def page_picks(prefix, teams, seeds_df, preds):
         p = pick["model_prob_t1"]
         fav = t1 if p >= 0.5 else t2
         fav_name = n1 if fav == t1 else n2
+        dog_name = n2 if fav == t1 else n1
         fav_prob = p if fav == t1 else 1 - p
+        dog_prob = 1 - fav_prob
         bt_ml_pct = get_bt_pct(fav_prob, "ml")
         bt_ats_pct = get_bt_pct(fav_prob, "ats")
 
         has_vegas = pick["vegas_ml_t1"] is not None
+        m_spread = pick["model_spread"]
+        m_total = pick["model_total"]
 
-        game_bets = []
+        card = {
+            "game": f"{s1t}{n1} vs {s2t}{n2}",
+            "ml": None, "spread": None, "total": None,
+            "best_rating": 0,
+        }
 
-        # ── Moneyline Analysis ──
+        # ── Moneyline Pick ──
         if has_vegas:
             v_ml_fav = pick["vegas_ml_t1"] if fav == t1 else pick["vegas_ml_t2"]
             v_ml_dog = pick["vegas_ml_t2"] if fav == t1 else pick["vegas_ml_t1"]
@@ -2345,188 +2329,179 @@ def page_picks(prefix, teams, seeds_df, preds):
             ml_ev = _ev(fav_prob, v_ml_fav)
             ml_kelly = _kelly(fav_prob, v_ml_fav)
             ml_edge = fav_prob - vegas_implied
-            ml_score = _edge_rating(ml_ev, ml_kelly, bt_ml_pct)
+            ml_score = _edge_rating(max(ml_ev, 0), ml_kelly, bt_ml_pct)
             ml_label, ml_color = _edge_label(ml_score)
 
-            if ml_ev > 0:
-                game_bets.append({
-                    "Game": f"{s1t}{n1} vs {s2t}{n2}",
-                    "Bet Type": "Moneyline",
-                    "Pick": f"{fav_name} ({'+' if v_ml_fav > 0 else ''}{v_ml_fav})",
-                    "Model %": f"{fav_prob*100:.1f}%",
-                    "Vegas Implied": f"{vegas_implied*100:.1f}%",
-                    "Edge": f"{ml_edge*100:+.1f}%",
-                    "EV ($100)": f"${ml_ev:+.1f}",
-                    "Kelly %": f"{ml_kelly*100:.1f}%",
-                    "Backtest": f"{bt_ml_pct:.0f}%",
-                    "Rating": ml_score,
-                    "_label": ml_label, "_color": ml_color,
-                })
-
-            # Check dog value too
-            dog_prob = 1 - fav_prob
-            dog_name = n2 if fav == t1 else n1
+            # Also check if dog has value
             dog_ev = _ev(dog_prob, v_ml_dog)
-            if dog_ev > 0:
+            if dog_ev > ml_ev and dog_ev > 0:
                 dog_implied = _implied_prob(v_ml_dog)
                 dog_kelly = _kelly(dog_prob, v_ml_dog)
                 dog_edge = dog_prob - dog_implied
                 dog_score = _edge_rating(dog_ev, dog_kelly, 50)
                 dog_label, dog_color = _edge_label(dog_score)
-                game_bets.append({
-                    "Game": f"{s1t}{n1} vs {s2t}{n2}",
-                    "Bet Type": "ML Dog",
-                    "Pick": f"{dog_name} ({'+' if v_ml_dog > 0 else ''}{v_ml_dog})",
-                    "Model %": f"{dog_prob*100:.1f}%",
-                    "Vegas Implied": f"{dog_implied*100:.1f}%",
-                    "Edge": f"{dog_edge*100:+.1f}%",
-                    "EV ($100)": f"${dog_ev:+.1f}",
-                    "Kelly %": f"{dog_kelly*100:.1f}%",
-                    "Backtest": "—",
-                    "Rating": dog_score,
-                    "_label": dog_label, "_color": dog_color,
-                })
+                card["ml"] = {
+                    "pick": f"{dog_name} ({'+' if v_ml_dog > 0 else ''}{v_ml_dog})",
+                    "model": f"{dog_prob*100:.1f}%", "vegas": f"{dog_implied*100:.1f}%",
+                    "edge": f"{dog_edge*100:+.1f}%", "ev": f"${dog_ev:+.1f}",
+                    "kelly": f"{dog_kelly*100:.1f}%", "score": dog_score,
+                    "label": dog_label, "color": dog_color, "bt": "—",
+                }
+            else:
+                card["ml"] = {
+                    "pick": f"{fav_name} ({'+' if v_ml_fav > 0 else ''}{v_ml_fav})",
+                    "model": f"{fav_prob*100:.1f}%", "vegas": f"{vegas_implied*100:.1f}%",
+                    "edge": f"{ml_edge*100:+.1f}%", "ev": f"${ml_ev:+.1f}",
+                    "kelly": f"{ml_kelly*100:.1f}%", "score": ml_score,
+                    "label": ml_label, "color": ml_color, "bt": f"{bt_ml_pct:.0f}%",
+                }
+        else:
+            # No Vegas — show model projection
+            model_ml = pick["model_ml_t1"] if fav == t1 else pick["model_ml_t2"]
+            card["ml"] = {
+                "pick": f"{fav_name} ({model_ml})",
+                "model": f"{fav_prob*100:.1f}%", "vegas": "—",
+                "edge": "—", "ev": "—", "kelly": "—", "score": 0,
+                "label": "NO LINE", "color": "#666", "bt": f"{bt_ml_pct:.0f}%",
+            }
 
-        # ── Spread Analysis ──
+        # ── Spread Pick ──
         if has_vegas and pick["vegas_spread"] is not None:
             v_spread = pick["vegas_spread"]
-            m_spread = pick["model_spread"]
-            spread_diff = v_spread - m_spread  # positive = vegas giving more points than model
-            # If model has team favored by 7 but vegas only by 3, take the favorite ATS
-            if abs(spread_diff) >= 1.0:
-                spread_ev = abs(spread_diff) * 4.0  # rough EV scaling
-                spread_kelly = min(abs(spread_diff) / 20, 0.15)
-                spread_score = _edge_rating(spread_ev, spread_kelly, bt_ats_pct)
-                spread_label, spread_color = _edge_label(spread_score)
+            spread_diff = v_spread - m_spread
+            spread_ev = abs(spread_diff) * 4.0
+            spread_kelly = min(abs(spread_diff) / 20, 0.15)
+            spread_score = _edge_rating(spread_ev if abs(spread_diff) >= 1.0 else 0, spread_kelly, bt_ats_pct)
+            spread_label, spread_color = _edge_label(spread_score)
 
-                if m_spread < v_spread:
-                    # Model has fav winning by MORE than Vegas thinks -> bet favorite ATS
-                    pick_text = f"{fav_name} {v_spread:+.1f}"
-                else:
-                    # Model has underdog closer or winning -> bet dog ATS
-                    dog_name = n2 if fav == t1 else n1
-                    pick_text = f"{dog_name} {-v_spread:+.1f}"
+            if m_spread < v_spread:
+                pick_text = f"{fav_name} {v_spread:+.1f}"
+            else:
+                pick_text = f"{dog_name} {-v_spread:+.1f}"
 
-                game_bets.append({
-                    "Game": f"{s1t}{n1} vs {s2t}{n2}",
-                    "Bet Type": "Spread",
-                    "Pick": pick_text,
-                    "Model %": f"Model: {m_spread:+.1f}",
-                    "Vegas Implied": f"Vegas: {v_spread:+.1f}",
-                    "Edge": f"{abs(spread_diff):.1f} pts",
-                    "EV ($100)": f"${spread_ev:+.1f}",
-                    "Kelly %": f"{spread_kelly*100:.1f}%",
-                    "Backtest": f"{bt_ats_pct:.0f}%",
-                    "Rating": spread_score,
-                    "_label": spread_label, "_color": spread_color,
-                })
+            card["spread"] = {
+                "pick": pick_text,
+                "model": f"{m_spread:+.1f}", "vegas": f"{v_spread:+.1f}",
+                "edge": f"{abs(spread_diff):.1f} pts",
+                "ev": f"${spread_ev:+.1f}" if abs(spread_diff) >= 1.0 else "—",
+                "kelly": f"{spread_kelly*100:.1f}%" if abs(spread_diff) >= 1.0 else "—",
+                "score": spread_score if abs(spread_diff) >= 1.0 else 0,
+                "label": spread_label if abs(spread_diff) >= 1.0 else "EVEN",
+                "color": spread_color if abs(spread_diff) >= 1.0 else "#666",
+                "bt": f"{bt_ats_pct:.0f}%",
+            }
+        else:
+            # No Vegas spread — show model only
+            card["spread"] = {
+                "pick": f"{fav_name} {m_spread:+.1f}",
+                "model": f"{m_spread:+.1f}", "vegas": "—",
+                "edge": "—", "ev": "—", "kelly": "—", "score": 0,
+                "label": "NO LINE", "color": "#666", "bt": f"{bt_ats_pct:.0f}%",
+            }
 
-        # ── Totals Analysis ──
+        # ── Over/Under Pick ──
         if has_vegas and pick["vegas_total"] is not None:
             v_total = pick["vegas_total"]
-            m_total = pick["model_total"]
             total_diff = m_total - v_total
-            if abs(total_diff) >= 2.0:
-                total_ev = abs(total_diff) * 3.0
-                total_kelly = min(abs(total_diff) / 25, 0.12)
-                total_score = _edge_rating(total_ev, total_kelly, 55)
-                total_label, total_color = _edge_label(total_score)
+            total_ev = abs(total_diff) * 3.0
+            total_kelly = min(abs(total_diff) / 25, 0.12)
+            total_score = _edge_rating(total_ev if abs(total_diff) >= 2.0 else 0, total_kelly, 55)
+            total_label, total_color = _edge_label(total_score)
 
-                ou_pick = "OVER" if m_total > v_total else "UNDER"
-                game_bets.append({
-                    "Game": f"{s1t}{n1} vs {s2t}{n2}",
-                    "Bet Type": "Total",
-                    "Pick": f"{ou_pick} {v_total}",
-                    "Model %": f"Proj: {m_total:.1f}",
-                    "Vegas Implied": f"Line: {v_total:.1f}",
-                    "Edge": f"{abs(total_diff):.1f} pts",
-                    "EV ($100)": f"${total_ev:+.1f}",
-                    "Kelly %": f"{total_kelly*100:.1f}%",
-                    "Backtest": "—",
-                    "Rating": total_score,
-                    "_label": total_label, "_color": total_color,
-                })
+            ou_pick = "OVER" if m_total > v_total else "UNDER"
 
-        # If no Vegas odds, show model projections only
-        if not has_vegas:
-            game_bets.append({
-                "Game": f"{s1t}{n1} vs {s2t}{n2}",
-                "Bet Type": "Projection",
-                "Pick": f"{fav_name} ({pick['model_ml_t1'] if fav == t1 else pick['model_ml_t2']})",
-                "Model %": f"{fav_prob*100:.1f}%",
-                "Vegas Implied": "No Vegas line",
-                "Edge": "—",
-                "EV ($100)": "—",
-                "Kelly %": "—",
-                "Backtest": f"{bt_ml_pct:.0f}%",
-                "Rating": 0,
-                "_label": "NO LINE", "_color": "#666",
+            card["total"] = {
+                "pick": f"{ou_pick} {v_total}",
+                "model": f"{m_total:.1f}", "vegas": f"{v_total:.1f}",
+                "edge": f"{abs(total_diff):.1f} pts",
+                "ev": f"${total_ev:+.1f}" if abs(total_diff) >= 2.0 else "—",
+                "kelly": f"{total_kelly*100:.1f}%" if abs(total_diff) >= 2.0 else "—",
+                "score": total_score if abs(total_diff) >= 2.0 else 0,
+                "label": total_label if abs(total_diff) >= 2.0 else "EVEN",
+                "color": total_color if abs(total_diff) >= 2.0 else "#666",
+                "bt": "—",
+            }
+        else:
+            card["total"] = {
+                "pick": f"Proj {m_total:.1f}",
+                "model": f"{m_total:.1f}", "vegas": "—",
+                "edge": "—", "ev": "—", "kelly": "—", "score": 0,
+                "label": "NO LINE", "color": "#666", "bt": "—",
+            }
+
+        card["best_rating"] = max(
+            card["ml"]["score"], card["spread"]["score"], card["total"]["score"]
+        )
+        game_cards.append(card)
+
+        # Also build flat list for board table
+        for btype, data in [("Moneyline", card["ml"]), ("Spread", card["spread"]), ("O/U", card["total"])]:
+            all_bets.append({
+                "Game": card["game"], "Bet Type": btype,
+                "Pick": data["pick"], "Model": data["model"], "Vegas": data["vegas"],
+                "Edge": data["edge"], "EV ($100)": data["ev"],
+                "Kelly %": data["kelly"], "Signal": data["label"],
+                "Rating": data["score"],
+                "_color": data["color"],
             })
 
-        all_bets.extend(game_bets)
+    # Sort games by best edge
+    game_cards.sort(key=lambda x: x["best_rating"], reverse=True)
 
-    # Sort by rating descending
-    all_bets.sort(key=lambda x: x["Rating"], reverse=True)
+    # ── Render Game Cards ──
+    for card in game_cards:
+        best = card["best_rating"]
+        border_color = "#4ade80" if best >= 70 else "#fbbf24" if best >= 45 else "#60a5fa" if best >= 25 else "#444"
 
-    # ── Flagged Bets (top picks) ──
-    flagged = [b for b in all_bets if b["Rating"] >= 40]
-    if flagged:
-        st.markdown("### TOP PICKS")
-        for bet in flagged:
-            label, color = bet["_label"], bet["_color"]
+        st.markdown(
+            f'<div style="background:#1a1d24; border:1px solid {border_color}; border-left:4px solid {border_color}; '
+            f'border-radius:6px; padding:14px 18px; margin:10px 0;">'
+            f'<div style="font-weight:700; font-size:16px; margin-bottom:10px;">{card["game"]}</div>'
+            f'<div style="display:flex; gap:12px; flex-wrap:wrap;">',
+            unsafe_allow_html=True,
+        )
+
+        # Three bet type columns
+        for btype, data in [("MONEYLINE", card["ml"]), ("SPREAD", card["spread"]), ("O/U", card["total"])]:
+            sc = data["score"]
+            col = data["color"]
+            lbl = data["label"]
+            edge_display = data["edge"]
+
             st.markdown(
-                f'<div style="background:#1a1d24; border-left:4px solid {color}; '
-                f'border-radius:4px; padding:12px 16px; margin:6px 0; '
-                f'display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">'
-                f'<div style="flex:2; min-width:200px;">'
-                f'<span style="font-weight:700; font-size:15px;">{bet["Game"]}</span><br>'
-                f'<span style="color:{color}; font-weight:700; font-size:18px;">{bet["Pick"]}</span>'
-                f'<span style="color:#888; margin-left:8px;">({bet["Bet Type"]})</span>'
-                f'</div>'
-                f'<div style="flex:1; min-width:120px; text-align:center;">'
-                f'<div style="font-size:12px; color:#888;">Model vs Vegas</div>'
-                f'<div style="font-size:14px;">{bet["Model %"]} vs {bet["Vegas Implied"]}</div>'
-                f'</div>'
-                f'<div style="flex:1; min-width:100px; text-align:center;">'
-                f'<div style="font-size:12px; color:#888;">Edge</div>'
-                f'<div style="font-size:16px; font-weight:700; color:{color};">{bet["Edge"]}</div>'
-                f'</div>'
-                f'<div style="flex:1; min-width:100px; text-align:center;">'
-                f'<div style="font-size:12px; color:#888;">EV / Kelly</div>'
-                f'<div style="font-size:14px;">{bet["EV ($100)"]} / {bet["Kelly %"]}</div>'
-                f'</div>'
-                f'<div style="flex:0; min-width:80px; text-align:center;">'
-                f'<div style="background:{color}; color:#000; font-weight:800; padding:4px 12px; '
-                f'border-radius:4px; font-size:13px;">{label} ({bet["Rating"]})</div>'
-                f'</div>'
+                f'<div style="flex:1; min-width:180px; background:#12141a; border-radius:6px; padding:10px 14px;">'
+                f'<div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; margin-bottom:4px;">{btype}</div>'
+                f'<div style="font-size:16px; font-weight:700; color:{col}; margin-bottom:6px;">{data["pick"]}</div>'
+                f'<div style="font-size:12px; color:#aaa;">Model: {data["model"]} &nbsp;|&nbsp; Vegas: {data["vegas"]}</div>'
+                f'<div style="font-size:12px; color:#aaa;">Edge: {edge_display} &nbsp;|&nbsp; EV: {data["ev"]}</div>'
+                f'<div style="margin-top:6px;">'
+                f'<span style="background:{col}; color:#000; font-weight:700; padding:2px 8px; '
+                f'border-radius:3px; font-size:11px;">{lbl} ({sc})</span></div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
-        st.markdown("")
 
-    # ── Full Bet Board ──
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+    # ── Full Bet Board (table) ──
     st.markdown("---")
     st.subheader("Full Bet Board")
 
-    board_rows = []
-    for bet in all_bets:
-        row = {k: v for k, v in bet.items() if not k.startswith("_")}
-        row["Signal"] = bet["_label"]
-        board_rows.append(row)
-
+    all_bets.sort(key=lambda x: x["Rating"], reverse=True)
+    board_rows = [{k: v for k, v in b.items() if not k.startswith("_")} for b in all_bets]
     if board_rows:
         st.dataframe(pd.DataFrame(board_rows), use_container_width=True, hide_index=True)
 
     # ── Legend ──
     with st.expander("How to read this page"):
         st.markdown("""
-**Edge** — How much our model disagrees with Vegas. Positive = our model likes it more.
+**Every game gets three picks:** Moneyline (who wins), Spread (margin of victory), and O/U (total points).
+
+**Edge** — How much our model disagrees with Vegas. Bigger = stronger play.
 
 **EV ($100)** — Expected profit on a $100 bet. Positive = profitable long-term.
 
 **Kelly %** — Recommended bet size as % of bankroll. Use half or quarter Kelly for safety.
-
-**Backtest** — How often this type of pick has won historically.
 
 **Rating** (0-100) — Overall strength combining EV, Kelly, and backtest accuracy.
 
@@ -2535,7 +2510,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 | **STRONG** | 70+ | High-confidence play |
 | **MODERATE** | 45-69 | Standard bet |
 | **SLIGHT** | 25-44 | Small position |
-| **SKIP** | <25 | Pass |
+| **SKIP/EVEN** | <25 | Pass or no edge |
 """)
 
 
