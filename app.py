@@ -2023,9 +2023,162 @@ def _edge_label(score):
         return "SKIP", "#666"
 
 
+def _build_odds_name_map(teams):
+    """Build a mapping from odds API team names to our team IDs.
+    Odds API uses 'Duke Blue Devils', our data uses 'Duke'."""
+    # Explicit overrides for tricky names (odds API -> our data)
+    OVERRIDES = {
+        "hawai'i rainbow warriors": "Hawaii",
+        "hawaii rainbow warriors": "Hawaii",
+        "st. john's red storm": "St John's",
+        "saint john's red storm": "St John's",
+        "miami hurricanes": "Miami FL",
+        "miami (oh) redhawks": "Miami OH",
+        "miami (fl) hurricanes": "Miami FL",
+        "queens university royals": "Queens NC",
+        "liu sharks": "LIU Brooklyn",
+        "suny albany great danes": "SUNY Albany",
+        "unc wilmington seahawks": "UNC Wilmington",
+        "unc greensboro spartans": "UNC Greensboro",
+        "unc asheville bulldogs": "UNC Asheville",
+        "gw revolutionaries": "G Washington",
+        "george washington revolutionaries": "G Washington",
+        "george washington colonials": "G Washington",
+        "saint mary's gaels": "St Mary's CA",
+        "saint joseph's hawks": "St Joseph's PA",
+        "sam houston state bearkats": "Sam Houston St",
+        "sam houston bearkats": "Sam Houston St",
+        "houston christian huskies": "Houston Chr",
+        "cal baptist lancers": "Cal Baptist",
+        "prairie view panthers": "Prairie View",
+        "penn quakers": "Pennsylvania",
+        "pennsylvania quakers": "Pennsylvania",
+        "connecticut huskies": "UConn",
+        "uconn huskies": "UConn",
+        "smu mustangs": "SMU",
+        "lsu tigers": "LSU",
+        "tcu horned frogs": "TCU",
+        "ucf knights": "UCF",
+        "ole miss rebels": "Ole Miss",
+        "pitt panthers": "Pittsburgh",
+        "pittsburgh panthers": "Pittsburgh",
+        "vcu rams": "VCU",
+        "utep miners": "UTEP",
+        "unlv rebels": "UNLV",
+        "usc trojans": "USC",
+        "north dakota st bison": "N Dakota St",
+        "north dakota state bison": "N Dakota St",
+        "south dakota st jackrabbits": "S Dakota St",
+        "south dakota state jackrabbits": "S Dakota St",
+        "east washington eagles": "E Washington",
+        "eastern washington eagles": "E Washington",
+        "mcneese cowboys": "McNeese St",
+        "mcneese state cowboys": "McNeese St",
+        "seattle redhawks": "Seattle",
+        "kennesaw st owls": "Kennesaw",
+        "kennesaw state owls": "Kennesaw",
+        "illinois st redbirds": "Illinois St",
+        "illinois state redbirds": "Illinois St",
+        "utah state aggies": "Utah St",
+        "michigan st spartans": "Michigan St",
+        "michigan state spartans": "Michigan St",
+        "oklahoma st cowboys": "Oklahoma St",
+        "oklahoma state cowboys": "Oklahoma St",
+        "wichita st shockers": "Wichita St",
+        "wichita state shockers": "Wichita St",
+        "tennessee st tigers": "Tennessee St",
+        "tennessee state tigers": "Tennessee St",
+        "wright st raiders": "Wright St",
+        "wright state raiders": "Wright St",
+        "saint louis billikens": "Saint Louis",
+        "texas a&m aggies": "Texas A&M",
+        "byu cougars": "BYU",
+        "arkansas pine bluff golden lions": "Ark Pine Bluff",
+        "loy marymount lions": "Loy Marymount",
+        "loyola marymount lions": "Loy Marymount",
+        "mt st mary's mountaineers": "Mt St Mary's",
+        "mount st mary's mountaineers": "Mt St Mary's",
+        "cal golden bears": "California",
+        "california golden bears": "California",
+        "iowa hawkeyes": "Iowa",
+        "iowa state cyclones": "Iowa St",
+        "new mexico lobos": "New Mexico",
+        "new mexico st aggies": "New Mexico St",
+        "northern iowa panthers": "Northern Iowa",
+        "dayton flyers": "Dayton",
+        "liberty flames": "Liberty",
+        "furman paladins": "Furman",
+        "hofstra pride": "Hofstra",
+        "idaho vandals": "Idaho",
+        "akron zips": "Akron",
+        "santa clara broncos": "Santa Clara",
+        "wake forest demon deacons": "Wake Forest",
+        "nebraska cornhuskers": "Nebraska",
+        "tulsa golden hurricane": "Tulsa",
+        "missouri tigers": "Missouri",
+        "texas tech red raiders": "Texas Tech",
+        "texas longhorns": "Texas",
+        "nevada wolf pack": "Nevada",
+    }
+
+    # Build reverse map: our_name -> tid
+    name_to_tid = {}
+    for tid, name in teams.items():
+        name_to_tid[name.lower()] = tid
+
+    # Build odds_name -> tid
+    odds_map = {}
+    for odds_name_lower, our_name in OVERRIDES.items():
+        tid = name_to_tid.get(our_name.lower())
+        if tid:
+            odds_map[odds_name_lower] = tid
+
+    # For each team, also register patterns: "teamname *" matches
+    for tid, our_name in teams.items():
+        ln = our_name.lower()
+        odds_map[ln] = tid  # exact match
+
+    return odds_map, name_to_tid
+
+
+def _resolve_odds_team(odds_name, odds_map, name_to_tid):
+    """Resolve an odds API team name to a team ID."""
+    ln = odds_name.lower()
+
+    # Direct match (including overrides)
+    if ln in odds_map:
+        return odds_map[ln]
+
+    # Try stripping last word (mascot) progressively: "Duke Blue Devils" -> "Duke Blue" -> "Duke"
+    words = ln.split()
+    for i in range(len(words) - 1, 0, -1):
+        prefix = " ".join(words[:i])
+        if prefix in name_to_tid:
+            return name_to_tid[prefix]
+
+    # Try "St" / "St." normalization: "Oklahoma St Cowboys" -> "Oklahoma St"
+    for i in range(len(words) - 1, 0, -1):
+        prefix = " ".join(words[:i])
+        # Try adding "St" if it's not there
+        prefix_st = prefix.replace("state", "st").replace("saint", "st")
+        if prefix_st in name_to_tid:
+            return name_to_tid[prefix_st]
+        # Try "St." -> "St"
+        prefix_nodot = prefix.replace("st.", "st")
+        if prefix_nodot in name_to_tid:
+            return name_to_tid[prefix_nodot]
+
+    # Substring: if our team name is IN the odds name
+    for name, tid in name_to_tid.items():
+        if len(name) >= 4 and name in ln:
+            return tid
+
+    return None
+
+
 def _match_odds_teams(teams, stats, odds_cache):
     """Match odds API team names to our team IDs and extract Vegas lines."""
-    all_team_names = {tname(teams, tid).lower(): tid for tid in teams}
+    odds_map, name_to_tid = _build_odds_name_map(teams)
     matched = []
 
     for game in odds_cache.get("games", []):
@@ -2035,26 +2188,19 @@ def _match_odds_teams(teams, stats, odds_cache):
         if not bookmakers:
             continue
 
-        home_tid = all_team_names.get(home.lower())
-        away_tid = all_team_names.get(away.lower())
-
-        # Partial matching fallback
-        if not home_tid:
-            for name, tid in all_team_names.items():
-                if home.lower() in name or name in home.lower():
-                    home_tid = tid
-                    break
-        if not away_tid:
-            for name, tid in all_team_names.items():
-                if away.lower() in name or name in away.lower():
-                    away_tid = tid
-                    break
+        home_tid = _resolve_odds_team(home, odds_map, name_to_tid)
+        away_tid = _resolve_odds_team(away, odds_map, name_to_tid)
 
         if not home_tid or not away_tid or home_tid not in stats.index or away_tid not in stats.index:
             continue
 
-        bk = bookmakers[0]
-        markets = {m["key"]: m for m in bk.get("markets", [])}
+        # Merge markets from all bookmakers (use first available for each market type)
+        markets = {}
+        bk_title = bookmakers[0].get("title", "")
+        for bk in bookmakers:
+            for m in bk.get("markets", []):
+                if m["key"] not in markets:
+                    markets[m["key"]] = m
 
         v_ml1, v_ml2, v_spread, v_total = None, None, None, None
 
@@ -2089,7 +2235,7 @@ def _match_odds_teams(teams, stats, odds_cache):
 
         matched.append({
             "t1": t1, "t2": t2,
-            "home": home, "away": away, "bk_title": bk.get("title", ""),
+            "home": home, "away": away, "bk_title": bk_title,
             "v_ml1": v_ml1, "v_ml2": v_ml2,
             "v_spread": v_spread, "v_total": v_total,
         })
