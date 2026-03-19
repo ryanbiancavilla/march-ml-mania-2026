@@ -1,28 +1,16 @@
 {
   "games": [
     {
-      "game_id": "401856483",
-      "name": "North Dakota State Bison at Michigan State Spartans",
+      "game_id": "401856490",
+      "name": "VCU Rams at North Carolina Tar Heels",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:10 - 2nd",
-      "home_team": "Michigan State Spartans",
-      "home_score": 82,
-      "home_id": "127",
-      "away_team": "North Dakota State Bison",
-      "away_score": 61,
-      "away_id": "2449"
-    },
-    {
-      "game_id": "401856481",
-      "name": "Hawai'i Rainbow Warriors at Arkansas Razorbacks",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "2:50 - 2nd",
-      "home_team": "Arkansas Razorbacks",
-      "home_score": 91,
-      "home_id": "8",
-      "away_team": "Hawai'i Rainbow Warriors",
-      "away_score": 71,
-      "away_id": "62"
+      "status_detail": "6:48 - 1st",
+      "home_team": "North Carolina Tar Heels",
+      "home_score": 26,
+      "home_id": "153",
+      "away_team": "VCU Rams",
+      "away_score": 18,
+      "away_id": "2670"
     },
     {
       "game_id": "401856478",
@@ -37,6 +25,18 @@
       "away_id": "2561"
     },
     {
+      "game_id": "401856483",
+      "name": "North Dakota State Bison at Michigan State Spartans",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
+      "home_team": "Michigan State Spartans",
+      "home_score": 92,
+      "home_id": "127",
+      "away_team": "North Dakota State Bison",
+      "away_score": 67,
+      "away_id": "2449"
+    },
+    {
       "game_id": "401856489",
       "name": "Troy Trojans at Nebraska Cornhuskers",
       "status": "STATUS_FINAL",
@@ -47,6 +47,18 @@
       "away_team": "Troy Trojans",
       "away_score": 47,
       "away_id": "2653"
+    },
+    {
+      "game_id": "401856481",
+      "name": "Hawai'i Rainbow Warriors at Arkansas Razorbacks",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
+      "home_team": "Arkansas Razorbacks",
+      "home_score": 97,
+      "home_id": "8",
+      "away_team": "Hawai'i Rainbow Warriors",
+      "away_score": 78,
+      "away_id": "62"
     },
     {
       "game_id": "401856480",
@@ -97,22 +109,10 @@
       "away_id": "2628"
     },
     {
-      "game_id": "401856490",
-      "name": "VCU Rams at North Carolina Tar Heels",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 6:50 PM EDT",
-      "home_team": "North Carolina Tar Heels",
-      "home_score": 0,
-      "home_id": "153",
-      "away_team": "VCU Rams",
-      "away_score": 0,
-      "away_id": "2670"
-    },
-    {
       "game_id": "401856486",
       "name": "Howard Bison at Michigan Wolverines",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 7:10 PM EDT",
+      "status_detail": "3/19 - 7:30 PM EDT",
       "home_team": "Michigan Wolverines",
       "home_score": 0,
       "home_id": "130",
@@ -124,7 +124,7 @@
       "game_id": "401856484",
       "name": "Texas Longhorns at BYU Cougars",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 7:25 PM EDT",
+      "status_detail": "3/19 - 7:35 PM EDT",
       "home_team": "BYU Cougars",
       "home_score": 0,
       "home_id": "252",
@@ -160,7 +160,7 @@
       "game_id": "401856487",
       "name": "Saint Louis Billikens at Georgia Bulldogs",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 9:45 PM EDT",
+      "status_detail": "3/19 - 9:55 PM EDT",
       "home_team": "Georgia Bulldogs",
       "home_score": 0,
       "home_id": "61",
@@ -193,5 +193,5 @@
       "away_id": "70"
     }
   ],
-  "fetched_at": "2026-03-19T22:22:09.982876+00:00"
+  "fetched_at": "2026-03-19T23:24:55.052006+00:00"
 }
