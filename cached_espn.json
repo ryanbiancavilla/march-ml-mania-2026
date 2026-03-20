@@ -171,13 +171,13 @@
     {
       "game_id": "401856491",
       "name": "Pennsylvania Quakers at Illinois Fighting Illini",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "1:28 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Illinois Fighting Illini",
-      "home_score": 103,
+      "home_score": 105,
       "home_id": "356",
       "away_team": "Pennsylvania Quakers",
-      "away_score": 65,
+      "away_score": 70,
       "away_id": "219",
       "broadcast": "TNT",
       "start_time": "2026-03-20T01:55Z"
@@ -185,13 +185,13 @@
     {
       "game_id": "401856485",
       "name": "Kennesaw State Owls at Gonzaga Bulldogs",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "16:05 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Gonzaga Bulldogs",
-      "home_score": 42,
+      "home_score": 73,
       "home_id": "2250",
       "away_team": "Kennesaw State Owls",
-      "away_score": 33,
+      "away_score": 64,
       "away_id": "338",
       "broadcast": "TBS",
       "start_time": "2026-03-20T02:24Z"
@@ -199,13 +199,13 @@
     {
       "game_id": "401856493",
       "name": "Idaho Vandals at Houston Cougars",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "12:23 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Houston Cougars",
-      "home_score": 57,
+      "home_score": 78,
       "home_id": "248",
       "away_team": "Idaho Vandals",
-      "away_score": 33,
+      "away_score": 47,
       "away_id": "70",
       "broadcast": "truTV",
       "start_time": "2026-03-20T02:15Z"
@@ -213,17 +213,17 @@
     {
       "game_id": "401856487",
       "name": "Saint Louis Billikens at Georgia Bulldogs",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "11:44 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Georgia Bulldogs",
-      "home_score": 47,
+      "home_score": 77,
       "home_id": "61",
       "away_team": "Saint Louis Billikens",
-      "away_score": 74,
+      "away_score": 102,
       "away_id": "139",
       "broadcast": "CBS",
       "start_time": "2026-03-20T02:10Z"
     }
   ],
-  "fetched_at": "2026-03-20T03:44:25.099936+00:00"
+  "fetched_at": "2026-03-20T05:04:04.457081+00:00"
 }
