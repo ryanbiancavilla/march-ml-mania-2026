@@ -58,8 +58,8 @@ def check_password():
             transition: all 0.25s ease !important;
         }
         input[type="password"]:focus {
-            border-color: rgba(65, 182, 230, 0.5) !important;
-            box-shadow: 0 0 0 1px rgba(65, 182, 230, 0.3), 0 4px 16px rgba(65, 182, 230, 0.1) !important;
+            border-color: rgba(0, 156, 222, 0.5) !important;
+            box-shadow: 0 0 0 1px rgba(0, 156, 222, 0.3), 0 4px 16px rgba(0, 156, 222, 0.1) !important;
         }
         </style>""",
         unsafe_allow_html=True,
@@ -131,29 +131,29 @@ st.markdown("""
     .block-container { padding-top: 0.5rem; max-width: 1200px; }
     html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
-    /* ── Sidebar ── */
+    /* ── Sidebar (NCAA Navy) ── */
     [data-testid="stSidebar"] {
-        background: #009CDE;
-        border-right: 1px solid rgba(65, 182, 230, 0.2);
+        background: #002855;
+        border-right: 1px solid rgba(0, 40, 85, 0.4);
     }
     [data-testid="stSidebar"] .stRadio label { font-weight: 500; color: #FAFAFA; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label {
         padding: 7px 12px !important; border-radius: 6px !important;
         font-size: 13px !important; border: 1px solid transparent !important;
-        color: rgba(255, 255, 255, 0.7) !important;
+        color: rgba(255, 255, 255, 0.6) !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
+        background: rgba(0, 156, 222, 0.12) !important;
         color: #FAFAFA !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
-        background: rgba(65, 182, 230, 0.15) !important;
-        border-color: rgba(65, 182, 230, 0.3) !important;
+        background: rgba(0, 156, 222, 0.2) !important;
+        border-color: rgba(0, 156, 222, 0.4) !important;
         color: #FAFAFA !important;
     }
-    [data-testid="stSidebar"] hr { border-color: rgba(65, 182, 230, 0.15); }
+    [data-testid="stSidebar"] hr { border-color: rgba(255, 255, 255, 0.1); }
     [data-testid="stSidebar"] [data-testid="stMarkdown"] p,
     [data-testid="stSidebar"] [data-testid="stRadio"] > label {
         color: rgba(255, 255, 255, 0.8) !important;
@@ -313,7 +313,7 @@ st.markdown("""
     .champ-banner {
         text-align: center; font-size: 22px; font-weight: 800;
         padding: 16px; border: 1px solid #009CDE; border-radius: 8px;
-        background: rgba(65, 182, 230, 0.06); color: #009CDE; margin: 8px 0;
+        background: rgba(0, 40, 85, 0.15); color: #009CDE; margin: 8px 0;
     }
 
     /* ── Metric cards ── */
@@ -401,7 +401,7 @@ st.markdown("""
         display: inline-flex; align-items: center; gap: 4px;
         padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700;
     }
-    .vp-badge-live { background: rgba(65, 182, 230, 0.15); color: #009CDE; }
+    .vp-badge-live { background: rgba(0, 156, 222, 0.15); color: #009CDE; }
     .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
     .vp-badge-win { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
     .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
@@ -4215,7 +4215,7 @@ st.sidebar.markdown(
     "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
     "<span style='color:#FAFAFA;'>VILPOM</span></span>"
     "</div>"
-    "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
+    "<div style='text-align:center; color:rgba(255,255,255,0.5); font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
     "ANALYTICS & INTELLIGENCE</div>"
     "<div style='width:40px; height:2px; background:linear-gradient(90deg, #009CDE, #33b3e8); "
     "margin:0 auto 4px; border-radius:2px;'></div>",
@@ -4239,12 +4239,12 @@ page = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
-    "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
+    "<div style='color:rgba(255,255,255,0.4); font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
     "<span style='font-family: Impact, Haettenschweiler, sans-serif; "
     "letter-spacing:-0.02em; display:inline-block; "
-    "transform: skewX(-12deg); color:#FAFAFA;'>VILPOM</span> "
+    "transform: skewX(-12deg); color:rgba(255,255,255,0.6);'>VILPOM</span> "
     "&copy; 2026 &middot; v2.0</div>"
-    "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
+    "<div style='color:rgba(255,255,255,0.3); font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
     "For entertainment only</div>"
     "</div>",
     unsafe_allow_html=True,
