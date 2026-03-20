@@ -33,8 +33,9 @@ def check_password():
 
     st.markdown(
         "<div style='text-align:center; margin-top:100px;'>"
-        "<div style='font-family: Oswald, Impact, sans-serif; font-size:64px; font-weight:700; "
-        "letter-spacing:2px; margin-bottom:6px; text-transform:uppercase;'>"
+        "<div style='font-family: Inter, Impact, sans-serif; font-size:64px; font-weight:900; "
+        "letter-spacing:-3px; margin-bottom:6px; text-transform:uppercase; "
+        "transform: skewX(-15deg); display:inline-block;'>"
         "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></div>"
         "<div style='width:50px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
         "margin:12px auto;'></div>"
@@ -90,7 +91,7 @@ if not check_password():
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
     /* ── Fix broken Material Icons rendering as text ── */
@@ -3494,8 +3495,9 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-family: Oswald, Impact, sans-serif; font-size:22px; margin-bottom:12px; '
-            'font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">'
+            '<div style="font-family: Inter, Impact, sans-serif; font-size:22px; margin-bottom:12px; '
+            'font-weight:900; text-transform:uppercase; letter-spacing:-1.5px; '
+            'transform: skewX(-15deg); display:inline-block;">'
             '<span style="color:#41B6E6;">VIL</span><span style="color:#FAFAFA;">POM</span></div>'
             '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
             'No Games With Odds Right Now</div>'
@@ -4014,8 +4016,9 @@ def page_picks(prefix, teams, seeds_df, preds):
 def page_about():
     st.markdown(
         "<div style='text-align:center; margin:16px 0 6px;'>"
-        "<span style='font-family: Oswald, Impact, sans-serif; font-size:36px; font-weight:700; "
-        "letter-spacing:1.5px; text-transform:uppercase; display:inline-block;'>"
+        "<span style='font-family: Inter, Impact, sans-serif; font-size:36px; font-weight:900; "
+        "letter-spacing:-2px; text-transform:uppercase; display:inline-block; "
+        "transform: skewX(-15deg);'>"
         "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
         "</div>"
         "<div style='width:40px; height:2px; background:#41B6E6; "
@@ -4170,8 +4173,9 @@ def page_about():
         '<div style="color:#888; font-size:11px;">Vegas lines from major books</div></div>'
         '<div style="color:#444; font-size:18px;">&#8594;</div>'
         '<div style="text-align:center; min-width:140px;">'
-        '<div style="font-family: Oswald, Impact, sans-serif; font-weight:700; '
-        'font-size:15px; text-transform:uppercase; letter-spacing:1px;">'
+        '<div style="font-family: Inter, Impact, sans-serif; font-weight:900; '
+        'font-size:15px; text-transform:uppercase; letter-spacing:-0.8px; '
+        'transform: skewX(-15deg); display:inline-block;">'
         '<span style="color:#41B6E6;">VIL</span><span style="color:#FAFAFA;">POM</span></div>'
         '<div style="color:#888; font-size:11px;">Model vs Vegas edge detection</div></div>'
         '</div></div>',
@@ -4198,8 +4202,9 @@ conferences = load_conferences()
 # Sidebar
 st.sidebar.markdown(
     "<div style='text-align:center; padding:8px 0 4px;'>"
-    "<span style='font-family: Oswald, Impact, sans-serif; font-size:32px; font-weight:700; "
-    "letter-spacing:1.5px; text-transform:uppercase; display:inline-block;'>"
+    "<span style='font-family: Inter, Impact, sans-serif; font-size:32px; font-weight:900; "
+    "letter-spacing:-2px; text-transform:uppercase; display:inline-block; "
+    "transform: skewX(-15deg);'>"
     "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
     "</div>"
     "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
@@ -4227,8 +4232,8 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
     "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
-    "<span style='font-family: Oswald, Impact, sans-serif; font-weight:700; "
-    "letter-spacing:1px; display:inline-block;'>VILPOM</span> "
+    "<span style='font-family: Inter, Impact, sans-serif; font-weight:900; "
+    "letter-spacing:-0.5px; display:inline-block; transform: skewX(-15deg);'>VILPOM</span> "
     "&copy; 2026 &middot; v2.0</div>"
     "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
     "For entertainment only</div>"
