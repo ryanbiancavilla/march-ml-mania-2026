@@ -3107,9 +3107,12 @@ def page_backtest(prefix, teams):
                 actual_total = w_score + l_score
 
                 p = get_pred(preds, gt1, gt2)
-                fav = gt1 if p >= 0.5 else gt2
-                fav_prob = p if fav == gt1 else 1 - p
-                spread = prob_to_spread(p)
+                s1_seed = team_seeds.get(gt1)
+                s2_seed = team_seeds.get(gt2)
+                p_cal = calibrate_prob_for_betting(p, s1_seed, s2_seed)
+                fav = gt1 if p_cal >= 0.5 else gt2
+                fav_prob = p_cal if fav == gt1 else 1 - p_cal
+                spread = prob_to_spread(p_cal)
                 proj_total = project_game_total(stats, gt1, gt2)
 
                 ml_hit = (fav == winner)
@@ -3585,8 +3588,9 @@ def page_picks(prefix, teams, seeds_df, preds):
                     pg = get_pred(preds, t1g, t2g)
                     lines_g = compute_betting_lines(stats, preds, t1g, t2g,
                                                      t1_seed=team_seeds.get(t1g), t2_seed=team_seeds.get(t2g))
-                    fav_g = t1g if pg >= 0.5 else t2g
-                    fav_prob_g = pg if fav_g == t1g else 1 - pg
+                    pg_cal = lines_g.get("t1_prob_cal", pg)
+                    fav_g = t1g if pg_cal >= 0.5 else t2g
+                    fav_prob_g = pg_cal if fav_g == t1g else 1 - pg_cal
                     fav_name_g = tname(teams, fav_g)
                     pick_icon = (
                         f'<div style="padding:3px 10px; border-top:1px solid #2a2a2a; font-size:10px; color:#009CDE; font-weight:600; display:flex; align-items:center; gap:3px;">'
@@ -3681,7 +3685,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 
             picks.append({
                 "t1": t1, "t2": t2,
-                "model_prob_t1": p,
+                "model_prob_t1": lines.get("t1_prob_cal", p),
                 "model_spread": lines["spread"],
                 "model_total": lines["total"],
                 "model_ml_t1": lines["t1_ml"],
