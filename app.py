@@ -898,7 +898,10 @@ def slot_sort_key(slot):
     return 0  # play-in games first
 
 
-def simulate_bracket(seeds_df, slots_df, preds, deterministic=True):
+def simulate_bracket(seeds_df, slots_df, preds, deterministic=True, actual_winners=None):
+    """Simulate bracket. If actual_winners is provided (dict: frozenset({tid1,tid2}) -> winner_tid),
+    use actual results for completed games and model predictions for the rest."""
+    actual_winners = actual_winners or {}
     seed_to_team = dict(zip(seeds_df.Seed, seeds_df.TeamID))
     sorted_slots = slots_df.sort_values(
         "Slot", key=lambda x: x.map(slot_sort_key)
@@ -915,7 +918,12 @@ def simulate_bracket(seeds_df, slots_df, preds, deterministic=True):
             continue
 
         p = get_pred(preds, t1, t2)
-        if deterministic:
+
+        # Use actual result if available
+        matchup_key = frozenset({t1, t2})
+        if matchup_key in actual_winners:
+            winner = actual_winners[matchup_key]
+        elif deterministic:
             winner = t1 if p >= 0.5 else t2
         else:
             winner = t1 if np.random.random() < p else t2
@@ -1804,8 +1812,6 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
         unsafe_allow_html=True,
     )
 
-    sim_results, slot_winners = simulate_bracket(seeds_df, slots_df, preds, deterministic=True)
-
     team_seed_map = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
 
     # Get 1-seed names for region labels
@@ -1818,12 +1824,13 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
         else:
             region_labels[region] = f"Region {region}"
 
-    # ── Compare bracket picks vs actual results from ESPN ──
+    # ── Build actual results from ESPN BEFORE simulating bracket ──
     espn_data = _load_cached_espn()
     odds_map_bk, name_to_tid_bk = _build_odds_name_map(teams, prefix)
-    actual_winners = set()  # team IDs that actually won
-    actual_losers = set()   # team IDs that actually lost
-    actual_matchups = {}    # (winner_tid, loser_tid) -> score string
+    actual_winners_set = set()
+    actual_losers = set()
+    actual_matchups = {}      # (winner_tid, loser_tid) -> score string
+    actual_winners_map = {}   # frozenset({tid1,tid2}) -> winner_tid
 
     if espn_data and espn_data.get("games"):
         for g in espn_data["games"]:
@@ -1839,11 +1846,17 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
             w_tid = _resolve_odds_team(w_name, odds_map_bk, name_to_tid_bk)
             l_tid = _resolve_odds_team(l_name, odds_map_bk, name_to_tid_bk)
             if w_tid:
-                actual_winners.add(w_tid)
+                actual_winners_set.add(w_tid)
             if l_tid:
                 actual_losers.add(l_tid)
             if w_tid and l_tid:
                 actual_matchups[(w_tid, l_tid)] = f"{w_score}-{l_score}"
+                actual_winners_map[frozenset({w_tid, l_tid})] = w_tid
+
+    # Simulate bracket using actual results where available
+    sim_results, slot_winners = simulate_bracket(
+        seeds_df, slots_df, preds, deterministic=True, actual_winners=actual_winners_map
+    )
 
     # Find bracket misses: games where model predicted the wrong winner
     bracket_misses = []
