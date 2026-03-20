@@ -1,5 +1,8 @@
 """Fetch NCAAB odds and ESPN scores, save to cached JSON files.
-Run by GitHub Actions every 2 hours, or manually."""
+Run by GitHub Actions on schedule, or manually.
+
+Key design: MERGE new data into existing cache so past finals persist.
+ESPN only returns today's games, so we archive completed games to avoid losing them."""
 
 import json
 import os
@@ -31,11 +34,7 @@ def fetch_odds(api_key):
 
     remaining = resp.headers.get("x-requests-remaining", "?")
     print(f"Odds API: {len(resp.json())} games fetched, {remaining} credits remaining")
-    return {
-        "games": resp.json(),
-        "remaining": remaining,
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
-    }
+    return resp.json(), remaining
 
 
 def fetch_espn_scores():
@@ -88,35 +87,97 @@ def fetch_espn_scores():
         })
 
     print(f"ESPN: {len(games)} games fetched")
-    return {
-        "games": games,
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
-    }
+    return games
+
+
+def load_json(path):
+    """Load existing JSON cache file, return empty dict on error."""
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def merge_espn(existing, new_games):
+    """Merge new ESPN games into existing cache. Keep past finals, update live games."""
+    # Index existing games by game_id for fast lookup
+    by_id = {}
+    for g in existing.get("games", []):
+        gid = g.get("game_id")
+        if gid:
+            by_id[gid] = g
+
+    # Update/add new games
+    for g in new_games:
+        gid = g.get("game_id")
+        if gid:
+            old = by_id.get(gid)
+            if old and old.get("status") == "STATUS_FINAL" and g.get("status") != "STATUS_FINAL":
+                # Don't overwrite a final game with a non-final status (ESPN quirk)
+                continue
+            by_id[gid] = g
+
+    return list(by_id.values())
+
+
+def merge_odds(existing, new_games):
+    """Merge new odds games into existing cache. Update current games, keep old ones with odds."""
+    by_id = {}
+    for g in existing.get("games", []):
+        gid = g.get("id")
+        if gid:
+            by_id[gid] = g
+
+    for g in new_games:
+        gid = g.get("id")
+        if gid:
+            by_id[gid] = g  # Always update with latest odds
+
+    return list(by_id.values())
 
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Fetch ESPN scores (free, no key needed)
-    espn_data = fetch_espn_scores()
-    if espn_data:
-        espn_path = os.path.join(script_dir, "cached_espn.json")
-        with open(espn_path, "w") as f:
-            json.dump(espn_data, f, indent=2)
-        print(f"Saved ESPN scores to cached_espn.json")
+    # ── ESPN scores (free, no key needed) ──
+    espn_path = os.path.join(script_dir, "cached_espn.json")
+    existing_espn = load_json(espn_path)
+    new_espn_games = fetch_espn_scores()
 
-    # Fetch odds (requires API key)
+    if new_espn_games is not None:
+        merged_games = merge_espn(existing_espn, new_espn_games)
+        espn_out = {
+            "games": merged_games,
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
+        with open(espn_path, "w") as f:
+            json.dump(espn_out, f, indent=2)
+        finals = sum(1 for g in merged_games if g.get("status") == "STATUS_FINAL")
+        print(f"Saved ESPN: {len(merged_games)} total games ({finals} finals archived)")
+
+    # ── Odds (requires API key) ──
     api_key = os.environ.get("ODDS_API_KEY", "")
     if not api_key:
         print("ODDS_API_KEY not set, skipping odds fetch")
         return
 
-    odds_data = fetch_odds(api_key)
-    if odds_data:
+    result = fetch_odds(api_key)
+    if result:
+        new_odds_games, remaining = result
         odds_path = os.path.join(script_dir, "cached_odds.json")
+        existing_odds = load_json(odds_path)
+        merged_odds = merge_odds(existing_odds, new_odds_games)
+        odds_out = {
+            "games": merged_odds,
+            "remaining": remaining,
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
         with open(odds_path, "w") as f:
-            json.dump(odds_data, f, indent=2)
-        print(f"Saved odds to cached_odds.json")
+            json.dump(odds_out, f, indent=2)
+        print(f"Saved odds: {len(merged_odds)} total games (was {len(existing_odds.get('games', []))})")
     else:
         print("Failed to fetch odds")
         sys.exit(1)

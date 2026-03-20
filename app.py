@@ -3038,24 +3038,36 @@ def page_picks(prefix, teams, seeds_df, preds):
         t1_final_score = 0
         t2_final_score = 0
         if game_final:
-            # Figure out which ESPN team maps to t1 vs t2 using the odds home/away
+            # Figure out which ESPN team maps to t1 vs t2
+            # Try multiple matching strategies; skip grading if uncertain
             home_name = pick.get("home", "")
-            away_name = pick.get("away", "")
-            home_tid = pick.get("t1") if pick.get("home_is_t1", True) else pick.get("t2")
-            # Use the odds API mapping: t1 = min(home_tid, away_tid), home was resolved
-            # We stored home/away in the pick from odds_matched
-            if home_name and n1.lower() in home_name.lower():
-                t1_final_score = final_home_score
-                t2_final_score = final_away_score
-            elif home_name and n2.lower() in home_name.lower():
-                t1_final_score = final_away_score
-                t2_final_score = final_home_score
-            elif n1.lower() in final_home_team.lower():
-                t1_final_score = final_home_score
-                t2_final_score = final_away_score
-            else:
-                t1_final_score = final_away_score
-                t2_final_score = final_home_score
+            mapped = False
+
+            # Strategy 1: Match via odds API home/away names stored in pick
+            if home_name:
+                if n1.lower() in home_name.lower():
+                    t1_final_score = final_home_score
+                    t2_final_score = final_away_score
+                    mapped = True
+                elif n2.lower() in home_name.lower():
+                    t1_final_score = final_away_score
+                    t2_final_score = final_home_score
+                    mapped = True
+
+            # Strategy 2: Match via ESPN home_team name
+            if not mapped and final_home_team:
+                if n1.lower() in final_home_team.lower():
+                    t1_final_score = final_home_score
+                    t2_final_score = final_away_score
+                    mapped = True
+                elif n2.lower() in final_home_team.lower():
+                    t1_final_score = final_away_score
+                    t2_final_score = final_home_score
+                    mapped = True
+
+            # If we couldn't confidently map, don't grade this game
+            if not mapped:
+                game_final = False
 
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",

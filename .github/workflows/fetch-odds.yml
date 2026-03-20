@@ -2,10 +2,15 @@ name: Fetch Odds & Scores
 
 on:
   schedule:
-    # Hourly during game hours: noon-1AM EDT (16:00-05:00 UTC)
-    # ~14 calls/day × 31 days = 434/month (under 500 free tier)
-    # Off from 1AM-noon EDT (05:00-16:00 UTC) — no games
-    - cron: '0 0-5,16-23 * * *'
+    # Peak game hours (6PM-midnight EDT = 22:00-04:00 UTC): every 30 min
+    # ~12 calls/day during peak for live odds updates
+    - cron: '0,30 22-23 * * *'
+    - cron: '0,30 0-3 * * *'
+    # Early game hours (noon-6PM EDT = 16:00-21:00 UTC): hourly
+    # ~6 calls/day for pregame odds
+    - cron: '0 16-21 * * *'
+    # Total: ~18 calls/day × 27 game days = ~486/month (under 500 free tier)
+    # Dead hours (midnight-noon EDT = 04:00-16:00 UTC): OFF
   workflow_dispatch: # Allow manual trigger
 
 jobs:
