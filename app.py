@@ -2725,17 +2725,87 @@ def _load_cached_odds():
         return None
 
 
-def _load_cached_espn():
-    """Load pre-fetched ESPN scores from cached_espn.json (updated by GitHub Actions)."""
-    import json
-    cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cached_espn.json")
-    if not os.path.exists(cache_path):
-        return None
+@st.cache_data(ttl=120)
+def _fetch_live_espn():
+    """Fetch live ESPN scores directly (cached 2 min). Returns list of game dicts or None."""
+    import requests
     try:
-        with open(cache_path) as f:
-            return json.load(f)
+        url = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard"
+        resp = requests.get(url, params={"groups": 100, "limit": 200}, timeout=10)
+        if resp.status_code != 200:
+            return None
+        games = []
+        for ev in resp.json().get("events", []):
+            status = ev.get("status", {}).get("type", {}).get("name", "")
+            comps = ev.get("competitions", [{}])
+            if not comps:
+                continue
+            comp = comps[0]
+            competitors = comp.get("competitors", [])
+            if len(competitors) < 2:
+                continue
+            home, away = competitors[0], competitors[1]
+            broadcasts = comp.get("broadcasts", [])
+            broadcast_names = []
+            for b in broadcasts:
+                for name_entry in b.get("names", []):
+                    broadcast_names.append(name_entry)
+            games.append({
+                "game_id": ev.get("id"),
+                "name": ev.get("name", ""),
+                "status": status,
+                "status_detail": ev.get("status", {}).get("type", {}).get("shortDetail", ""),
+                "home_team": home.get("team", {}).get("displayName", ""),
+                "home_score": int(home.get("score", 0)),
+                "home_id": home.get("team", {}).get("id", ""),
+                "away_team": away.get("team", {}).get("displayName", ""),
+                "away_score": int(away.get("score", 0)),
+                "away_id": away.get("team", {}).get("id", ""),
+                "broadcast": ", ".join(broadcast_names) if broadcast_names else "",
+                "start_time": comp.get("date", ev.get("date", "")),
+            })
+        return games
     except Exception:
         return None
+
+
+def _load_cached_espn():
+    """Load ESPN scores: fetch live data and merge with cached file for historical games."""
+    import json
+    # Load cached file (has historical finals from GitHub Actions)
+    cache_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cached_espn.json")
+    cached = {}
+    if os.path.exists(cache_path):
+        try:
+            with open(cache_path) as f:
+                cached = json.load(f)
+        except Exception:
+            cached = {}
+
+    # Fetch live data from ESPN API
+    live_games = _fetch_live_espn()
+    if live_games is None:
+        # API failed — fall back to cached file only
+        return cached if cached else None
+
+    # Merge: keep cached finals, update/add live games
+    by_id = {}
+    for g in cached.get("games", []):
+        gid = g.get("game_id")
+        if gid:
+            by_id[gid] = g
+    for g in live_games:
+        gid = g.get("game_id")
+        if gid:
+            old = by_id.get(gid)
+            if old and old.get("status") == "STATUS_FINAL" and g.get("status") != "STATUS_FINAL":
+                continue  # Don't overwrite a final with non-final (ESPN quirk)
+            by_id[gid] = g
+
+    return {
+        "games": list(by_id.values()),
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 def page_backtest(prefix, teams):
