@@ -6,6 +6,7 @@ Advanced ML-powered predictions, efficiency ratings, and edge detection.
 import os
 import math
 import hmac
+from datetime import datetime, timezone, timedelta
 
 import numpy as np
 import pandas as pd
@@ -1592,15 +1593,87 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
         else:
             region_labels[region] = f"Region {region}"
 
+    # ── Compare bracket picks vs actual results from ESPN ──
+    espn_data = _load_cached_espn()
+    odds_map_bk, name_to_tid_bk = _build_odds_name_map(teams, prefix)
+    actual_winners = set()  # team IDs that actually won
+    actual_losers = set()   # team IDs that actually lost
+    actual_matchups = {}    # (winner_tid, loser_tid) -> score string
+
+    if espn_data and espn_data.get("games"):
+        for g in espn_data["games"]:
+            if g.get("status") != "STATUS_FINAL":
+                continue
+            home_score = int(g.get("home_score", 0))
+            away_score = int(g.get("away_score", 0))
+            w_name = g["home_team"] if home_score > away_score else g["away_team"]
+            l_name = g["away_team"] if home_score > away_score else g["home_team"]
+            w_score = max(home_score, away_score)
+            l_score = min(home_score, away_score)
+
+            w_tid = _resolve_odds_team(w_name, odds_map_bk, name_to_tid_bk)
+            l_tid = _resolve_odds_team(l_name, odds_map_bk, name_to_tid_bk)
+            if w_tid:
+                actual_winners.add(w_tid)
+            if l_tid:
+                actual_losers.add(l_tid)
+            if w_tid and l_tid:
+                actual_matchups[(w_tid, l_tid)] = f"{w_score}-{l_score}"
+
+    # Find bracket misses: games where model predicted the wrong winner
+    bracket_misses = []
+    bracket_hits = 0
+    all_bracket_slots = []
+    for slot, r in sim_results.items():
+        t1, t2, winner = r.get("t1"), r.get("t2"), r.get("winner")
+        if t1 is None or t2 is None:
+            continue
+        loser = t2 if winner == t1 else t1
+        # Check if we have actual results for this matchup
+        if winner in actual_winners and loser in actual_losers:
+            if (winner, loser) in actual_matchups:
+                bracket_hits += 1
+            elif (loser, winner) in actual_matchups:
+                # Model predicted wrong winner
+                bracket_misses.append({
+                    "slot": slot,
+                    "predicted": tname(teams, winner),
+                    "predicted_tid": winner,
+                    "predicted_seed": team_seed_map.get(winner, ""),
+                    "actual": tname(teams, loser),
+                    "actual_tid": loser,
+                    "actual_seed": team_seed_map.get(loser, ""),
+                    "score": actual_matchups[(loser, winner)],
+                    "prob": r.get("prob", 0.5),
+                })
+
+    total_graded = bracket_hits + len(bracket_misses)
+
+    # ── Record Banner ──
+    if total_graded > 0:
+        rec_color = "#4ade80" if bracket_hits > len(bracket_misses) else "#f87171"
+        st.markdown(
+            f'<div class="vp-card" style="border-left:4px solid {rec_color}; text-align:center;">'
+            f'<div style="font-size:12px; color:#888; letter-spacing:1px; font-weight:600; margin-bottom:4px;">'
+            f'2026 TOURNAMENT BRACKET RECORD</div>'
+            f'<div style="font-size:32px; font-weight:900; color:{rec_color};">'
+            f'{bracket_hits}-{len(bracket_misses)}</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
     # Champion banner
     champ_result = sim_results.get("R6CH", {})
     champ = champ_result.get("winner")
     if champ:
         s = team_seed_map.get(champ, "")
         seed_txt = f" ({s} seed)" if s else ""
+        # Check if champ is already eliminated
+        champ_elim = champ in actual_losers
+        elim_txt = ' <span style="color:#f87171; font-size:14px;">ELIMINATED</span>' if champ_elim else ""
         st.markdown(
             f'<div class="champ-banner">\U0001f3c6 Predicted Champion: '
-            f'{tname(teams, champ)}{seed_txt}</div>',
+            f'{tname(teams, champ)}{seed_txt}{elim_txt}</div>',
             unsafe_allow_html=True,
         )
 
@@ -1609,6 +1682,33 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     st.markdown(final_four_html(sim_results, teams, team_seed_map), unsafe_allow_html=True)
 
     st.markdown("---")
+
+    # ── Missed Picks ──
+    if bracket_misses:
+        st.markdown('<div class="vp-section">BRACKET MISSES</div>', unsafe_allow_html=True)
+        st.caption(f"Games where our model predicted the wrong winner ({len(bracket_misses)} miss{'es' if len(bracket_misses) != 1 else ''}).")
+        for miss in bracket_misses:
+            pred_seed = f"({miss['predicted_seed']}) " if miss['predicted_seed'] else ""
+            actual_seed = f"({miss['actual_seed']}) " if miss['actual_seed'] else ""
+            st.markdown(
+                f'<div class="vp-card" style="border-left:4px solid #f87171;">'
+                f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                f'<div>'
+                f'<div style="font-size:13px; margin-bottom:4px;">'
+                f'<span style="color:#f87171; font-weight:700;">Model picked:</span> '
+                f'<span style="color:#888; text-decoration:line-through;">{pred_seed}{miss["predicted"]}</span>'
+                f' <span style="color:#888;">({miss["prob"]*100:.0f}% confidence)</span></div>'
+                f'<div style="font-size:13px;">'
+                f'<span style="color:#4ade80; font-weight:700;">Actual winner:</span> '
+                f'<span style="color:#FAFAFA; font-weight:600;">{actual_seed}{miss["actual"]}</span>'
+                f' <span style="color:#888;">{miss["score"]}</span></div>'
+                f'</div>'
+                f'<span style="background:#f87171; color:#000; font-weight:700; padding:3px 10px; '
+                f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">MISS</span>'
+                f'</div></div>',
+                unsafe_allow_html=True,
+            )
+        st.markdown("")
 
     # Regional brackets
     for region in ["W", "X", "Y", "Z"]:
@@ -2667,13 +2767,6 @@ def page_picks(prefix, teams, seeds_df, preds):
                     ml_icon = "✓" if ml_correct else "✗"
                     ml_color = "#4ade80" if ml_correct else "#f87171"
 
-                    # Spread pick direction
-                    spread_side = fav_name_g if m_spread_g < 0 else tname(teams, t2g if fav_g == t1g else t1g)
-
-                    # O/U pick
-                    ou_pick = "OVER" if m_total_g > actual_total - 5 and m_total_g > 130 else ""
-                    ou_pick = "OVER" if m_total_g > 0 else "UNDER"  # simplified
-
                     pick_html = (
                         f'<div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap;">'
                         f'<span style="font-size:11px; font-weight:600; color:{ml_color};">'
@@ -2882,7 +2975,6 @@ def page_picks(prefix, teams, seeds_df, preds):
         broadcast_display = ""
         if commence_time:
             try:
-                from datetime import datetime, timezone, timedelta
                 ct = datetime.fromisoformat(commence_time.replace("Z", "+00:00"))
                 et = ct - timedelta(hours=4)  # Convert UTC to EDT
                 game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
@@ -2899,7 +2991,6 @@ def page_picks(prefix, teams, seeds_df, preds):
                 broadcast_display = edata.get("broadcast", "")
                 if not game_time_display and edata.get("start_time"):
                     try:
-                        from datetime import datetime, timedelta
                         ct = datetime.fromisoformat(edata["start_time"].replace("Z", "+00:00"))
                         et = ct - timedelta(hours=4)
                         game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
