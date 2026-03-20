@@ -2828,12 +2828,21 @@ def page_picks(prefix, teams, seeds_df, preds):
         live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
+        def _seed_tag(tid):
+            """Return a small seed number prefix like '1 ' for TV-style display."""
+            s = team_seeds.get(tid)
+            if s:
+                return f'<span style="color:#FF6B35; font-weight:700; font-size:11px; margin-right:3px;">{int(s)}</span>'
+            return ""
+
         if live_games:
             st.markdown('<div class="vp-section" style="margin-top:8px;">LIVE NOW</div>', unsafe_allow_html=True)
             for g in live_games:
                 # Resolve teams to model IDs for prediction
                 home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
                 away_tid = _resolve_odds_team(g["away_team"], odds_map_lookup, name_to_tid_lookup)
+                away_seed = _seed_tag(away_tid) if away_tid else ""
+                home_seed = _seed_tag(home_tid) if home_tid else ""
                 pick_html = ""
                 if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
                     t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
@@ -2863,10 +2872,10 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<div class="vp-card" style="border-left:3px solid #fbbf24;">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:600;">'
-                    f'<span style="color:#aaa;">{g["away_team"]}</span> '
+                    f'{away_seed}<span style="color:#aaa;">{g["away_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["away_score"]}</span>'
                     f'<span style="color:#444; margin:0 10px; font-size:12px;">@</span>'
-                    f'<span style="color:#aaa;">{g["home_team"]}</span> '
+                    f'{home_seed}<span style="color:#aaa;">{g["home_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["home_score"]}</span></div>'
                     f'<div style="display:flex; align-items:center; gap:6px;">'
                     f'{tv_html}'
@@ -2888,6 +2897,8 @@ def page_picks(prefix, teams, seeds_df, preds):
                 # Try to resolve ESPN teams to model IDs for pick display
                 home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
                 away_tid = _resolve_odds_team(g["away_team"], odds_map_lookup, name_to_tid_lookup)
+                away_seed = _seed_tag(away_tid) if away_tid else ""
+                home_seed = _seed_tag(home_tid) if home_tid else ""
                 pick_html = ""
                 if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
                     t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
@@ -2911,10 +2922,10 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'padding:8px 12px; border-left:3px solid rgba(74, 222, 128, 0.3);">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-size:12px;">'
-                    f'<span style="{a_bold}">{g["away_team"]}</span> '
+                    f'{away_seed}<span style="{a_bold}">{g["away_team"]}</span> '
                     f'<span style="font-size:15px; {a_bold}">{g["away_score"]}</span>'
                     f'<span style="color:#333; margin:0 6px; font-size:10px;">@</span>'
-                    f'<span style="{h_bold}">{g["home_team"]}</span> '
+                    f'{home_seed}<span style="{h_bold}">{g["home_team"]}</span> '
                     f'<span style="font-size:15px; {h_bold}">{g["home_score"]}</span></div>'
                     f'<span class="vp-badge vp-badge-final">F</span>'
                     f'</div>'
