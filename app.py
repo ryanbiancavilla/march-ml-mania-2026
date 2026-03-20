@@ -1019,12 +1019,16 @@ def page_rankings(prefix, teams, seeds_df, conferences):
     html += '<th>eFG%</th><th>FG%</th><th>3P%</th><th>FT%</th>'
     html += '</tr></thead><tbody>'
 
+    # Compute averages for relative coloring of OffEff/DefEff
+    avg_off = sum(r["OffEff"] for r in rows) / max(len(rows), 1)
+    avg_def = sum(r["DefEff"] for r in rows) / max(len(rows), 1)
+
     for i, r in enumerate(rows, 1):
         seed_html = f'<span class="seed-badge">{r["Seed"]}</span>' if r["Seed"] else ""
         tier_html = _tier_badge(r["Elo"], max_elo)
         net_cls = _eff_color(r["NetEff"])
-        off_cls = _eff_color(r["OffEff"])
-        def_cls = _eff_color(r["DefEff"], higher_better=False)
+        off_cls = _eff_color(r["OffEff"] - avg_off)
+        def_cls = _eff_color(avg_def - r["DefEff"])  # lower DefEff = better
         margin_cls = "stat-good" if r["Margin"] > 0 else "stat-bad" if r["Margin"] < 0 else "stat-neutral"
 
         html += f'<tr>'
