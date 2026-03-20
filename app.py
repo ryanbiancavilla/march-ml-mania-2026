@@ -2654,14 +2654,23 @@ def page_picks(prefix, teams, seeds_df, preds):
     st.caption("Model performance across 20+ years of tournament games vs. closing Vegas lines.")
     _render_summary_cards(bt)
 
-    # ── Build ESPN broadcast lookup ──
+    # ── Build ESPN broadcast + score lookup ──
     espn_broadcast = {}
+    espn_scores = {}  # keyed by lowercased team fragments for flexible matching
     if espn_data and espn_data.get("games"):
         for g in espn_data["games"]:
             key = g.get("name", "").lower()
             espn_broadcast[key] = {
                 "broadcast": g.get("broadcast", ""),
                 "start_time": g.get("start_time", ""),
+            }
+            # Store scores for grading picks on final games
+            espn_scores[key] = {
+                "status": g.get("status", ""),
+                "home_team": g.get("home_team", ""),
+                "away_team": g.get("away_team", ""),
+                "home_score": int(g.get("home_score", 0)),
+                "away_score": int(g.get("away_score", 0)),
             }
 
     # ── Model Picks vs Vegas ──
@@ -2716,6 +2725,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "vegas_spread": gm["v_spread"], "vegas_total": gm["v_total"],
                 "region": "",
                 "commence_time": gm.get("commence_time", ""),
+                "home": gm.get("home", ""), "away": gm.get("away", ""),
             })
 
     elif data_source == "Tournament Bracket":
@@ -2834,9 +2844,11 @@ def page_picks(prefix, teams, seeds_df, preds):
             except Exception:
                 game_time_display = ""
 
-        # Try to find broadcast from ESPN data
-        matchup_key = f"{n2} vs. {n1}".lower()  # ESPN uses "Away vs. Home" format with period
-        matchup_key2 = f"{n1} vs. {n2}".lower()
+        # Try to find broadcast + final score from ESPN data
+        game_final = False
+        final_home_score = 0
+        final_away_score = 0
+        final_home_team = ""
         for ekey, edata in espn_broadcast.items():
             if (n1.lower() in ekey and n2.lower() in ekey):
                 broadcast_display = edata.get("broadcast", "")
@@ -2850,6 +2862,39 @@ def page_picks(prefix, teams, seeds_df, preds):
                         pass
                 break
 
+        # Check if game is final for grading
+        for ekey, sc in espn_scores.items():
+            if n1.lower() in ekey and n2.lower() in ekey:
+                if sc["status"] == "STATUS_FINAL":
+                    game_final = True
+                    final_home_score = sc["home_score"]
+                    final_away_score = sc["away_score"]
+                    final_home_team = sc["home_team"]
+                break
+
+        # Determine actual scores mapped to t1/t2
+        t1_final_score = 0
+        t2_final_score = 0
+        if game_final:
+            # Figure out which ESPN team maps to t1 vs t2 using the odds home/away
+            home_name = pick.get("home", "")
+            away_name = pick.get("away", "")
+            home_tid = pick.get("t1") if pick.get("home_is_t1", True) else pick.get("t2")
+            # Use the odds API mapping: t1 = min(home_tid, away_tid), home was resolved
+            # We stored home/away in the pick from odds_matched
+            if home_name and n1.lower() in home_name.lower():
+                t1_final_score = final_home_score
+                t2_final_score = final_away_score
+            elif home_name and n2.lower() in home_name.lower():
+                t1_final_score = final_away_score
+                t2_final_score = final_home_score
+            elif n1.lower() in final_home_team.lower():
+                t1_final_score = final_home_score
+                t2_final_score = final_away_score
+            else:
+                t1_final_score = final_away_score
+                t2_final_score = final_home_score
+
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",
             "ml": None, "spread": None, "total": None,
@@ -2857,6 +2902,10 @@ def page_picks(prefix, teams, seeds_df, preds):
             "commence_time": commence_time,
             "game_time_display": game_time_display,
             "broadcast_display": broadcast_display,
+            "game_final": game_final,
+            "final_score": f"{t1_final_score}-{t2_final_score}" if game_final else "",
+            "t1_final": t1_final_score,
+            "t2_final": t2_final_score,
         }
 
         # ── Moneyline Pick ──
@@ -2970,6 +3019,51 @@ def page_picks(prefix, teams, seeds_df, preds):
         card["best_rating"] = max(
             card["ml"]["score"], card["spread"]["score"], card["total"]["score"]
         )
+
+        # ── Grade picks for final games ──
+        if game_final and has_vegas:
+            actual_margin = t1_final_score - t2_final_score  # t1 margin
+            actual_total = t1_final_score + t2_final_score
+            fav_won = (fav == t1 and t1_final_score > t2_final_score) or \
+                      (fav == t2 and t2_final_score > t1_final_score)
+
+            # Grade ML — did the model's ML pick win?
+            ml_pick_data = card["ml"]
+            # Check if model picked the dog instead
+            if dog_name in ml_pick_data["pick"]:
+                ml_correct = not fav_won  # model picked dog, dog needs to win
+            else:
+                ml_correct = fav_won
+            card["ml"]["result"] = "WIN" if ml_correct else "LOSS"
+
+            # Grade ATS — did the picked side cover?
+            if pick["vegas_spread"] is not None:
+                v_spread = pick["vegas_spread"]
+                # t1 spread: t1_score + v_spread vs t2_score
+                t1_covers = (t1_final_score + v_spread) > t2_final_score
+                # Model picked t1 side if model spread < vegas spread
+                model_took_t1 = m_spread < v_spread
+                if model_took_t1:
+                    ats_correct = t1_covers
+                else:
+                    ats_correct = not t1_covers
+                # Push check
+                if abs((t1_final_score + v_spread) - t2_final_score) < 0.01:
+                    card["spread"]["result"] = "PUSH"
+                else:
+                    card["spread"]["result"] = "WIN" if ats_correct else "LOSS"
+
+            # Grade O/U
+            if pick["vegas_total"] is not None:
+                v_total = pick["vegas_total"]
+                model_took_over = m_total > v_total
+                if abs(actual_total - v_total) < 0.01:
+                    card["total"]["result"] = "PUSH"
+                elif model_took_over:
+                    card["total"]["result"] = "WIN" if actual_total > v_total else "LOSS"
+                else:
+                    card["total"]["result"] = "WIN" if actual_total < v_total else "LOSS"
+
         game_cards.append(card)
 
         # Also build flat list for board table
@@ -2986,13 +3080,48 @@ def page_picks(prefix, teams, seeds_df, preds):
     # Sort games by tip-off time (next game first), then by edge as tiebreaker
     game_cards.sort(key=lambda x: (x["commence_time"] or "9999", -x["best_rating"]))
 
+    # ── Today's Record Summary ──
+    graded = [c for c in game_cards if c.get("game_final")]
+    if graded:
+        ml_w = sum(1 for c in graded if c["ml"].get("result") == "WIN")
+        ml_l = sum(1 for c in graded if c["ml"].get("result") == "LOSS")
+        ats_w = sum(1 for c in graded if c["spread"].get("result") == "WIN")
+        ats_l = sum(1 for c in graded if c["spread"].get("result") == "LOSS")
+        ou_w = sum(1 for c in graded if c["total"].get("result") == "WIN")
+        ou_l = sum(1 for c in graded if c["total"].get("result") == "LOSS")
+        kc1, kc2, kc3 = st.columns(3)
+        ml_c = "#4ade80" if ml_w > ml_l else "#f87171" if ml_l > ml_w else "#fbbf24"
+        ats_c = "#4ade80" if ats_w > ats_l else "#f87171" if ats_l > ats_w else "#fbbf24"
+        ou_c = "#4ade80" if ou_w > ou_l else "#f87171" if ou_l > ou_w else "#fbbf24"
+        with kc1:
+            st.markdown(
+                f'<div class="vp-metric" style="border-top:3px solid {ml_c};">'
+                f'<div class="label">TODAY\'S ML</div>'
+                f'<div class="value" style="color:{ml_c};">{ml_w}-{ml_l}</div>'
+                f'</div>', unsafe_allow_html=True)
+        with kc2:
+            st.markdown(
+                f'<div class="vp-metric" style="border-top:3px solid {ats_c};">'
+                f'<div class="label">TODAY\'S ATS</div>'
+                f'<div class="value" style="color:{ats_c};">{ats_w}-{ats_l}</div>'
+                f'</div>', unsafe_allow_html=True)
+        with kc3:
+            st.markdown(
+                f'<div class="vp-metric" style="border-top:3px solid {ou_c};">'
+                f'<div class="label">TODAY\'S O/U</div>'
+                f'<div class="value" style="color:{ou_c};">{ou_w}-{ou_l}</div>'
+                f'</div>', unsafe_allow_html=True)
+
     # ── Render Game Cards ──
     for card in game_cards:
         best = card["best_rating"]
         border_color = "#4ade80" if best >= 70 else "#fbbf24" if best >= 45 else "#60a5fa" if best >= 25 else "#444"
 
-        # Build game info line (time + broadcast)
+        # Build game info line (time + broadcast + final score)
         info_parts = []
+        is_final = card.get("game_final", False)
+        if is_final:
+            info_parts.append(f'<span style="color:#4ade80; font-weight:700;">FINAL: {card["t1_final"]}-{card["t2_final"]}</span>')
         if card.get("game_time_display"):
             info_parts.append(f'<span style="color:#fbbf24; font-weight:600;">{card["game_time_display"]}</span>')
         if card.get("broadcast_display"):
@@ -3005,6 +3134,20 @@ def page_picks(prefix, teams, seeds_df, preds):
                 + '</div>'
             )
 
+        # For final games, show record instead of edge
+        if is_final:
+            results = [card["ml"].get("result"), card["spread"].get("result"), card["total"].get("result")]
+            wins = sum(1 for r in results if r == "WIN")
+            losses = sum(1 for r in results if r == "LOSS")
+            pushes = sum(1 for r in results if r == "PUSH")
+            record_str = f"{wins}W-{losses}L" + (f"-{pushes}P" if pushes else "")
+            record_color = "#4ade80" if wins > losses else "#f87171" if losses > wins else "#fbbf24"
+            badge_html = (f'<span style="background:{record_color}; color:#000; font-weight:700; padding:3px 10px; '
+                          f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">{record_str}</span>')
+        else:
+            badge_html = (f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
+                          f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">EDGE: {best}</span>')
+
         st.markdown(
             f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
             f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
@@ -3012,8 +3155,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}</div>'
             f'{info_line}'
             f'</div>'
-            f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
-            f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">EDGE: {best}</span>'
+            f'{badge_html}'
             f'</div>'
             f'<div style="display:flex; gap:12px; flex-wrap:wrap;">',
             unsafe_allow_html=True,
@@ -3026,6 +3168,23 @@ def page_picks(prefix, teams, seeds_df, preds):
             lbl = data["label"]
             edge_display = data["edge"]
 
+            # Result badge for graded games
+            result = data.get("result", "")
+            if result == "WIN":
+                result_html = ('<div style="margin-top:6px;"><span style="background:#4ade80; color:#000; '
+                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
+                               'letter-spacing:1px;">✓ WIN</span></div>')
+            elif result == "LOSS":
+                result_html = ('<div style="margin-top:6px;"><span style="background:#f87171; color:#000; '
+                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
+                               'letter-spacing:1px;">✗ LOSS</span></div>')
+            elif result == "PUSH":
+                result_html = ('<div style="margin-top:6px;"><span style="background:#fbbf24; color:#000; '
+                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
+                               'letter-spacing:1px;">— PUSH</span></div>')
+            else:
+                result_html = ""
+
             st.markdown(
                 f'<div class="vp-bet-type">'
                 f'<div style="font-size:10px; color:#FF6B35; font-weight:700; letter-spacing:1px; margin-bottom:6px;">{btype}</div>'
@@ -3036,6 +3195,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 f'<div>'
                 f'<span style="background:{col}; color:#000; font-weight:700; padding:3px 10px; '
                 f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">{lbl} ({sc})</span></div>'
+                f'{result_html}'
                 f'</div>',
                 unsafe_allow_html=True,
             )
