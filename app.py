@@ -2991,7 +2991,10 @@ def page_picks(prefix, teams, seeds_df, preds):
         bt_ml_pct = get_bt_pct(fav_prob, "ml")
         bt_ats_pct = get_bt_pct(fav_prob, "ats")
 
-        has_vegas = pick["vegas_ml_t1"] is not None
+        has_vegas_ml = pick["vegas_ml_t1"] is not None
+        has_vegas_spread = pick["vegas_spread"] is not None
+        has_vegas_total = pick["vegas_total"] is not None
+        has_vegas = has_vegas_ml or has_vegas_spread or has_vegas_total
         m_spread = pick["model_spread"]
         m_total = pick["model_total"]
 
@@ -3045,7 +3048,7 @@ def page_picks(prefix, teams, seeds_df, preds):
         }
 
         # ── Moneyline Pick ──
-        if has_vegas:
+        if has_vegas_ml:
             v_ml_fav = pick["vegas_ml_t1"] if fav == t1 else pick["vegas_ml_t2"]
             v_ml_dog = pick["vegas_ml_t2"] if fav == t1 else pick["vegas_ml_t1"]
             vegas_implied = _implied_prob(v_ml_fav)
@@ -3089,7 +3092,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             }
 
         # ── Spread Pick ──
-        if has_vegas and pick["vegas_spread"] is not None:
+        if has_vegas_spread:
             v_spread = pick["vegas_spread"]
             spread_diff = v_spread - m_spread
             spread_ev = abs(spread_diff) * 4.0
@@ -3125,7 +3128,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             }
 
         # ── Over/Under Pick ──
-        if has_vegas and pick["vegas_total"] is not None:
+        if has_vegas_total:
             v_total = pick["vegas_total"]
             total_diff = m_total - v_total
             total_ev = abs(total_diff) * 3.0
