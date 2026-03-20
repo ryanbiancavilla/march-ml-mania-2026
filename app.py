@@ -1068,24 +1068,28 @@ def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None)
 </div>"""
 
 
-def _build_slot_game_states(model_results, actual_matchups, actual_winners_map):
-    """Build a dict: slot -> game_state for bracket rendering."""
+def _build_slot_game_states(sim_results, preds, actual_matchups, actual_winners_map):
+    """Build a dict: slot -> game_state for bracket rendering.
+    Uses sim_results (actual-winners simulation) for correct team matchups,
+    and preds to determine what the model would have picked."""
     states = {}
-    for slot, r in model_results.items():
-        t1, t2, winner = r.get("t1"), r.get("t2"), r.get("winner")
+    for slot, r in sim_results.items():
+        t1, t2 = r.get("t1"), r.get("t2")
         if t1 is None or t2 is None:
             continue
-        loser = t2 if winner == t1 else t1
         matchup_key = frozenset({t1, t2})
         actual_winner = actual_winners_map.get(matchup_key)
         if not actual_winner:
             continue  # game not yet played
-        if (winner, loser) in actual_matchups:
-            # Model was correct
-            states[slot] = {"type": "hit", "actual_winner": actual_winner, "score": actual_matchups[(winner, loser)]}
-        elif (loser, winner) in actual_matchups:
-            # Model was wrong
-            states[slot] = {"type": "miss", "actual_winner": actual_winner, "score": actual_matchups[(loser, winner)]}
+        actual_loser = t2 if actual_winner == t1 else t1
+        # Determine what the model would have predicted for this matchup
+        p = get_pred(preds, t1, t2)
+        model_pick = t1 if p >= 0.5 else t2
+        score = actual_matchups.get((actual_winner, actual_loser), "")
+        if model_pick == actual_winner:
+            states[slot] = {"type": "hit", "actual_winner": actual_winner, "score": score}
+        else:
+            states[slot] = {"type": "miss", "actual_winner": actual_winner, "score": score}
     return states
 
 
@@ -1962,7 +1966,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     total_graded = bracket_hits + len(bracket_misses)
 
     # Build slot-level game states for inline bracket rendering
-    slot_states = _build_slot_game_states(model_results, actual_matchups, actual_winners_map)
+    slot_states = _build_slot_game_states(sim_results, preds, actual_matchups, actual_winners_map)
 
     # ── Top bar: Record + Champion side by side ──
     champ_result = sim_results.get("R6CH", {})
