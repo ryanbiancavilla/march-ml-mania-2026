@@ -789,7 +789,9 @@ def simulate_bracket(seeds_df, slots_df, preds, deterministic=True):
 # ──────────────────────────── Monte Carlo Odds ────────────────────────────
 
 @st.cache_data
-def monte_carlo_odds(_seeds_df, _slots_df, _preds, n_sims=10000):
+def monte_carlo_odds(_seeds_df, _slots_df, _preds, n_sims=10000, eliminated=None):
+    """Run Monte Carlo bracket simulations. Eliminated teams (frozenset) get 0% chance."""
+    eliminated = eliminated or frozenset()
     seed_to_team = dict(zip(_seeds_df.Seed, _seeds_df.TeamID))
     sorted_slots = _slots_df.sort_values(
         "Slot", key=lambda x: x.map(slot_sort_key)
@@ -810,8 +812,20 @@ def monte_carlo_odds(_seeds_df, _slots_df, _preds, n_sims=10000):
             t2 = sw.get(row["WeakSeed"]) or seed_to_team.get(row["WeakSeed"])
             if t1 is None or t2 is None:
                 continue
-            p = get_pred(_preds, t1, t2)
-            winner = t1 if np.random.random() < p else t2
+
+            # If one team is eliminated, the other auto-advances
+            t1_elim = t1 in eliminated
+            t2_elim = t2 in eliminated
+            if t1_elim and t2_elim:
+                continue  # both eliminated, skip
+            elif t1_elim:
+                winner = t2
+            elif t2_elim:
+                winner = t1
+            else:
+                p = get_pred(_preds, t1, t2)
+                winner = t1 if np.random.random() < p else t2
+
             sw[slot] = winner
 
             if slot.startswith("R1"):
@@ -1623,29 +1637,27 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     # Find bracket misses: games where model predicted the wrong winner
     bracket_misses = []
     bracket_hits = 0
-    all_bracket_slots = []
     for slot, r in sim_results.items():
         t1, t2, winner = r.get("t1"), r.get("t2"), r.get("winner")
         if t1 is None or t2 is None:
             continue
         loser = t2 if winner == t1 else t1
-        # Check if we have actual results for this matchup
-        if winner in actual_winners and loser in actual_losers:
-            if (winner, loser) in actual_matchups:
-                bracket_hits += 1
-            elif (loser, winner) in actual_matchups:
-                # Model predicted wrong winner
-                bracket_misses.append({
-                    "slot": slot,
-                    "predicted": tname(teams, winner),
-                    "predicted_tid": winner,
-                    "predicted_seed": team_seed_map.get(winner, ""),
-                    "actual": tname(teams, loser),
-                    "actual_tid": loser,
-                    "actual_seed": team_seed_map.get(loser, ""),
-                    "score": actual_matchups[(loser, winner)],
-                    "prob": r.get("prob", 0.5),
-                })
+        # Check if this exact matchup has a result (check both orderings)
+        if (winner, loser) in actual_matchups:
+            bracket_hits += 1
+        elif (loser, winner) in actual_matchups:
+            # Model predicted wrong winner
+            bracket_misses.append({
+                "slot": slot,
+                "predicted": tname(teams, winner),
+                "predicted_tid": winner,
+                "predicted_seed": team_seed_map.get(winner, ""),
+                "actual": tname(teams, loser),
+                "actual_tid": loser,
+                "actual_seed": team_seed_map.get(loser, ""),
+                "score": actual_matchups[(loser, winner)],
+                "prob": r.get("prob", 0.5),
+            })
 
     total_graded = bracket_hits + len(bracket_misses)
 
@@ -1754,16 +1766,24 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     # ── Championship Odds (Monte Carlo) ──
     st.markdown("---")
     st.subheader("Championship Odds")
-    st.caption("Based on 10,000 simulated tournaments. For entertainment purposes only.")
+    elim_count = len(actual_losers) if actual_losers else 0
+    if elim_count:
+        st.caption(f"Based on 10,000 simulated tournaments. {elim_count} eliminated teams removed from projections.")
+    else:
+        st.caption("Based on 10,000 simulated tournaments.")
 
     with st.spinner("Running 10,000 tournament simulations..."):
-        probs, round_labels = monte_carlo_odds(seeds_df, slots_df, preds)
+        probs, round_labels = monte_carlo_odds(
+            seeds_df, slots_df, preds,
+            eliminated=frozenset(actual_losers) if actual_losers else None,
+        )
 
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
     elo = compute_elo(prefix)
 
     odds_rows = []
     for tid, p_list in probs.items():
+        is_elim = tid in actual_losers
         odds_rows.append({
             "Team": tname(teams, tid),
             "Seed": team_seeds.get(tid, 99),
@@ -1775,15 +1795,18 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
             "CG": f"{p_list[5]*100:.1f}%",
             "Champ": f"{p_list[6]*100:.1f}%",
             "_champ_pct": p_list[6],
+            "_eliminated": is_elim,
         })
 
     odds_df = pd.DataFrame(odds_rows).sort_values("_champ_pct", ascending=False).reset_index(drop=True)
     odds_df.index = odds_df.index + 1
     odds_df.index.name = "#"
 
-    # Top 20 futures board styled like a sportsbook
+    # Top 20 futures board styled like a sportsbook (exclude eliminated teams)
     futures_rows = []
     for _, row in odds_df.iterrows():
+        if row.get("_eliminated", False):
+            continue
         cp = row["_champ_pct"]
         if cp > 0:
             ml = prob_to_moneyline(cp)
@@ -1818,7 +1841,8 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
 
     st.markdown("")
     st.subheader("Full Round-by-Round Advancement Odds")
-    _styled_df(odds_df.drop(columns=["_champ_pct"]), max_height=600)
+    active_df = odds_df[~odds_df["_eliminated"]].drop(columns=["_champ_pct", "_eliminated"])
+    _styled_df(active_df, max_height=600)
 
 
 # ──────────────────────────── Page: Model Backtest ────────────────────────────
@@ -2897,6 +2921,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                     "vegas_ml_t1": None, "vegas_ml_t2": None,
                     "vegas_spread": None, "vegas_total": None,
                     "region": region,
+                    "home": "", "away": "",
                 })
 
     elif data_source == "Enter Odds Manually":
@@ -2938,6 +2963,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "vegas_ml_t1": v_ml1, "vegas_ml_t2": v_ml2,
                 "vegas_spread": v_spread, "vegas_total": v_total,
                 "region": "",
+                "home": "", "away": "",
             })
 
     # ── Render Picks ──
