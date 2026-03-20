@@ -3047,6 +3047,7 @@ def _build_odds_name_map(teams, prefix="M"):
         "miami hurricanes": "Miami FL",
         "miami (oh) redhawks": "Miami OH",
         "miami (fl) hurricanes": "Miami FL",
+        "uconn huskies": "Connecticut",
         "queens university royals": "Queens NC",
         "liu sharks": "LIU Brooklyn",
         "suny albany great danes": "SUNY Albany",
