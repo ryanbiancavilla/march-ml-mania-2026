@@ -31,9 +31,13 @@ def check_password():
         return True
 
     st.markdown(
-        "<h1 style='text-align:center; font-weight:900; letter-spacing:-1px;'>"
-        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></h1>"
-        "<p style='text-align:center;color:#888;font-size:14px;letter-spacing:2px;'>NCAA ANALYTICS & BETTING INTELLIGENCE</p>",
+        "<div style='text-align:center; margin-top:80px;'>"
+        "<div style='font-size:56px; font-weight:900; letter-spacing:-2px; margin-bottom:4px;'>"
+        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></div>"
+        "<div style='color:#555; font-size:11px; letter-spacing:3px; font-weight:600;'>"
+        "NCAA ANALYTICS & BETTING INTELLIGENCE</div>"
+        "<div style='width:60px; height:3px; background:#FF6B35; margin:20px auto 0;'></div>"
+        "</div>",
         unsafe_allow_html=True,
     )
     # CSS to disable copy/paste/select on the password field
@@ -42,20 +46,33 @@ def check_password():
         input[type="password"] {
             -webkit-user-select: none; -moz-user-select: none;
             -ms-user-select: none; user-select: none;
+            background: #12141a !important; border: 1px solid #2a2d36 !important;
+            border-radius: 8px !important; padding: 12px !important;
+            font-size: 14px !important; letter-spacing: 2px !important;
+        }
+        input[type="password"]:focus {
+            border-color: #FF6B35 !important;
+            box-shadow: 0 0 0 1px #FF6B35 !important;
         }
         </style>""",
         unsafe_allow_html=True,
     )
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1.2, 1.6, 1.2])
     with col2:
-        pwd = st.text_input("Access Code", type="password", key="pwd_input")
-        if st.button("Enter", use_container_width=True):
+        st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True)
+        pwd = st.text_input("ACCESS CODE", type="password", key="pwd_input",
+                           label_visibility="visible")
+        if st.button("UNLOCK", use_container_width=True):
             if hmac.compare_digest(pwd, st.secrets["app_password"]):
                 st.session_state["authenticated"] = True
                 st.rerun()
             else:
                 st.error("Incorrect access code.")
-        st.caption("Members only. Do not share this access code.")
+        st.markdown(
+            "<div style='text-align:center; color:#444; font-size:10px; letter-spacing:1px; margin-top:20px;'>"
+            "MEMBERS ONLY &middot; DO NOT SHARE</div>",
+            unsafe_allow_html=True,
+        )
     return False
 
 
@@ -99,6 +116,63 @@ st.markdown("""
     .vp-section {
         font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
         color: #FF6B35; text-transform: uppercase; margin-bottom: 12px;
+    }
+
+    /* Style all Streamlit subheaders */
+    [data-testid="stMarkdownContainer"] h3 {
+        font-size: 16px !important; font-weight: 700 !important;
+        letter-spacing: 0.3px; color: #e2e8f0 !important;
+        border-bottom: 1px solid #2a2d36; padding-bottom: 8px; margin-top: 8px;
+    }
+    [data-testid="stMarkdownContainer"] h2 {
+        font-size: 20px !important; font-weight: 800 !important;
+        letter-spacing: -0.3px; color: #FAFAFA !important;
+    }
+
+    /* Style Streamlit captions */
+    [data-testid="stCaptionContainer"] p {
+        font-size: 11px !important; letter-spacing: 0.3px;
+    }
+
+    /* Style selectbox/inputs */
+    [data-testid="stSelectbox"] label, [data-testid="stTextInput"] label,
+    [data-testid="stCheckbox"] label, [data-testid="stSlider"] label,
+    [data-testid="stMultiSelect"] label {
+        font-size: 12px !important; font-weight: 600 !important;
+        letter-spacing: 0.5px; text-transform: uppercase; color: #888 !important;
+    }
+
+    /* Streamlit hr dividers */
+    hr { border-color: #1e2028 !important; margin: 20px 0 !important; }
+
+    /* Radio button styling */
+    [data-testid="stRadio"] > div > label {
+        font-size: 13px !important;
+    }
+
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #FF6B35 0%, #e55a2b 100%) !important;
+        color: #fff !important; font-weight: 700 !important;
+        border: none !important; border-radius: 8px !important;
+        letter-spacing: 0.5px; padding: 8px 24px !important;
+        transition: all 0.2s !important;
+    }
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #ff7e4d 0%, #FF6B35 100%) !important;
+        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3) !important;
+    }
+
+    /* Spinner */
+    .stSpinner > div { border-top-color: #FF6B35 !important; }
+
+    /* Expander styling */
+    [data-testid="stExpander"] {
+        border: 1px solid #2a2d36 !important; border-radius: 10px !important;
+        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+    }
+    [data-testid="stExpander"] summary {
+        font-weight: 600 !important; font-size: 13px !important;
     }
 
     /* Rankings table */
@@ -993,38 +1067,40 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # Big probability display
     st.markdown("---")
-    c1, c2, c3 = st.columns([2, 1, 2])
-    with c1:
-        color1 = "#4ade80" if p >= 0.5 else "#f87171"
-        st.markdown(
-            f'<div class="big-prob" style="color:{color1}">{p*100:.1f}%</div>'
-            f'<div style="text-align:center; font-size:18px; font-weight:600;">{tname(teams, t1)}</div>',
-            unsafe_allow_html=True,
-        )
-        s1 = team_seeds.get(t1)
-        if s1:
-            st.markdown(f'<div style="text-align:center; color:#888;">Seed: {s1}</div>', unsafe_allow_html=True)
-    with c2:
-        st.markdown(
-            '<div style="text-align:center; font-size:24px; color:#666; margin-top:20px;">vs</div>',
-            unsafe_allow_html=True,
-        )
-    with c3:
-        color2 = "#4ade80" if (1 - p) >= 0.5 else "#f87171"
-        st.markdown(
-            f'<div class="big-prob" style="color:{color2}">{(1-p)*100:.1f}%</div>'
-            f'<div style="text-align:center; font-size:18px; font-weight:600;">{tname(teams, t2)}</div>',
-            unsafe_allow_html=True,
-        )
-        s2 = team_seeds.get(t2)
-        if s2:
-            st.markdown(f'<div style="text-align:center; color:#888;">Seed: {s2}</div>', unsafe_allow_html=True)
+    n1, n2 = tname(teams, t1), tname(teams, t2)
+    s1_seed = team_seeds.get(t1)
+    s2_seed = team_seeds.get(t2)
+    s1_txt = f'<span style="color:#FF6B35; font-size:13px; font-weight:700;">({s1_seed})</span> ' if s1_seed else ''
+    s2_txt = f' <span style="color:#FF6B35; font-size:13px; font-weight:700;">({s2_seed})</span>' if s2_seed else ''
+    color1 = "#4ade80" if p >= 0.5 else "#f87171"
+    color2 = "#4ade80" if (1 - p) >= 0.5 else "#f87171"
+    fav_glow = f"0 0 30px rgba({','.join(str(int(color1[i:i+2], 16)) for i in (1,3,5))}, 0.15)"
+
+    st.markdown(
+        f'<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin:20px 0;">'
+        # Team 1
+        f'<div class="vp-metric" style="flex:1; border-top:3px solid {color1};">'
+        f'<div class="big-prob" style="color:{color1}; margin:4px 0;">{p*100:.1f}%</div>'
+        f'<div style="text-align:center; font-size:18px; font-weight:700;">{s1_txt}{n1}</div>'
+        f'</div>'
+        # VS
+        f'<div style="text-align:center; padding:0 8px;">'
+        f'<div style="font-size:12px; color:#444; font-weight:700; letter-spacing:2px;">VS</div>'
+        f'</div>'
+        # Team 2
+        f'<div class="vp-metric" style="flex:1; border-top:3px solid {color2};">'
+        f'<div class="big-prob" style="color:{color2}; margin:4px 0;">{(1-p)*100:.1f}%</div>'
+        f'<div style="text-align:center; font-size:18px; font-weight:700;">{n2}{s2_txt}</div>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
     # Probability bar
     st.markdown(
-        f'<div style="display:flex; height:12px; border-radius:6px; overflow:hidden; margin:16px 0;">'
-        f'<div style="width:{p*100}%; background:#4ade80;"></div>'
-        f'<div style="width:{(1-p)*100}%; background:#f87171;"></div>'
+        f'<div style="display:flex; height:8px; border-radius:4px; overflow:hidden; margin:8px 0 16px;">'
+        f'<div style="width:{p*100}%; background:linear-gradient(90deg, {color1}, {color1}88);"></div>'
+        f'<div style="width:{(1-p)*100}%; background:linear-gradient(90deg, {color2}88, {color2});"></div>'
         f'</div>',
         unsafe_allow_html=True,
     )
@@ -1154,26 +1230,40 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         for label, v1, v2, higher_better in compare_stats:
             if higher_better is not None and isinstance(v1, (int, float)):
                 if higher_better:
-                    c1_style = "color:#4ade80; font-weight:700;" if v1 > v2 else ""
-                    c2_style = "color:#4ade80; font-weight:700;" if v2 > v1 else ""
+                    c1_cls = "stat-good" if v1 > v2 else "stat-bad" if v1 < v2 else "stat-neutral"
+                    c2_cls = "stat-good" if v2 > v1 else "stat-bad" if v2 < v1 else "stat-neutral"
+                    # advantage dot
+                    dot1 = '<span style="color:#4ade80; margin-left:6px;">&#9679;</span>' if v1 > v2 else ''
+                    dot2 = '<span style="color:#4ade80; margin-right:6px;">&#9679;</span>' if v2 > v1 else ''
                 else:
-                    c1_style = "color:#4ade80; font-weight:700;" if v1 < v2 else ""
-                    c2_style = "color:#4ade80; font-weight:700;" if v2 < v1 else ""
+                    c1_cls = "stat-good" if v1 < v2 else "stat-bad" if v1 > v2 else "stat-neutral"
+                    c2_cls = "stat-good" if v2 < v1 else "stat-bad" if v2 > v1 else "stat-neutral"
+                    dot1 = '<span style="color:#4ade80; margin-left:6px;">&#9679;</span>' if v1 < v2 else ''
+                    dot2 = '<span style="color:#4ade80; margin-right:6px;">&#9679;</span>' if v2 < v1 else ''
             else:
-                c1_style = c2_style = ""
+                c1_cls = c2_cls = "stat-neutral"
+                dot1 = dot2 = ''
 
-            rows_html += f"""<tr>
-                <td style="text-align:right; padding:4px 12px; {c1_style}">{v1}</td>
-                <td style="text-align:center; padding:4px 12px; color:#888; font-weight:600;">{label}</td>
-                <td style="text-align:left; padding:4px 12px; {c2_style}">{v2}</td>
-            </tr>"""
+            rows_html += (
+                f'<tr>'
+                f'<td style="text-align:right; padding:6px 14px; font-variant-numeric:tabular-nums;" '
+                f'class="{c1_cls}"><span style="font-weight:600;">{v1}</span>{dot1}</td>'
+                f'<td style="text-align:center; padding:6px 14px; color:#FF6B35; font-weight:700; '
+                f'font-size:11px; letter-spacing:0.5px; text-transform:uppercase;">{label}</td>'
+                f'<td style="text-align:left; padding:6px 14px; font-variant-numeric:tabular-nums;" '
+                f'class="{c2_cls}">{dot2}<span style="font-weight:600;">{v2}</span></td>'
+                f'</tr>'
+            )
 
         st.markdown(
-            f'<table style="width:100%; max-width:500px; margin:auto; border-collapse:collapse;">'
-            f'<tr><th style="text-align:right; padding:6px 12px;">{tname(teams, t1)}</th>'
-            f'<th style="text-align:center; padding:6px 12px; color:#888;">Stat</th>'
-            f'<th style="text-align:left; padding:6px 12px;">{tname(teams, t2)}</th></tr>'
-            f'{rows_html}</table>',
+            f'<div style="border-radius:10px; border:1px solid #2a2d36; overflow:hidden; max-width:560px; margin:auto;">'
+            f'<table class="vp-table" style="margin:0;">'
+            f'<thead><tr>'
+            f'<th style="text-align:right; width:40%;">{tname(teams, t1)}</th>'
+            f'<th style="text-align:center; width:20%; color:#FF6B35;">STAT</th>'
+            f'<th style="text-align:left; width:40%;">{tname(teams, t2)}</th>'
+            f'</tr></thead><tbody>'
+            f'{rows_html}</tbody></table></div>',
             unsafe_allow_html=True,
         )
 
@@ -1188,19 +1278,31 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         for col, tid, info in [(cc1, t1, c1_info), (cc2, t2, c2_info)]:
             with col:
                 if info:
-                    st.markdown(f"**{tname(teams, tid)}**")
-                    st.markdown(f"**Coach:** {info['name']}")
-                    st.markdown(f"**Tenure:** {info['tenure']} season{'s' if info['tenure'] != 1 else ''}")
-                    if info['tourney_games'] > 0:
-                        st.markdown(
-                            f"**NCAA Tournament Record:** {info['tourney_wins']}-"
-                            f"{info['tourney_games'] - info['tourney_wins']} "
-                            f"({info['tourney_pct']}%)"
-                        )
-                    else:
-                        st.markdown("**NCAA Tournament Record:** No prior tournament games")
+                    t_record = (f"{info['tourney_wins']}-{info['tourney_games'] - info['tourney_wins']} "
+                                f"({info['tourney_pct']}%)" if info['tourney_games'] > 0
+                                else "No tournament games")
+                    st.markdown(
+                        f'<div class="vp-card">'
+                        f'<div style="font-weight:700; color:#FF6B35; font-size:11px; letter-spacing:1px; '
+                        f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
+                        f'<div style="font-size:18px; font-weight:700; margin-bottom:10px;">{info["name"]}</div>'
+                        f'<div style="display:flex; gap:20px;">'
+                        f'<div><div style="color:#888; font-size:10px; letter-spacing:0.5px;">TENURE</div>'
+                        f'<div style="font-weight:700; font-size:16px;">{info["tenure"]} yr{"s" if info["tenure"] != 1 else ""}</div></div>'
+                        f'<div><div style="color:#888; font-size:10px; letter-spacing:0.5px;">NCAA TOURNEY</div>'
+                        f'<div style="font-weight:700; font-size:16px;">{t_record}</div></div>'
+                        f'</div></div>',
+                        unsafe_allow_html=True,
+                    )
                 else:
-                    st.markdown(f"**{tname(teams, tid)}** — Coach data not available")
+                    st.markdown(
+                        f'<div class="vp-card">'
+                        f'<div style="font-weight:700; color:#FF6B35; font-size:11px; letter-spacing:1px; '
+                        f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
+                        f'<div style="color:#666;">Coach data not available</div>'
+                        f'</div>',
+                        unsafe_allow_html=True,
+                    )
 
     # ── Similar Opponents ──
     st.markdown("---")
@@ -1317,13 +1419,24 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     elo2 = elo.get(t2, 1500)
     elo_diff = elo1 - elo2
     elo_wp = 1 / (1 + 10 ** (-elo_diff / 400))
+    diff_pp = (p - elo_wp) * 100
 
     ec1, ec2 = st.columns(2)
     with ec1:
-        st.metric("Elo Only", f"{elo_wp*100:.1f}%", help=f"Elo ratings: {int(elo1)} vs {int(elo2)}")
+        st.markdown(
+            f'<div class="vp-metric">'
+            f'<div class="label">ELO ONLY</div>'
+            f'<div class="value" style="color:#60a5fa;">{elo_wp*100:.1f}%</div>'
+            f'<div class="sub">{int(elo1)} vs {int(elo2)}</div>'
+            f'</div>', unsafe_allow_html=True)
     with ec2:
-        diff_pp = (p - elo_wp) * 100
-        st.metric("Full Model", f"{p*100:.1f}%", delta=f"{diff_pp:+.1f}pp")
+        delta_color = "#4ade80" if diff_pp > 0 else "#f87171" if diff_pp < 0 else "#888"
+        st.markdown(
+            f'<div class="vp-metric">'
+            f'<div class="label">FULL ENSEMBLE</div>'
+            f'<div class="value" style="color:#FF6B35;">{p*100:.1f}%</div>'
+            f'<div class="sub" style="color:{delta_color}; font-weight:600;">{diff_pp:+.1f}pp vs Elo</div>'
+            f'</div>', unsafe_allow_html=True)
 
 
 # ──────────────────────────── Page: Tournament Odds ────────────────────────────
@@ -1382,17 +1495,35 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 
     # Top 20 futures board styled like a sportsbook
     top_futures = futures_df.head(20)
-    board_html = '<div style="max-width:700px; margin:auto;">'
-    for _, fr in top_futures.iterrows():
-        seed_txt = f'<span style="color:#888; margin-right:6px;">({int(fr["Seed"])})</span>'
-        odds_color = "#4ade80" if fr["_cp"] >= 0.10 else "#fbbf24" if fr["_cp"] >= 0.03 else "#e2e8f0"
+    board_html = '<div style="max-width:700px; margin:auto; border-radius:10px; border:1px solid #2a2d36; overflow:hidden;">'
+    # Header row
+    board_html += (
+        '<div style="display:flex; justify-content:space-between; align-items:center; '
+        'padding:10px 16px; background:#12141a; border-bottom:2px solid #FF6B35;">'
+        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px;">TEAM</span>'
+        '<div style="display:flex; gap:24px;">'
+        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:60px; text-align:right;">PROB</span>'
+        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:80px; text-align:right;">ODDS</span>'
+        '</div></div>'
+    )
+    for idx, (_, fr) in enumerate(top_futures.iterrows()):
+        rank = idx + 1
+        seed_txt = f'<span class="seed-badge" style="margin-right:8px;">{int(fr["Seed"])}</span>'
+        odds_color = "#FF6B35" if fr["_cp"] >= 0.10 else "#4ade80" if fr["_cp"] >= 0.03 else "#e2e8f0"
+        bg = 'rgba(255,107,53,0.04)' if rank <= 4 else '#14161c'
         board_html += (
             f'<div style="display:flex; justify-content:space-between; align-items:center; '
-            f'padding:8px 16px; border-bottom:1px solid #2a2d34; background:#1a1d24; margin:1px 0;">'
-            f'<span>{seed_txt}{fr["Team"]}</span>'
+            f'padding:10px 16px; border-bottom:1px solid #1e2028; background:{bg}; '
+            f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(255,107,53,0.08)\'" '
+            f'onmouseout="this.style.background=\'{bg}\'">'
+            f'<div style="display:flex; align-items:center; gap:8px;">'
+            f'<span style="color:#FF6B35; font-weight:800; font-size:13px; min-width:20px;">{rank}</span>'
+            f'{seed_txt}'
+            f'<span style="font-weight:600;">{fr["Team"]}</span></div>'
             f'<div style="display:flex; gap:24px; align-items:center;">'
-            f'<span style="color:#aaa; font-size:13px;">{fr["Champ %"]}</span>'
-            f'<span style="font-weight:700; font-size:16px; color:{odds_color}; min-width:80px; text-align:right;">'
+            f'<span style="color:#aaa; font-size:13px; font-variant-numeric:tabular-nums; min-width:60px; text-align:right;">{fr["Champ %"]}</span>'
+            f'<span style="font-weight:700; font-size:16px; color:{odds_color}; min-width:80px; text-align:right; '
+            f'font-variant-numeric:tabular-nums;">'
             f'{fr["Futures Odds"]}</span>'
             f'</div></div>'
         )
@@ -1793,43 +1924,44 @@ def _render_summary_cards(bt):
     kc1, kc2, kc3, kc4 = st.columns(4)
     with kc1:
         ml_color = "#4ade80" if ml_roi > 0 else "#f87171"
+        profit_str = f'{"+" if ml_total_profit >= 0 else ""}{ml_total_profit:.0f}u'
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-            f'<div style="color:#888; font-size:12px;">MONEYLINE</div>'
-            f'<div style="font-size:28px; font-weight:800; color:{ml_color};">{ml_wins}-{total_games - ml_wins}</div>'
-            f'<div style="font-size:14px; color:#aaa;">{ml_pct:.1f}% Win Rate</div>'
-            f'<div style="font-size:16px; font-weight:700; color:{ml_color}; margin-top:4px;">'
-            f'{"+" if ml_total_profit >= 0 else ""}{ml_total_profit:.0f}u ({ml_roi:+.1f}% ROI)</div>'
+            f'<div class="vp-metric" style="border-top:3px solid {ml_color};">'
+            f'<div class="label">MONEYLINE</div>'
+            f'<div class="value" style="color:{ml_color};">{ml_wins}-{total_games - ml_wins}</div>'
+            f'<div class="sub">{ml_pct:.1f}% Win Rate</div>'
+            f'<div style="font-size:14px; font-weight:700; color:{ml_color}; margin-top:6px;">'
+            f'{profit_str} &middot; {ml_roi:+.1f}% ROI</div>'
             f'</div>', unsafe_allow_html=True)
     with kc2:
         ats_color = "#4ade80" if ats_pct > 52.4 else "#f87171"
+        ats_profit_str = f'{"+" if ats_total_profit >= 0 else ""}{ats_total_profit:.0f}u'
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-            f'<div style="color:#888; font-size:12px;">AGAINST THE SPREAD</div>'
-            f'<div style="font-size:28px; font-weight:800; color:{ats_color};">{ats_wins}-{len(ats_valid) - ats_wins}</div>'
-            f'<div style="font-size:14px; color:#aaa;">{ats_pct:.1f}% Cover Rate</div>'
-            f'<div style="font-size:16px; font-weight:700; color:{ats_color}; margin-top:4px;">'
-            f'{"+" if ats_total_profit >= 0 else ""}{ats_total_profit:.0f}u ({ats_roi:+.1f}% ROI)</div>'
+            f'<div class="vp-metric" style="border-top:3px solid {ats_color};">'
+            f'<div class="label">AGAINST SPREAD</div>'
+            f'<div class="value" style="color:{ats_color};">{ats_wins}-{len(ats_valid) - ats_wins}</div>'
+            f'<div class="sub">{ats_pct:.1f}% Cover Rate</div>'
+            f'<div style="font-size:14px; font-weight:700; color:{ats_color}; margin-top:6px;">'
+            f'{ats_profit_str} &middot; {ats_roi:+.1f}% ROI</div>'
             f'</div>', unsafe_allow_html=True)
     with kc3:
-        ou_color = "#4ade80" if abs(ou_pct - 50) < 5 else "#fbbf24"
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-            f'<div style="color:#888; font-size:12px;">TOTALS (O/U)</div>'
-            f'<div style="font-size:28px; font-weight:800; color:#60a5fa;">'
+            f'<div class="vp-metric" style="border-top:3px solid #60a5fa;">'
+            f'<div class="label">TOTALS (O/U)</div>'
+            f'<div class="value" style="color:#60a5fa;">'
             f'{ou_over_ct}O / {ou_under_ct}U</div>'
-            f'<div style="font-size:14px; color:#aaa;">Over hits: {ou_pct:.1f}%</div>'
-            f'<div style="font-size:16px; font-weight:700; color:#fbbf24; margin-top:4px;">'
+            f'<div class="sub">Over hits: {ou_pct:.1f}%</div>'
+            f'<div style="font-size:14px; font-weight:700; color:#fbbf24; margin-top:6px;">'
             f'MAE: {mae_total:.1f} pts</div>'
             f'</div>', unsafe_allow_html=True)
     with kc4:
         brier = ((bt.Fav_Prob - bt.ML_Correct.astype(float)) ** 2).mean()
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-            f'<div style="color:#888; font-size:12px;">MODEL QUALITY</div>'
-            f'<div style="font-size:28px; font-weight:800; color:#c084fc;">{brier:.3f}</div>'
-            f'<div style="font-size:14px; color:#aaa;">Avg Brier Score</div>'
-            f'<div style="font-size:16px; font-weight:700; color:#c084fc; margin-top:4px;">'
+            f'<div class="vp-metric" style="border-top:3px solid #c084fc;">'
+            f'<div class="label">MODEL QUALITY</div>'
+            f'<div class="value" style="color:#c084fc;">{brier:.3f}</div>'
+            f'<div class="sub">Brier Score</div>'
+            f'<div style="font-size:14px; font-weight:700; color:#c084fc; margin-top:6px;">'
             f'{total_games} games tested</div>'
             f'</div>', unsafe_allow_html=True)
 
@@ -1918,28 +2050,28 @@ def page_backtest(prefix, teams):
             bias = avg_proj - avg_actual
             bias_color = "#f87171" if abs(bias) > 3 else "#4ade80"
             st.markdown(
-                f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-                f'<div style="color:#888; font-size:12px;">PROJECTION BIAS</div>'
-                f'<div style="font-size:28px; font-weight:800; color:{bias_color};">{bias:+.1f}</div>'
-                f'<div style="font-size:13px; color:#aaa;">Avg Proj: {avg_proj:.1f} | Avg Actual: {avg_actual:.1f}</div>'
+                f'<div class="vp-metric" style="border-top:3px solid {bias_color};">'
+                f'<div class="label">PROJECTION BIAS</div>'
+                f'<div class="value" style="color:{bias_color};">{bias:+.1f}</div>'
+                f'<div class="sub">Avg Proj: {avg_proj:.1f} | Actual: {avg_actual:.1f}</div>'
                 f'</div>', unsafe_allow_html=True)
         with tc2:
             rmse = (bt.Total_Diff ** 2).mean() ** 0.5
             st.markdown(
-                f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-                f'<div style="color:#888; font-size:12px;">RMSE</div>'
-                f'<div style="font-size:28px; font-weight:800; color:#60a5fa;">{rmse:.1f}</div>'
-                f'<div style="font-size:13px; color:#aaa;">Root Mean Squared Error</div>'
+                f'<div class="vp-metric" style="border-top:3px solid #60a5fa;">'
+                f'<div class="label">RMSE</div>'
+                f'<div class="value" style="color:#60a5fa;">{rmse:.1f}</div>'
+                f'<div class="sub">Root Mean Squared Error</div>'
                 f'</div>', unsafe_allow_html=True)
         with tc3:
             within_5 = (bt.Total_Diff.abs() <= 5).sum()
             within_10 = (bt.Total_Diff.abs() <= 10).sum()
             st.markdown(
-                f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:16px; text-align:center;">'
-                f'<div style="color:#888; font-size:12px;">ACCURACY</div>'
-                f'<div style="font-size:28px; font-weight:800; color:#fbbf24;">'
+                f'<div class="vp-metric" style="border-top:3px solid #fbbf24;">'
+                f'<div class="label">ACCURACY</div>'
+                f'<div class="value" style="color:#fbbf24;">'
                 f'{within_5/total_games*100:.0f}%</div>'
-                f'<div style="font-size:13px; color:#aaa;">Within 5 pts: {within_5} | '
+                f'<div class="sub">Within 5 pts: {within_5} | '
                 f'Within 10: {within_10} ({within_10/total_games*100:.0f}%)</div>'
                 f'</div>', unsafe_allow_html=True)
 
@@ -2099,7 +2231,12 @@ def page_backtest(prefix, teams):
         if live.get("games"):
             st.markdown("---")
             st.subheader("2026 Tournament Results Tracker")
-            st.success(f"Tracking {len(live['games'])} completed games")
+            st.markdown(
+                f'<div style="background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.3); '
+                f'border-radius:8px; padding:10px 16px; font-size:13px; color:#4ade80; font-weight:600;">'
+                f'Tracking {len(live["games"])} completed games</div>',
+                unsafe_allow_html=True,
+            )
             live_rows = []
             ml_w, ml_l, ats_w, ats_l, ou_o, ou_u = 0, 0, 0, 0, 0, 0
             stats = compute_season_stats(prefix)
@@ -2139,15 +2276,24 @@ def page_backtest(prefix, teams):
             lc1, lc2, lc3 = st.columns(3)
             with lc1:
                 c = "#4ade80" if ml_w > ml_l else "#f87171"
-                st.markdown(f'<div style="text-align:center;font-size:20px;font-weight:700;color:{c};">ML: {ml_w}-{ml_l}</div>',
-                            unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid {c};">'
+                    f'<div class="label">MONEYLINE</div>'
+                    f'<div class="value" style="color:{c};">{ml_w}-{ml_l}</div></div>',
+                    unsafe_allow_html=True)
             with lc2:
                 c = "#4ade80" if ats_w > ats_l else "#f87171"
-                st.markdown(f'<div style="text-align:center;font-size:20px;font-weight:700;color:{c};">ATS: {ats_w}-{ats_l}</div>',
-                            unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid {c};">'
+                    f'<div class="label">SPREAD (ATS)</div>'
+                    f'<div class="value" style="color:{c};">{ats_w}-{ats_l}</div></div>',
+                    unsafe_allow_html=True)
             with lc3:
-                st.markdown(f'<div style="text-align:center;font-size:20px;font-weight:700;color:#fbbf24;">O/U: {ou_o}O-{ou_u}U</div>',
-                            unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid #fbbf24;">'
+                    f'<div class="label">TOTALS (O/U)</div>'
+                    f'<div class="value" style="color:#fbbf24;">{ou_o}O-{ou_u}U</div></div>',
+                    unsafe_allow_html=True)
 
             _styled_table(live_rows)
 
@@ -2469,23 +2615,36 @@ def page_picks(prefix, teams, seeds_df, preds):
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
         if live_games:
-            st.markdown("**In Progress**")
+            st.markdown('<div class="vp-section" style="margin-top:8px;">LIVE</div>', unsafe_allow_html=True)
             for g in live_games:
                 st.markdown(
-                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                    f'<span style="color:#fbbf24;">{g["status_detail"]}</span>'
+                    f'<div class="vp-card" style="border-left:3px solid #fbbf24; display:flex; '
+                    f'justify-content:space-between; align-items:center;">'
+                    f'<div style="font-weight:600;">'
+                    f'<span style="color:#aaa;">{g["away_team"]}</span> '
+                    f'<span style="font-size:18px; font-weight:800;">{g["away_score"]}</span>'
+                    f'<span style="color:#555; margin:0 8px;">@</span>'
+                    f'<span style="color:#aaa;">{g["home_team"]}</span> '
+                    f'<span style="font-size:18px; font-weight:800;">{g["home_score"]}</span></div>'
+                    f'<span style="color:#000; background:#fbbf24; font-weight:700; font-size:10px; '
+                    f'padding:3px 8px; border-radius:4px; letter-spacing:0.5px;">{g["status_detail"]}</span>'
                     f'</div>', unsafe_allow_html=True)
 
         if final_games:
-            st.markdown("**Final Scores**")
+            st.markdown('<div class="vp-section" style="margin-top:8px;">FINAL</div>', unsafe_allow_html=True)
             for g in final_games:
+                a_bold = 'font-weight:800; color:#FAFAFA;' if int(g["away_score"]) > int(g["home_score"]) else ''
+                h_bold = 'font-weight:800; color:#FAFAFA;' if int(g["home_score"]) > int(g["away_score"]) else ''
                 st.markdown(
-                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; '
-                    f'padding:10px 16px; margin:4px 0; display:flex; justify-content:space-between;">'
-                    f'<span>{g["away_team"]} {g["away_score"]} @ {g["home_team"]} {g["home_score"]}</span>'
-                    f'<span style="color:#4ade80;">FINAL</span>'
+                    f'<div class="vp-card" style="border-left:3px solid #4ade80; display:flex; '
+                    f'justify-content:space-between; align-items:center;">'
+                    f'<div style="font-weight:500;">'
+                    f'<span style="color:#aaa; {a_bold}">{g["away_team"]}</span> '
+                    f'<span style="font-size:18px; {a_bold}">{g["away_score"]}</span>'
+                    f'<span style="color:#555; margin:0 8px;">@</span>'
+                    f'<span style="color:#aaa; {h_bold}">{g["home_team"]}</span> '
+                    f'<span style="font-size:18px; {h_bold}">{g["home_score"]}</span></div>'
+                    f'<span style="color:#4ade80; font-weight:700; font-size:10px; letter-spacing:1px;">FINAL</span>'
                     f'</div>', unsafe_allow_html=True)
 
     # ── Model Picks vs Vegas ──
