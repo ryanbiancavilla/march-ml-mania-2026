@@ -962,50 +962,67 @@ _HIST_SEED_WIN_RATES = {
 }
 
 
-def calibrate_prob_for_betting(raw_p, t1_seed=None, t2_seed=None):
-    """Shrink overconfident model probabilities toward historical base rates.
-    Uses 40+ years of seed matchup data as a Bayesian prior — regularization, not overfitting.
-    Only used for betting lines; bracket predictions stay on raw model output.
 
-    The model outputs are degenerate (34% at 0.01/0.99 extremes, rational fractions
-    from KNN-like frequency ratios). We use the historical seed prior as the PRIMARY
-    signal and only let the model nudge it, since the model's probability magnitudes
-    are unreliable even when it picks the right winner."""
+def project_spread(stats, t1, t2):
+    """Project point spread from efficiency stats — the real analytical edge.
+    Returns spread from t1 perspective: negative = t1 favored."""
+    if t1 not in stats.index or t2 not in stats.index:
+        return 0.0
+    s1, s2 = stats.loc[t1], stats.loc[t2]
+    avg_tempo = (s1.Tempo + s2.Tempo) / 2
+    t1_pts = (s1.OffEff + s2.DefEff) / 2 * avg_tempo / 100
+    t2_pts = (s2.OffEff + s1.DefEff) / 2 * avg_tempo / 100
+    raw_spread = t2_pts - t1_pts  # negative = t1 favored
+    return round(raw_spread * 2) / 2  # round to nearest 0.5
+
+
+def spread_to_prob(spread):
+    """Convert point spread to implied win probability via logistic."""
+    logit = -spread / 4.8  # ~4.8 points per logit unit (NCAA calibration)
+    return 1 / (1 + math.exp(-logit))
+
+
+def compute_betting_lines(stats, preds, t1, t2, t1_seed=None, t2_seed=None):
+    """Compute full betting line package for a matchup.
+
+    Uses efficiency-based spread projection (the real analysis) blended with
+    the ensemble model and seed priors. The spread comes from actual team stats
+    (OffEff, DefEff, Tempo) not from the degenerate model probabilities."""
+    p = get_pred(preds, t1, t2)
+    total = project_game_total(stats, t1, t2)
+
+    # Project spread from efficiency stats (the smart part)
+    eff_spread = project_spread(stats, t1, t2)
+    eff_prob = spread_to_prob(eff_spread)
+
+    # Blend: 50% efficiency projection, 30% ensemble model, 20% seed prior
+    # This gives real analytical weight to team stats while using the model
+    # and seed history as regularizers
+    seed_prob = 0.5  # default if no seed matchup found
     if t1_seed is not None and t2_seed is not None:
         s_high = min(t1_seed, t2_seed)
         s_low = max(t1_seed, t2_seed)
         hist_rate = _HIST_SEED_WIN_RATES.get((s_high, s_low))
         if hist_rate is not None:
-            # t1 is the better seed → hist_p for t1
-            hist_p = hist_rate if t1_seed <= t2_seed else 1 - hist_rate
-            # Use historical prior as anchor (80%), model as nudge (20%)
-            # This produces spreads in the range Vegas actually sets
-            cal = 0.2 * raw_p + 0.8 * hist_p
-            return max(0.02, min(0.98, cal))
-    # Non-R1 or unknown seeds: heavy shrinkage toward 0.5 (keep 40% of edge)
-    return 0.5 + (raw_p - 0.5) * 0.4
+            seed_prob = hist_rate if t1_seed <= t2_seed else 1 - hist_rate
 
+    p_bet = 0.50 * eff_prob + 0.30 * p + 0.20 * seed_prob
+    p_bet = max(0.02, min(0.98, p_bet))
 
-def compute_betting_lines(stats, preds, t1, t2, t1_seed=None, t2_seed=None):
-    """Compute full betting line package for a matchup."""
-    p = get_pred(preds, t1, t2)
-    p_bet = calibrate_prob_for_betting(p, t1_seed, t2_seed)
     spread = prob_to_spread(p_bet)
-    total = project_game_total(stats, t1, t2)
-    # Derive individual scores from total + spread so they're consistent:
-    # t1_pts - t2_pts == -spread (spread negative = t1 favored = t1 scores more)
-    # t1_pts + t2_pts == total
-    t1_pts = round((total - spread) / 2 * 2) / 2  # round to 0.5
+
+    # Derive individual scores from total + spread so they're consistent
+    t1_pts = round((total - spread) / 2 * 2) / 2
     t2_pts = round((total + spread) / 2 * 2) / 2
 
     return {
         "t1_prob": p,         # raw model prob (for bracket picks display)
         "t2_prob": 1 - p,
-        "t1_prob_cal": p_bet, # calibrated prob (for betting)
+        "t1_prob_cal": p_bet, # blended prob (for betting)
         "t2_prob_cal": 1 - p_bet,
         "t1_ml": prob_to_moneyline(p_bet),
         "t2_ml": prob_to_moneyline(1 - p_bet),
-        "spread": spread,  # negative = t1 favored (calibrated)
+        "spread": spread,  # negative = t1 favored
         "total": total,
         "t1_pts": t1_pts,
         "t2_pts": t2_pts,
@@ -3114,14 +3131,13 @@ def page_backtest(prefix, teams):
                 w_score, l_score = g["w_score"], g["l_score"]
                 actual_total = w_score + l_score
 
-                p = get_pred(preds, gt1, gt2)
-                s1_seed = team_seeds.get(gt1)
-                s2_seed = team_seeds.get(gt2)
-                p_cal = calibrate_prob_for_betting(p, s1_seed, s2_seed)
+                lines = compute_betting_lines(stats, preds, gt1, gt2,
+                                              t1_seed=team_seeds.get(gt1), t2_seed=team_seeds.get(gt2))
+                p_cal = lines["t1_prob_cal"]
                 fav = gt1 if p_cal >= 0.5 else gt2
                 fav_prob = p_cal if fav == gt1 else 1 - p_cal
-                spread = prob_to_spread(p_cal)
-                proj_total = project_game_total(stats, gt1, gt2)
+                spread = lines["spread"]
+                proj_total = lines["total"]
 
                 ml_hit = (fav == winner)
                 actual_margin = w_score - l_score
