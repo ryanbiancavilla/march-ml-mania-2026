@@ -283,13 +283,13 @@
     {
       "game_id": "401856524",
       "name": "Tennessee State Tigers at Iowa State Cyclones",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "12:33 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Iowa State Cyclones",
-      "home_score": 76,
+      "home_score": 108,
       "home_id": "66",
       "away_team": "Tennessee State Tigers",
-      "away_score": 43,
+      "away_score": 74,
       "away_id": "2634",
       "broadcast": "CBS",
       "start_time": "2026-03-20T19:07Z"
@@ -297,13 +297,13 @@
     {
       "game_id": "401856521",
       "name": "Hofstra Pride at Alabama Crimson Tide",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:52 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Alabama Crimson Tide",
-      "home_score": 49,
+      "home_score": 90,
       "home_id": "333",
       "away_team": "Hofstra Pride",
-      "away_score": 39,
+      "away_score": 70,
       "away_id": "2275",
       "broadcast": "truTV",
       "start_time": "2026-03-20T19:15Z"
@@ -312,12 +312,12 @@
       "game_id": "401856528",
       "name": "Utah State Aggies at Villanova Wildcats",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "9:59 - 1st",
+      "status_detail": "15:40 - 2nd",
       "home_team": "Villanova Wildcats",
-      "home_score": 20,
+      "home_score": 53,
       "home_id": "222",
       "away_team": "Utah State Aggies",
-      "away_score": 26,
+      "away_score": 47,
       "away_id": "328",
       "broadcast": "TNT",
       "start_time": "2026-03-20T20:10Z"
@@ -325,13 +325,13 @@
     {
       "game_id": "401856527",
       "name": "Miami (OH) RedHawks at Tennessee Volunteers",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:49 - 1st",
+      "status": "STATUS_HALFTIME",
+      "status_detail": "Halftime",
       "home_team": "Tennessee Volunteers",
-      "home_score": 10,
+      "home_score": 51,
       "home_id": "2633",
       "away_team": "Miami (OH) RedHawks",
-      "away_score": 13,
+      "away_score": 32,
       "away_id": "193",
       "broadcast": "TBS",
       "start_time": "2026-03-20T20:25Z"
@@ -449,5 +449,5 @@
       "start_time": "2026-03-21T02:10Z"
     }
   ],
-  "fetched_at": "2026-03-20T20:41:43.040438+00:00"
+  "fetched_at": "2026-03-20T21:37:56.813660+00:00"
 }
