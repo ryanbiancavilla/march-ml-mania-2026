@@ -1,0 +1,72 @@
+name: Claude Code (Mobile)
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'What changes should Claude make?'
+        required: true
+        type: string
+      auto_commit:
+        description: 'Commit and push changes directly to master'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install -r requirements.txt
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Claude Code
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "${{ inputs.prompt }}" --allowedTools "Edit,Write,Read,Glob,Grep,Bash" --max-turns 50
+
+      - name: Commit and push
+        if: ${{ inputs.auto_commit }}
+        run: |
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Claude Code: ${{ inputs.prompt }}"
+            git push
+          fi
+
+      - name: Create PR instead
+        if: ${{ !inputs.auto_commit }}
+        run: |
+          BRANCH="claude/$(date +%s)"
+          git checkout -b "$BRANCH"
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Claude Code: ${{ inputs.prompt }}"
+            git push -u origin "$BRANCH"
+            gh pr create --title "Claude: ${{ inputs.prompt }}" --body "Automated changes from Claude Code (mobile trigger)"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
