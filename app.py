@@ -3695,13 +3695,27 @@ def page_picks(prefix, teams, seeds_df, preds):
                 f'vertical-align:middle;">UPSET PICK &middot; {card["upset_text"]}</span>'
             )
 
+        # Team color bars for card header
+        ct1 = card.get("t1")
+        ct2 = card.get("t2")
+        ct1_color = _team_color(ct1) if ct1 else '#666'
+        ct2_color = _team_color(ct2) if ct2 else '#666'
+
         st.markdown(
             f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
-            f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+            f'<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">'
             f'<div>'
-            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">'
-            f'{card["s1t"]}{_team_logo_img(card.get("t1"), espn_map, size=18)}{card["n1"]} vs '
-            f'{card["s2t"]}{_team_logo_img(card.get("t2"), espn_map, size=18)}{card["n2"]}{upset_badge}</div>'
+            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; display:inline-block; min-width:260px;">'
+            f'<div style="display:flex; align-items:center; padding:5px 10px; border-bottom:1px solid #2a2a2a;">'
+            f'<div style="width:3px; height:20px; border-radius:1px; background:{ct1_color}; margin-right:6px; flex-shrink:0;"></div>'
+            f'{card["s1t"]}{_team_logo_img(ct1, espn_map, size=18)}'
+            f'<span style="font-weight:700; font-size:14px;">{card["n1"]}</span></div>'
+            f'<div style="display:flex; align-items:center; padding:5px 10px;">'
+            f'<div style="width:3px; height:20px; border-radius:1px; background:{ct2_color}; margin-right:6px; flex-shrink:0;"></div>'
+            f'{card["s2t"]}{_team_logo_img(ct2, espn_map, size=18)}'
+            f'<span style="font-weight:700; font-size:14px;">{card["n2"]}</span></div>'
+            f'</div>'
+            f'{upset_badge}'
             f'{info_line}'
             f'</div>'
             f'{badge_html}'
