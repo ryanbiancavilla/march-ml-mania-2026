@@ -1410,7 +1410,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
     # Build premium HTML table
     html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #333;">'
     html += '<table class="vp-table"><thead><tr>'
-    html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th><th>SEED</th>'
+    html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th>'
     html += '<th>RECORD</th><th>TIER</th><th>ELO</th>'
     if has_massey:
         html += '<th title="Composite rank across 60+ computer ranking systems">MASSEY</th>'
@@ -1436,11 +1436,11 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         html += f'<td class="rank-cell">{i}</td>'
         logo = _team_logo_img(r["tid"], espn_map, size=16)
         tc = _team_color(r["tid"])
-        html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{logo}{r["Team"]}</td>'
+        seed_prefix = f'<span style="color:#888; font-size:10px; font-weight:700; min-width:18px; text-align:right; margin-right:4px; font-variant-numeric:tabular-nums; display:inline-block;">{r["Seed"]}</span>' if r["Seed"] else ''
+        html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{seed_prefix}{logo}{r["Team"]}</td>'
         conf_str = conf_vals.get(r["Conf"], 0.5)
         conf_color = "#4ade80" if conf_str >= 0.55 else "#f87171" if conf_str < 0.48 else "#888"
         html += f'<td style="color:{conf_color}; font-weight:600;" title="Conf Avg Win%: {conf_str:.1%}">{r["Conf"]}</td>'
-        html += f'<td>{seed_html}</td>'
         html += f'<td>{r["Record"]}</td>'
         html += f'<td>{tier_html}</td>'
         html += f'<td style="font-weight:700;">{r["Elo"]}</td>'
