@@ -397,14 +397,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-def _styled_table(rows, columns=None, max_height=None):
-    """Render a list of dicts as a premium styled HTML table."""
+def _styled_table(rows, columns=None, max_height=None, espn_map=None):
+    """Render a list of dicts as a premium styled HTML table.
+    If rows contain '_tid' and espn_map is provided, 'Team' column gets logo + color bar."""
     if not rows:
         return
     if columns is None:
         columns = list(rows[0].keys())
     # Filter out internal columns starting with _
     columns = [c for c in columns if not c.startswith("_")]
+    has_team_enrichment = espn_map is not None and rows and "_tid" in rows[0]
     h = max_height or 0
     wrapper_style = f'max-height:{h}px; overflow-y:auto; ' if h else ''
     html = f'<div style="{wrapper_style}border-radius:10px; border:1px solid #333;">'
@@ -418,21 +420,31 @@ def _styled_table(rows, columns=None, max_height=None):
             val = r.get(c, "")
             style = ''
             sval = str(val)
-            if sval.startswith('+') or 'HIT' in sval:
-                style = ' style="color:#4ade80; font-weight:600;"'
-            elif 'MISS' in sval:
-                style = ' style="color:#f87171; font-weight:600;"'
-            html += f'<td{style}>{val}</td>'
+            # Enrich "Team" column with logo + color bar
+            if c == "Team" and has_team_enrichment:
+                tid = r.get("_tid")
+                tc = _team_color(tid) if tid else '#666'
+                logo = _team_logo_img(tid, espn_map, size=16) if tid else ''
+                html += (
+                    f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">'
+                    f'{logo}{val}</td>'
+                )
+            else:
+                if sval.startswith('+') or 'HIT' in sval:
+                    style = ' style="color:#4ade80; font-weight:600;"'
+                elif 'MISS' in sval:
+                    style = ' style="color:#f87171; font-weight:600;"'
+                html += f'<td{style}>{val}</td>'
         html += '</tr>'
     html += '</tbody></table></div>'
     st.markdown(html, unsafe_allow_html=True)
 
 
-def _styled_df(df, max_height=None):
+def _styled_df(df, max_height=None, espn_map=None):
     """Convert a pandas DataFrame to a premium styled HTML table."""
     rows = df.to_dict('records')
     columns = list(df.columns)
-    _styled_table(rows, columns, max_height)
+    _styled_table(rows, columns, max_height, espn_map=espn_map)
 
 
 # ──────────────────────────── Data Loading ────────────────────────────
@@ -2013,7 +2025,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
             continue
         row_data = {
             "Team": tname(teams, tid),
-            "tid": tid,
+            "_tid": tid,
             "Seed": team_seeds.get(tid, 99),
             "Elo": int(elo.get(tid, 1500)),
         }
@@ -2139,7 +2151,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 
     # Full table
     st.subheader("Full Round-by-Round Advancement Odds")
-    _styled_df(df.drop(columns=["_champ_pct"]), max_height=600)
+    _styled_df(df.drop(columns=["_champ_pct"]), max_height=600, espn_map=espn_map)
 
 
 # ──────────────────────────── Page: Bracket ────────────────────────────
