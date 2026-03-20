@@ -1391,15 +1391,32 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
 
     rows.sort(key=lambda r: r["Elo"], reverse=True)
 
+    # Build eliminated set from ESPN results
+    espn_data_r = _load_cached_espn()
+    odds_map_r, name_to_tid_r = _build_odds_name_map(teams, prefix)
+    eliminated_r = set()
+    if espn_data_r and espn_data_r.get("games"):
+        for g in espn_data_r["games"]:
+            if g.get("status") != "STATUS_FINAL":
+                continue
+            hs, aws = int(g.get("home_score", 0)), int(g.get("away_score", 0))
+            loser_name = g["away_team"] if hs > aws else g["home_team"]
+            loser_tid = _resolve_odds_team(loser_name, odds_map_r, name_to_tid_r)
+            if loser_tid:
+                eliminated_r.add(loser_tid)
+
     col1, col2 = st.columns([1, 3])
     with col1:
         show_tourney_only = st.checkbox("Tournament teams only", value=False)
+        show_alive_only = st.checkbox("Still alive only", value=False)
         conf_filter = st.selectbox("Conference", ["All"] + sorted(set(r["Conf"] for r in rows if r["Conf"])))
     with col2:
         search = st.text_input("Search team", "")
 
     if show_tourney_only:
         rows = [r for r in rows if r["Seed"] != ""]
+    if show_alive_only:
+        rows = [r for r in rows if r["Seed"] != "" and r["tid"] not in eliminated_r]
     if conf_filter != "All":
         rows = [r for r in rows if r["Conf"] == conf_filter]
     if search:
