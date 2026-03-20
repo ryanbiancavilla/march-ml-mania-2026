@@ -536,6 +536,25 @@ def load_massey_ranks():
     return agg.to_dict("index")
 
 
+# ──────────────────────────── Conference Strength ────────────────────────────
+
+@st.cache_data
+def load_conf_strength(prefix):
+    """Compute average win percentage per conference for current season."""
+    stats = compute_season_stats(prefix)
+    tc = pd.read_csv(os.path.join(DATA_DIR, f"{prefix}TeamConferences.csv"))
+    tc = tc[tc.Season == SEASON]
+    merged = tc.merge(stats[["WinPct"]].reset_index(), on="TeamID", how="left")
+    conf_agg = merged.groupby("ConfAbbrev").agg(
+        AvgWinPct=("WinPct", "mean"),
+    ).reset_index()
+    # Map team -> conf strength
+    result = tc.merge(conf_agg, on="ConfAbbrev", how="left")
+    team_conf_str = dict(zip(result.TeamID, result.AvgWinPct.round(3)))
+    conf_vals = dict(zip(conf_agg.ConfAbbrev, conf_agg.AvgWinPct.round(3)))
+    return team_conf_str, conf_vals
+
+
 # ──────────────────────────── Coach Data ────────────────────────────
 
 @st.cache_data
@@ -1153,6 +1172,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
+    team_conf_str, conf_vals = load_conf_strength(prefix)
 
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
 
@@ -1222,7 +1242,9 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         html += f'<tr>'
         html += f'<td class="rank-cell">{i}</td>'
         html += f'<td class="team-cell">{r["Team"]}</td>'
-        html += f'<td style="color:#888;">{r["Conf"]}</td>'
+        conf_str = conf_vals.get(r["Conf"], 0.5)
+        conf_color = "#4ade80" if conf_str >= 0.55 else "#f87171" if conf_str < 0.48 else "#888"
+        html += f'<td style="color:{conf_color}; font-weight:600;" title="Conf Avg Win%: {conf_str:.1%}">{r["Conf"]}</td>'
         html += f'<td>{seed_html}</td>'
         html += f'<td>{r["Record"]}</td>'
         html += f'<td>{tier_html}</td>'
@@ -1432,6 +1454,14 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         m1 = massey_ranks.get(t1, {})
         m2 = massey_ranks.get(t2, {})
 
+        # Conference strength
+        h2h_conferences = load_conferences()
+        h2h_conf_str, h2h_conf_vals = load_conf_strength(prefix)
+        c1_conf = h2h_conferences.get(t1, "")
+        c2_conf = h2h_conferences.get(t2, "")
+        c1_str = h2h_conf_str.get(t1, 0.5)
+        c2_str = h2h_conf_str.get(t2, 0.5)
+
         compare_stats = [
             ("Elo", int(elo.get(t1, 1500)), int(elo.get(t2, 1500)), True),
         ]
@@ -1441,6 +1471,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                  int(round(m2.get("MasseyRank", 999))), False),
             )
         compare_stats += [
+            ("Conference", c1_conf, c2_conf, None),
+            ("Conf Strength", f"{c1_str:.1%}", f"{c2_str:.1%}", None),
             ("Record", f"{int(s1_stats.Wins)}-{int(s1_stats.Games-s1_stats.Wins)}",
              f"{int(s2_stats.Wins)}-{int(s2_stats.Games-s2_stats.Wins)}", None),
             ("PPG", round(s1_stats.PPG, 1), round(s2_stats.PPG, 1), True),
