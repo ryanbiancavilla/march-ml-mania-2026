@@ -311,13 +311,13 @@
     {
       "game_id": "401856528",
       "name": "Utah State Aggies at Villanova Wildcats",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "2:12 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Villanova Wildcats",
-      "home_score": 73,
+      "home_score": 76,
       "home_id": "222",
       "away_team": "Utah State Aggies",
-      "away_score": 78,
+      "away_score": 86,
       "away_id": "328",
       "broadcast": "TNT",
       "start_time": "2026-03-20T20:10Z"
@@ -325,13 +325,13 @@
     {
       "game_id": "401856527",
       "name": "Miami (OH) RedHawks at Tennessee Volunteers",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "5:27 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Tennessee Volunteers",
-      "home_score": 70,
+      "home_score": 78,
       "home_id": "2633",
       "away_team": "Miami (OH) RedHawks",
-      "away_score": 49,
+      "away_score": 56,
       "away_id": "193",
       "broadcast": "TBS",
       "start_time": "2026-03-20T20:25Z"
@@ -339,13 +339,13 @@
     {
       "game_id": "401856522",
       "name": "Iowa Hawkeyes at Clemson Tigers",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/20 - 6:50 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "18:09 - 1st",
       "home_team": "Clemson Tigers",
-      "home_score": 0,
+      "home_score": 3,
       "home_id": "228",
       "away_team": "Iowa Hawkeyes",
-      "away_score": 0,
+      "away_score": 5,
       "away_id": "2294",
       "broadcast": "TNT",
       "start_time": "2026-03-20T22:50Z"
@@ -449,5 +449,5 @@
       "start_time": "2026-03-21T02:10Z"
     }
   ],
-  "fetched_at": "2026-03-20T22:20:22.525960+00:00"
+  "fetched_at": "2026-03-20T22:53:34.173518+00:00"
 }
