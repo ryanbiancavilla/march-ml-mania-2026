@@ -32,12 +32,13 @@ def check_password():
         return True
 
     st.markdown(
-        "<div style='text-align:center; margin-top:80px;'>"
-        "<div style='font-size:56px; font-weight:900; letter-spacing:-2px; margin-bottom:4px;'>"
+        "<div style='text-align:center; margin-top:100px;'>"
+        "<div style='font-size:64px; font-weight:900; letter-spacing:-3px; margin-bottom:6px;'>"
         "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></div>"
-        "<div style='color:#555; font-size:11px; letter-spacing:3px; font-weight:600;'>"
+        "<div style='width:50px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
+        "margin:12px auto;'></div>"
+        "<div style='color:#555; font-size:10px; letter-spacing:4px; font-weight:700;'>"
         "NCAA ANALYTICS & BETTING INTELLIGENCE</div>"
-        "<div style='width:60px; height:3px; background:#FF6B35; margin:20px auto 0;'></div>"
         "</div>",
         unsafe_allow_html=True,
     )
@@ -47,13 +48,16 @@ def check_password():
         input[type="password"] {
             -webkit-user-select: none; -moz-user-select: none;
             -ms-user-select: none; user-select: none;
-            background: #12141a !important; border: 1px solid #2a2d36 !important;
-            border-radius: 8px !important; padding: 12px !important;
-            font-size: 14px !important; letter-spacing: 2px !important;
+            background: rgba(18, 20, 26, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 10px !important; padding: 14px !important;
+            font-size: 14px !important; letter-spacing: 3px !important;
+            backdrop-filter: blur(8px) !important;
+            transition: all 0.25s ease !important;
         }
         input[type="password"]:focus {
-            border-color: #FF6B35 !important;
-            box-shadow: 0 0 0 1px #FF6B35 !important;
+            border-color: rgba(255, 107, 53, 0.5) !important;
+            box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 107, 53, 0.1) !important;
         }
         </style>""",
         unsafe_allow_html=True,
@@ -70,7 +74,8 @@ def check_password():
             else:
                 st.error("Incorrect access code.")
         st.markdown(
-            "<div style='text-align:center; color:#444; font-size:10px; letter-spacing:1px; margin-top:20px;'>"
+            "<div style='text-align:center; color:#333; font-size:9px; letter-spacing:2px; "
+            "font-weight:700; margin-top:24px;'>"
             "MEMBERS ONLY &middot; DO NOT SHARE</div>",
             unsafe_allow_html=True,
         )
@@ -85,202 +90,335 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-    .block-container { padding-top: 1rem; max-width: 1200px; }
+    /* ── Foundation ── */
+    .block-container { padding-top: 0.8rem; max-width: 1200px; }
     html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
-    /* Premium sidebar */
+    /* ── Premium sidebar ── */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0a0c10 0%, #12141a 100%);
-        border-right: 1px solid #1e2028;
+        background: linear-gradient(180deg, #080a0e 0%, #0d0f14 40%, #10121a 100%);
+        border-right: 1px solid rgba(255, 107, 53, 0.08);
     }
     [data-testid="stSidebar"] .stRadio label {
         font-weight: 500; letter-spacing: 0.3px;
     }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div {
+        gap: 2px;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label {
+        padding: 8px 12px !important; border-radius: 8px !important;
+        transition: all 0.2s !important; font-size: 13px !important;
+        border: 1px solid transparent !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
+        background: rgba(255, 107, 53, 0.06) !important;
+        border-color: rgba(255, 107, 53, 0.15) !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
+        background: rgba(255, 107, 53, 0.10) !important;
+        border-color: rgba(255, 107, 53, 0.25) !important;
+    }
 
-    /* Tabs */
+    /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1e2028; }
     .stTabs [data-baseweb="tab"] {
         padding: 10px 24px; font-weight: 600; letter-spacing: 0.3px;
         border-radius: 6px 6px 0 0;
     }
 
-    /* Premium card base */
+    /* ── Premium card base ── */
     .vp-card {
-        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
-        border: 1px solid #2a2d36; border-radius: 10px;
-        padding: 16px 20px; margin: 6px 0;
-        transition: border-color 0.2s;
+        background: linear-gradient(135deg, rgba(26, 29, 36, 0.8) 0%, rgba(20, 22, 28, 0.9) 100%);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
+        padding: 18px 22px; margin: 8px 0;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    .vp-card:hover { border-color: #FF6B35; }
+    .vp-card:hover {
+        border-color: rgba(255, 107, 53, 0.4);
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.08);
+        transform: translateY(-1px);
+    }
 
-    /* Section headers */
+    /* ── Section headers ── */
     .vp-section {
-        font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-        color: #FF6B35; text-transform: uppercase; margin-bottom: 12px;
+        font-size: 11px; font-weight: 800; letter-spacing: 2px;
+        color: #FF6B35; text-transform: uppercase; margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 107, 53, 0.15);
     }
 
-    /* Style all Streamlit subheaders */
+    /* ── Page header banner ── */
+    .vp-page-header {
+        padding: 20px 0 16px;
+        margin-bottom: 8px;
+    }
+    .vp-page-header h1 {
+        font-size: 26px !important; font-weight: 900 !important;
+        letter-spacing: -0.5px; color: #FAFAFA !important;
+        margin: 0 0 4px !important; line-height: 1.2 !important;
+    }
+    .vp-page-header .subtitle {
+        font-size: 13px; color: #666; letter-spacing: 0.3px; font-weight: 500;
+    }
+
+    /* ── Style all Streamlit subheaders ── */
     [data-testid="stMarkdownContainer"] h3 {
-        font-size: 16px !important; font-weight: 700 !important;
+        font-size: 15px !important; font-weight: 700 !important;
         letter-spacing: 0.3px; color: #e2e8f0 !important;
-        border-bottom: 1px solid #2a2d36; padding-bottom: 8px; margin-top: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 10px; margin-top: 12px;
     }
     [data-testid="stMarkdownContainer"] h2 {
-        font-size: 20px !important; font-weight: 800 !important;
+        font-size: 19px !important; font-weight: 800 !important;
         letter-spacing: -0.3px; color: #FAFAFA !important;
     }
 
-    /* Style Streamlit captions */
+    /* ── Captions ── */
     [data-testid="stCaptionContainer"] p {
-        font-size: 11px !important; letter-spacing: 0.3px;
+        font-size: 11px !important; letter-spacing: 0.3px; color: #555 !important;
     }
 
-    /* Style selectbox/inputs */
+    /* ── Inputs & Controls ── */
     [data-testid="stSelectbox"] label, [data-testid="stTextInput"] label,
     [data-testid="stCheckbox"] label, [data-testid="stSlider"] label,
     [data-testid="stMultiSelect"] label {
-        font-size: 12px !important; font-weight: 600 !important;
-        letter-spacing: 0.5px; text-transform: uppercase; color: #888 !important;
+        font-size: 11px !important; font-weight: 700 !important;
+        letter-spacing: 0.8px; text-transform: uppercase; color: #666 !important;
     }
 
-    /* Streamlit hr dividers */
-    hr { border-color: #1e2028 !important; margin: 20px 0 !important; }
+    /* ── Dividers ── */
+    hr { border-color: rgba(255, 255, 255, 0.04) !important; margin: 24px 0 !important; }
 
-    /* Radio button styling */
+    /* ── Radio button styling ── */
     [data-testid="stRadio"] > div > label {
         font-size: 13px !important;
     }
 
-    /* Button styling */
+    /* ── Button styling ── */
     .stButton > button {
         background: linear-gradient(135deg, #FF6B35 0%, #e55a2b 100%) !important;
         color: #fff !important; font-weight: 700 !important;
         border: none !important; border-radius: 8px !important;
-        letter-spacing: 0.5px; padding: 8px 24px !important;
-        transition: all 0.2s !important;
+        letter-spacing: 0.5px; padding: 10px 28px !important;
+        transition: all 0.25s ease !important;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2) !important;
     }
     .stButton > button:hover {
         background: linear-gradient(135deg, #ff7e4d 0%, #FF6B35 100%) !important;
-        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3) !important;
+        box-shadow: 0 6px 24px rgba(255, 107, 53, 0.35) !important;
+        transform: translateY(-1px) !important;
+    }
+    .stButton > button:active {
+        transform: translateY(0) !important;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2) !important;
     }
 
-    /* Spinner */
+    /* ── Spinner ── */
     .stSpinner > div { border-top-color: #FF6B35 !important; }
 
-    /* Expander styling */
+    /* ── Expander ── */
     [data-testid="stExpander"] {
-        border: 1px solid #2a2d36 !important; border-radius: 10px !important;
-        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06) !important; border-radius: 12px !important;
+        background: rgba(26, 29, 36, 0.6);
+        backdrop-filter: blur(8px);
     }
     [data-testid="stExpander"] summary {
         font-weight: 600 !important; font-size: 13px !important;
     }
 
-    /* Rankings table */
+    /* ── Rankings table ── */
     .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; }
     .vp-table thead th {
-        background: #12141a; color: #888; font-size: 11px; font-weight: 700;
-        letter-spacing: 0.8px; text-transform: uppercase; padding: 10px 12px;
+        background: rgba(12, 14, 20, 0.95); color: #777; font-size: 10px; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase; padding: 10px 12px;
         border-bottom: 2px solid #FF6B35; position: sticky; top: 0; z-index: 1;
-        text-align: left;
+        text-align: left; white-space: nowrap;
     }
-    .vp-table tbody tr { transition: background 0.15s; }
-    .vp-table tbody tr:hover { background: rgba(255, 107, 53, 0.06); }
+    .vp-table tbody tr { transition: all 0.2s ease; }
+    .vp-table tbody tr:hover { background: rgba(255, 107, 53, 0.05); }
     .vp-table tbody td {
-        padding: 8px 12px; border-bottom: 1px solid #1a1d24;
+        padding: 8px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         font-size: 13px; font-variant-numeric: tabular-nums;
     }
     .vp-table .rank-cell {
         font-weight: 800; color: #FF6B35; font-size: 14px; width: 36px; text-align: center;
     }
-    .vp-table .team-cell { font-weight: 600; color: #FAFAFA; }
+    .vp-table .team-cell { font-weight: 600; color: #FAFAFA; white-space: nowrap; }
     .vp-table .seed-badge {
-        display: inline-block; background: #FF6B35; color: #000; font-weight: 700;
-        font-size: 10px; padding: 1px 6px; border-radius: 3px; min-width: 20px; text-align: center;
+        display: inline-block; background: linear-gradient(135deg, #FF6B35, #e55a2b);
+        color: #fff; font-weight: 800;
+        font-size: 10px; padding: 2px 7px; border-radius: 4px; min-width: 20px; text-align: center;
+        box-shadow: 0 1px 4px rgba(255, 107, 53, 0.3);
     }
     .vp-table .stat-good { color: #4ade80; }
     .vp-table .stat-bad { color: #f87171; }
-    .vp-table .stat-neutral { color: #aaa; }
+    .vp-table .stat-neutral { color: #888; }
 
-    /* Tier badges */
-    .tier-elite { color: #000; background: #FF6B35; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
-    .tier-strong { color: #000; background: #4ade80; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
-    .tier-solid { color: #000; background: #60a5fa; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
-    .tier-avg { color: #000; background: #888; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
+    /* ── Tier badges ── */
+    .tier-elite {
+        color: #fff; background: linear-gradient(135deg, #FF6B35, #e55a2b);
+        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
+        letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
+    }
+    .tier-strong {
+        color: #000; background: linear-gradient(135deg, #4ade80, #22c55e);
+        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+    .tier-solid {
+        color: #000; background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+    .tier-avg {
+        color: #000; background: linear-gradient(135deg, #888, #666);
+        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
+        letter-spacing: 0.5px;
+    }
 
-    /* Bracket */
-    .bracket { display: flex; gap: 6px; min-height: 540px; overflow-x: auto; }
+    /* ── Bracket ── */
+    .bracket { display: flex; gap: 8px; min-height: 540px; overflow-x: auto; padding: 4px 0; }
     .round {
         display: flex; flex-direction: column; justify-content: space-around;
-        min-width: 165px;
+        min-width: 170px;
     }
     .round-title {
-        text-align: center; font-size: 11px; color: #FF6B35;
-        margin-bottom: 4px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        text-align: center; font-size: 10px; color: #FF6B35;
+        margin-bottom: 6px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
     }
     .matchup {
-        border: 1px solid #2a2d36; border-radius: 6px; overflow: hidden;
-        margin: 2px 0; background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; overflow: hidden;
+        margin: 3px 0; background: rgba(26, 29, 36, 0.7);
+        backdrop-filter: blur(8px);
+        transition: all 0.2s ease;
+    }
+    .matchup:hover {
+        border-color: rgba(255, 107, 53, 0.3);
+        box-shadow: 0 2px 12px rgba(255, 107, 53, 0.08);
     }
     .team-slot {
-        padding: 3px 8px; font-size: 12px; display: flex;
+        padding: 4px 10px; font-size: 12px; display: flex;
         justify-content: space-between; align-items: center;
-        border-bottom: 1px solid #2a2d34; color: #ccc;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #999;
     }
     .team-slot:last-child { border-bottom: none; }
     .team-slot.winner {
-        background: rgba(255, 107, 53, 0.12); color: #FF6B35;
+        background: rgba(255, 107, 53, 0.10); color: #FF6B35;
         font-weight: 700;
     }
-    .seed-tag { color: #666; margin-right: 4px; font-size: 11px; }
-    .prob-tag { color: #666; font-size: 10px; }
+    .seed-tag { color: #555; margin-right: 4px; font-size: 11px; font-weight: 600; }
+    .prob-tag { color: #555; font-size: 10px; font-variant-numeric: tabular-nums; }
     .big-prob {
-        font-size: 48px; font-weight: 900; text-align: center;
-        line-height: 1.1; margin: 10px 0; letter-spacing: -2px;
+        font-size: 52px; font-weight: 900; text-align: center;
+        line-height: 1; margin: 8px 0; letter-spacing: -3px;
     }
     .stat-bar { height: 6px; border-radius: 3px; margin: 2px 0; }
-    .ff-bracket { display: flex; gap: 12px; min-height: 180px; align-items: center; }
+    .ff-bracket { display: flex; gap: 16px; min-height: 180px; align-items: center; }
     .ff-round {
         display: flex; flex-direction: column; justify-content: space-around;
-        min-width: 180px; min-height: 160px;
+        min-width: 190px; min-height: 160px;
     }
     .champ-banner {
         text-align: center; font-size: 28px; font-weight: 900;
-        padding: 20px; border: 2px solid #FF6B35; border-radius: 10px;
-        background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.04) 100%);
+        padding: 24px; border: 2px solid #FF6B35; border-radius: 14px;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.03) 100%);
         color: #FF6B35; margin: 12px 0; letter-spacing: -0.5px;
+        box-shadow: 0 4px 24px rgba(255, 107, 53, 0.1);
     }
 
-    /* Metric cards */
+    /* ── Metric cards ── */
     .vp-metric {
-        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
-        border: 1px solid #2a2d36; border-radius: 10px;
-        padding: 16px; text-align: center;
+        background: linear-gradient(135deg, rgba(26, 29, 36, 0.8) 0%, rgba(20, 22, 28, 0.9) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
+        padding: 18px; text-align: center;
+        transition: all 0.25s ease;
     }
-    .vp-metric .label { color: #888; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-    .vp-metric .value { font-size: 28px; font-weight: 800; margin: 4px 0; }
-    .vp-metric .sub { color: #aaa; font-size: 12px; }
+    .vp-metric:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    .vp-metric .label { color: #666; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+    .vp-metric .value { font-size: 30px; font-weight: 900; margin: 6px 0; letter-spacing: -1px; }
+    .vp-metric .sub { color: #888; font-size: 12px; }
 
-    /* Hide streamlit dataframe styling overrides */
-    .stDataFrame { border-radius: 10px; overflow: hidden; }
-    [data-testid="stDataFrame"] > div { border-radius: 10px; }
+    /* ── Dataframe ── */
+    .stDataFrame { border-radius: 12px; overflow: hidden; }
+    [data-testid="stDataFrame"] > div { border-radius: 12px; }
 
-    /* Betting card upgrades */
+    /* ── Betting card upgrades ── */
     .vp-bet-card {
-        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
-        border: 1px solid #2a2d36; border-radius: 10px;
-        padding: 16px 20px; margin: 10px 0;
+        background: linear-gradient(135deg, rgba(26, 29, 36, 0.7) 0%, rgba(16, 18, 24, 0.85) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px;
+        padding: 20px 24px; margin: 12px 0;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    }
+    .vp-bet-card:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     .vp-bet-type {
-        background: #0e1117; border-radius: 8px; padding: 12px 16px;
+        background: rgba(14, 17, 23, 0.8); border-radius: 10px; padding: 14px 18px;
         flex: 1; min-width: 180px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.2s ease;
+    }
+    .vp-bet-type:hover {
+        border-color: rgba(255, 255, 255, 0.06);
+        background: rgba(14, 17, 23, 0.95);
     }
 
-    /* Scrollbar styling */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0e1117; }
-    ::-webkit-scrollbar-thumb { background: #2a2d36; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 53, 0.4); }
+
+    /* ── Progress bar ── */
+    .stProgress > div > div { background: rgba(255, 255, 255, 0.06) !important; border-radius: 10px !important; }
+    .stProgress > div > div > div { background: linear-gradient(90deg, #FF6B35, #ff8f5e) !important; border-radius: 10px !important; }
+
+    /* ── Mobile responsive ── */
+    @media (max-width: 768px) {
+        .block-container { padding: 0.5rem 0.8rem !important; }
+        .vp-page-header h1 { font-size: 20px !important; }
+        .big-prob { font-size: 36px !important; }
+        .bracket { gap: 4px; }
+        .round { min-width: 140px; }
+        .team-slot { font-size: 11px; padding: 3px 6px; }
+        .vp-bet-card { padding: 14px 16px; }
+        .vp-bet-type { min-width: 140px; padding: 10px 12px; }
+        .vp-metric .value { font-size: 24px; }
+        .ff-bracket { flex-direction: column; align-items: stretch; }
+        .ff-round { min-width: auto; }
+        .vp-table thead th { font-size: 9px; padding: 8px 6px; }
+        .vp-table tbody td { font-size: 12px; padding: 6px; }
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .vp-card, .vp-metric, .vp-bet-card { animation: fadeIn 0.3s ease-out; }
+
+    /* ── Status badges ── */
+    .vp-badge {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 3px 10px; border-radius: 20px; font-size: 10px;
+        font-weight: 800; letter-spacing: 0.5px;
+    }
+    .vp-badge-live { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+    .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
+    .vp-badge-win { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+    .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+
+    /* ── Glass divider ── */
+    .vp-divider {
+        height: 1px; margin: 24px 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.15), transparent);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -961,8 +1099,12 @@ def _eff_color(val, higher_better=True):
 
 
 def page_rankings(prefix, teams, seeds_df, conferences):
+    gender_label = "Men's" if prefix == "M" else "Women's"
     st.markdown(
-        f'<div class="vp-section">{"MEN" if prefix == "M" else "WOMEN"}\'S POWER RANKINGS</div>',
+        f'<div class="vp-page-header">'
+        f'<h1>Power Rankings</h1>'
+        f'<div class="subtitle">{gender_label} NCAA Tournament &middot; Elo + Efficiency Ratings</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -1063,7 +1205,13 @@ def page_rankings(prefix, teams, seeds_df, conferences):
 # ──────────────────────────── Page: Head-to-Head ────────────────────────────
 
 def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, seed_history):
-    st.markdown('<div class="vp-section">HEAD-TO-HEAD MATCHUP</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="vp-page-header">'
+        '<h1>Head-to-Head Matchup</h1>'
+        '<div class="subtitle">Compare any two teams &middot; Stats, Props, History & Projections</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
@@ -1120,9 +1268,12 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # Probability bar
     st.markdown(
-        f'<div style="display:flex; height:8px; border-radius:4px; overflow:hidden; margin:8px 0 16px;">'
-        f'<div style="width:{p*100}%; background:linear-gradient(90deg, {color1}, {color1}88);"></div>'
-        f'<div style="width:{(1-p)*100}%; background:linear-gradient(90deg, {color2}88, {color2});"></div>'
+        f'<div style="display:flex; height:6px; border-radius:10px; overflow:hidden; margin:8px 0 20px; '
+        f'box-shadow: 0 2px 8px rgba(0,0,0,0.2);">'
+        f'<div style="width:{p*100}%; background:linear-gradient(90deg, {color1}, {color1}99); '
+        f'border-radius:10px 0 0 10px;"></div>'
+        f'<div style="width:{(1-p)*100}%; background:linear-gradient(90deg, {color2}99, {color2}); '
+        f'border-radius:0 10px 10px 0;"></div>'
         f'</div>',
         unsafe_allow_html=True,
     )
@@ -1464,7 +1615,13 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 # ──────────────────────────── Page: Tournament Odds ────────────────────────────
 
 def page_odds(prefix, teams, seeds_df, slots_df, preds):
-    st.markdown('<div class="vp-section">CHAMPIONSHIP ODDS</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="vp-page-header">'
+        '<h1>Championship Odds</h1>'
+        '<div class="subtitle">Monte Carlo Simulations &middot; Futures & Round-by-Round Advancement</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     with st.spinner("Running 10,000 tournament simulations..."):
         probs, round_labels = monte_carlo_odds(seeds_df, slots_df, preds)
@@ -1598,7 +1755,13 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 # ──────────────────────────── Page: Bracket ────────────────────────────
 
 def page_bracket(prefix, teams, seeds_df, slots_df, preds):
-    st.markdown('<div class="vp-section">PREDICTED BRACKET</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="vp-page-header">'
+        '<h1>Predicted Bracket</h1>'
+        '<div class="subtitle">ML Ensemble Predictions &middot; Live Results Tracking</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     sim_results, slot_winners = simulate_bracket(seeds_df, slots_df, preds, deterministic=True)
 
@@ -1671,12 +1834,14 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     # ── Record Banner ──
     if total_graded > 0:
         rec_color = "#4ade80" if bracket_hits > len(bracket_misses) else "#f87171"
+        pct = bracket_hits / total_graded * 100
         st.markdown(
-            f'<div class="vp-card" style="border-left:4px solid {rec_color}; text-align:center;">'
-            f'<div style="font-size:12px; color:#888; letter-spacing:1px; font-weight:600; margin-bottom:4px;">'
+            f'<div class="vp-card" style="border-top:3px solid {rec_color}; text-align:center; padding:24px;">'
+            f'<div style="font-size:10px; color:#666; letter-spacing:2px; font-weight:800; margin-bottom:8px;">'
             f'2026 TOURNAMENT BRACKET RECORD</div>'
-            f'<div style="font-size:32px; font-weight:900; color:{rec_color};">'
+            f'<div style="font-size:42px; font-weight:900; color:{rec_color}; letter-spacing:-2px;">'
             f'{bracket_hits}-{len(bracket_misses)}</div>'
+            f'<div style="font-size:13px; color:#888; margin-top:4px;">{pct:.0f}% accuracy</div>'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -2125,10 +2290,12 @@ def _load_cached_espn():
 
 
 def page_backtest(prefix, teams):
-    st.markdown('<div class="vp-section">MODEL BACKTEST</div>', unsafe_allow_html=True)
-    st.caption(
-        "How would our model have performed betting past NCAA tournaments? "
-        "Every prediction uses only data available before that tournament — no hindsight."
+    st.markdown(
+        '<div class="vp-page-header">'
+        '<h1>Model Backtest</h1>'
+        '<div class="subtitle">Historical Performance &middot; Out-of-Sample Tournament Predictions Since 2010</div>'
+        '</div>',
+        unsafe_allow_html=True,
     )
 
     with st.spinner("Running historical backtest..."):
@@ -2706,8 +2873,13 @@ def _match_odds_teams(teams, stats, odds_cache, prefix="M"):
 
 
 def page_picks(prefix, teams, seeds_df, preds):
-    st.markdown('<div class="vp-section">TODAY\'S PICKS</div>', unsafe_allow_html=True)
-    st.caption("Live scores, Vegas odds, and our model's best bets.")
+    st.markdown(
+        '<div class="vp-page-header">'
+        '<h1>Betting Picks</h1>'
+        '<div class="subtitle">Live Scores &middot; Vegas Odds &middot; Model Edge Detection</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     # ── Load data ──
     espn_data = _load_cached_espn()
@@ -2750,28 +2922,27 @@ def page_picks(prefix, teams, seeds_df, preds):
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
         if live_games:
-            st.markdown('<div class="vp-section" style="margin-top:8px;">LIVE</div>', unsafe_allow_html=True)
+            st.markdown('<div class="vp-section" style="margin-top:8px;">LIVE NOW</div>', unsafe_allow_html=True)
             for g in live_games:
                 st.markdown(
                     f'<div class="vp-card" style="border-left:3px solid #fbbf24; display:flex; '
                     f'justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:600;">'
                     f'<span style="color:#aaa;">{g["away_team"]}</span> '
-                    f'<span style="font-size:18px; font-weight:800;">{g["away_score"]}</span>'
-                    f'<span style="color:#555; margin:0 8px;">@</span>'
+                    f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["away_score"]}</span>'
+                    f'<span style="color:#444; margin:0 10px; font-size:12px;">@</span>'
                     f'<span style="color:#aaa;">{g["home_team"]}</span> '
-                    f'<span style="font-size:18px; font-weight:800;">{g["home_score"]}</span></div>'
-                    f'<span style="color:#000; background:#fbbf24; font-weight:700; font-size:10px; '
-                    f'padding:3px 8px; border-radius:4px; letter-spacing:0.5px;">{g["status_detail"]}</span>'
+                    f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["home_score"]}</span></div>'
+                    f'<span class="vp-badge vp-badge-live">{g["status_detail"]}</span>'
                     f'</div>', unsafe_allow_html=True)
 
         if final_games:
-            st.markdown('<div class="vp-section" style="margin-top:8px;">FINAL — MODEL PICKS</div>', unsafe_allow_html=True)
+            st.markdown('<div class="vp-section" style="margin-top:16px;">FINAL SCORES</div>', unsafe_allow_html=True)
             for g in final_games:
                 away_score = int(g["away_score"])
                 home_score = int(g["home_score"])
-                a_bold = 'font-weight:800; color:#FAFAFA;' if away_score > home_score else ''
-                h_bold = 'font-weight:800; color:#FAFAFA;' if home_score > away_score else ''
+                a_bold = 'font-weight:900; color:#FAFAFA;' if away_score > home_score else 'color:#666;'
+                h_bold = 'font-weight:900; color:#FAFAFA;' if home_score > away_score else 'color:#666;'
 
                 # Try to resolve ESPN teams to model IDs for pick display
                 home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
@@ -2810,15 +2981,15 @@ def page_picks(prefix, teams, seeds_df, preds):
                     )
 
                 st.markdown(
-                    f'<div class="vp-card" style="border-left:3px solid #4ade80;">'
+                    f'<div class="vp-card" style="border-left:3px solid rgba(74, 222, 128, 0.4);">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:500;">'
-                    f'<span style="color:#aaa; {a_bold}">{g["away_team"]}</span> '
-                    f'<span style="font-size:18px; {a_bold}">{g["away_score"]}</span>'
-                    f'<span style="color:#555; margin:0 8px;">@</span>'
-                    f'<span style="color:#aaa; {h_bold}">{g["home_team"]}</span> '
-                    f'<span style="font-size:18px; {h_bold}">{g["home_score"]}</span></div>'
-                    f'<span style="color:#4ade80; font-weight:700; font-size:10px; letter-spacing:1px;">FINAL</span>'
+                    f'<span style="{a_bold}">{g["away_team"]}</span> '
+                    f'<span style="font-size:20px; {a_bold}">{g["away_score"]}</span>'
+                    f'<span style="color:#333; margin:0 10px; font-size:12px;">@</span>'
+                    f'<span style="{h_bold}">{g["home_team"]}</span> '
+                    f'<span style="font-size:20px; {h_bold}">{g["home_score"]}</span></div>'
+                    f'<span class="vp-badge vp-badge-final">FINAL</span>'
                     f'</div>'
                     f'{pick_html}'
                     f'</div>', unsafe_allow_html=True)
@@ -3385,11 +3556,13 @@ def page_picks(prefix, teams, seeds_df, preds):
 
 def page_about():
     st.markdown(
-        "<div style='text-align:center; margin:40px 0 20px;'>"
-        "<span style='font-size:48px; font-weight:900; letter-spacing:-2px;'>"
+        "<div style='text-align:center; margin:60px 0 10px;'>"
+        "<span style='font-size:56px; font-weight:900; letter-spacing:-3px;'>"
         "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
         "</div>"
-        "<div style='text-align:center; color:#888; font-size:12px; letter-spacing:3px; font-weight:600; margin-bottom:40px;'>"
+        "<div style='width:50px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
+        "margin:8px auto 16px; border-radius:2px;'></div>"
+        "<div style='text-align:center; color:#666; font-size:11px; letter-spacing:4px; font-weight:700; margin-bottom:40px;'>"
         "NCAA TOURNAMENT ANALYTICS & BETTING INTELLIGENCE</div>",
         unsafe_allow_html=True,
     )
@@ -3506,12 +3679,14 @@ conferences = load_conferences()
 
 # Sidebar
 st.sidebar.markdown(
-    "<div style='text-align:center; margin-bottom:8px;'>"
-    "<span style='font-size:28px; font-weight:900; letter-spacing:-1px;'>"
+    "<div style='text-align:center; padding:8px 0 4px;'>"
+    "<span style='font-size:32px; font-weight:900; letter-spacing:-1.5px;'>"
     "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
     "</div>"
-    "<div style='text-align:center; color:#666; font-size:10px; letter-spacing:2px; font-weight:600;'>"
-    "ANALYTICS & INTELLIGENCE</div>",
+    "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
+    "ANALYTICS & INTELLIGENCE</div>"
+    "<div style='width:40px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
+    "margin:0 auto 4px; border-radius:2px;'></div>",
     unsafe_allow_html=True,
 )
 st.sidebar.markdown("---")
@@ -3531,8 +3706,12 @@ page = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    "<div style='text-align:center; color:#444; font-size:10px; letter-spacing:1px;'>"
-    "VILPOM &copy; 2026<br>For entertainment only. Not financial advice.</div>",
+    "<div style='text-align:center; padding:4px 0;'>"
+    "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
+    "VILPOM &copy; 2026 &middot; v2.0</div>"
+    "<div style='color:#2a2d36; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
+    "For entertainment only</div>"
+    "</div>",
     unsafe_allow_html=True,
 )
 
