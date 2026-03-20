@@ -2680,6 +2680,8 @@ def _build_odds_name_map(teams, prefix="M"):
         "santa clara broncos": "Santa Clara",
         "wake forest demon deacons": "Wake Forest",
         "nebraska cornhuskers": "Nebraska",
+        "ohio state buckeyes": "Ohio St",
+        "ohio st buckeyes": "Ohio St",
         "tulsa golden hurricane": "Tulsa",
         "missouri tigers": "Missouri",
         "texas tech red raiders": "Texas Tech",
@@ -2716,23 +2718,20 @@ def _resolve_odds_team(odds_name, odds_map, name_to_tid):
         return odds_map[ln]
 
     # Try stripping last word (mascot) progressively: "Duke Blue Devils" -> "Duke Blue" -> "Duke"
+    # At each step, also try state->st / saint->st / st.->st normalization
     words = ln.split()
     for i in range(len(words) - 1, 0, -1):
         prefix = " ".join(words[:i])
+        # Try state/saint/st. normalization first (more specific match)
+        prefix_st = prefix.replace("state", "st").replace("saint", "st")
+        if prefix_st != prefix and prefix_st in name_to_tid:
+            return name_to_tid[prefix_st]
+        prefix_nodot = prefix.replace("st.", "st")
+        if prefix_nodot != prefix and prefix_nodot in name_to_tid:
+            return name_to_tid[prefix_nodot]
+        # Then try exact match
         if prefix in name_to_tid:
             return name_to_tid[prefix]
-
-    # Try "St" / "St." normalization: "Oklahoma St Cowboys" -> "Oklahoma St"
-    for i in range(len(words) - 1, 0, -1):
-        prefix = " ".join(words[:i])
-        # Try adding "St" if it's not there
-        prefix_st = prefix.replace("state", "st").replace("saint", "st")
-        if prefix_st in name_to_tid:
-            return name_to_tid[prefix_st]
-        # Try "St." -> "St"
-        prefix_nodot = prefix.replace("st.", "st")
-        if prefix_nodot in name_to_tid:
-            return name_to_tid[prefix_nodot]
 
     # Substring: if our team name is IN the odds name
     for name, tid in name_to_tid.items():
