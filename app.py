@@ -1568,11 +1568,34 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             unsafe_allow_html=True,
         )
 
-    # Projected score
+    # Projected score — NCAA bracket-style stacked card
+    t1_proj = lines["t1_pts"]
+    t2_proj = lines["t2_pts"]
+    t1_winning = t1_proj > t2_proj
+    t2_winning = t2_proj > t1_proj
+    t1_name_style = 'color:#FAFAFA; font-weight:700;' if t1_winning else 'color:#888;'
+    t2_name_style = 'color:#FAFAFA; font-weight:700;' if t2_winning else 'color:#888;'
+    t1_score_style = 'color:#FAFAFA; font-weight:800;' if t1_winning else 'color:#555;'
+    t2_score_style = 'color:#FAFAFA; font-weight:800;' if t2_winning else 'color:#555;'
+    s1_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s1_seed)}</span>' if s1_seed else ''
+    s2_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s2_seed)}</span>' if s2_seed else ''
     st.markdown(
-        f'<div style="text-align:center; margin:12px 0; font-size:20px; font-weight:700; color:#e2e8f0;">'
-        f'Projected Score: {_team_logo_img(t1, espn_map, size=18)}{n1} {lines["t1_pts"]:.0f} — {_team_logo_img(t2, espn_map, size=18)}{n2} {lines["t2_pts"]:.0f}'
-        f'</div>',
+        f'<div style="max-width:400px; margin:12px auto;">'
+        f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">PROJECTED SCORE</div>'
+        f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+        f'<div style="display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #2a2a2a;">'
+        f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t1)}; margin-right:8px;"></div>'
+        f'{s1_tag}{_team_logo_img(t1, espn_map, size=20)}'
+        f'<span style="{t1_name_style} font-size:15px; flex:1;">{n1}</span>'
+        f'<span style="{t1_score_style} font-size:20px; font-variant-numeric:tabular-nums; min-width:32px; text-align:right;">{t1_proj:.0f}</span>'
+        f'</div>'
+        f'<div style="display:flex; align-items:center; padding:8px 12px;">'
+        f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t2)}; margin-right:8px;"></div>'
+        f'{s2_tag}{_team_logo_img(t2, espn_map, size=20)}'
+        f'<span style="{t2_name_style} font-size:15px; flex:1;">{n2}</span>'
+        f'<span style="{t2_score_style} font-size:20px; font-variant-numeric:tabular-nums; min-width:32px; text-align:right;">{t2_proj:.0f}</span>'
+        f'</div>'
+        f'</div></div>',
         unsafe_allow_html=True,
     )
 
