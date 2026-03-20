@@ -2219,8 +2219,50 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     st.markdown("")
 
     # Full table
-    st.subheader("Full Round-by-Round Advancement Odds")
-    _styled_df(df.drop(columns=["_champ_pct"]), max_height=600, espn_map=espn_map)
+    st.markdown(
+        '<div style="font-size:11px; color:#555; letter-spacing:1.5px; font-weight:700; margin:20px 0 8px;">FULL ROUND-BY-ROUND ADVANCEMENT ODDS</div>',
+        unsafe_allow_html=True,
+    )
+    rr_rows = df.to_dict("records")
+    rr_html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #333;">'
+    rr_html += '<table class="vp-table"><thead><tr>'
+    rr_html += '<th style="width:36px;">#</th><th>TEAM</th><th>ELO</th>'
+    if has_massey:
+        rr_html += '<th>MASSEY</th>'
+    rr_html += '<th>R32</th><th>S16</th><th>E8</th><th>FF</th><th>CG</th><th>CHAMP</th>'
+    rr_html += '</tr></thead><tbody>'
+    for i, rr in enumerate(rr_rows, 1):
+        tid = rr.get("_tid")
+        tc = _team_color(tid) if tid else "#666"
+        logo = _team_logo_img(tid, espn_map, size=16) if tid else ""
+        seed_val = rr.get("Seed", "")
+        seed_prefix = f'<span style="color:#888; font-size:10px; font-weight:700; min-width:18px; text-align:right; margin-right:4px; font-variant-numeric:tabular-nums; display:inline-block;">{seed_val}</span>' if seed_val and seed_val != 99 else ''
+        elo_val = rr.get("Elo", 1500)
+        elo_color = "#4ade80" if elo_val >= 1650 else "#FAFAFA" if elo_val >= 1550 else "#888"
+        champ_pct = rr.get("_champ_pct", 0)
+        champ_color = "#009CDE" if champ_pct >= 0.10 else "#4ade80" if champ_pct >= 0.03 else ""
+        champ_style = f' style="color:{champ_color}; font-weight:700;"' if champ_color else ' style="font-weight:600;"'
+        rr_html += f'<tr>'
+        rr_html += f'<td class="rank-cell">{i}</td>'
+        rr_html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{seed_prefix}{logo}{rr["Team"]}</td>'
+        rr_html += f'<td style="color:{elo_color}; font-weight:700;">{elo_val}</td>'
+        if has_massey:
+            m_val = rr.get("Massey", "—")
+            if m_val != "—":
+                m_cls = "stat-good" if float(m_val) <= 25 else "stat-neutral" if float(m_val) <= 100 else "stat-bad"
+                rr_html += f'<td class="{m_cls}" style="font-weight:600;">{m_val}</td>'
+            else:
+                rr_html += '<td style="color:#555;">—</td>'
+        rr_html += f'<td>{rr.get("R32", "")}</td>'
+        rr_html += f'<td>{rr.get("S16", "")}</td>'
+        rr_html += f'<td>{rr.get("E8", "")}</td>'
+        rr_html += f'<td>{rr.get("FF", "")}</td>'
+        rr_html += f'<td>{rr.get("CG", "")}</td>'
+        rr_html += f'<td{champ_style}>{rr.get("Champ", "")}</td>'
+        rr_html += '</tr>'
+    rr_html += '</tbody></table></div>'
+    st.markdown(rr_html, unsafe_allow_html=True)
+    st.caption(f"Showing {len(rr_rows)} teams")
 
 
 # ──────────────────────────── Page: Bracket ────────────────────────────
