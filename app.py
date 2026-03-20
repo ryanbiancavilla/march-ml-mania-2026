@@ -33,10 +33,9 @@ def check_password():
 
     st.markdown(
         "<div style='text-align:center; margin-top:100px;'>"
-        "<div style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:86px; font-weight:900; "
-        "letter-spacing:-0.05em; margin-bottom:6px; text-transform:uppercase; "
-        "transform: skewX(-14deg) scaleY(1.05); display:inline-block; line-height:0.85; "
-        "-webkit-text-stroke: 3px white; paint-order: stroke fill; color:#FAFAFA;'>"
+        "<div style='font-family: Impact, Haettenschweiler, sans-serif; font-size:80px; "
+        "letter-spacing:-0.02em; margin-bottom:6px; text-transform:uppercase; "
+        "transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;'>"
         "VILPOM</div>"
         "<div style='width:50px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
         "margin:12px auto;'></div>"
@@ -92,7 +91,7 @@ if not check_password():
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@900&display=swap');
+    /* Impact is a system font — no import needed */
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
     /* ── Fix broken Material Icons rendering as text ── */
@@ -3496,10 +3495,9 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-family: Saira Extra Condensed, Impact, sans-serif; font-size:30px; margin-bottom:12px; '
-            'font-weight:900; text-transform:uppercase; letter-spacing:-0.05em; '
-            'transform: skewX(-14deg) scaleY(1.05); display:inline-block; line-height:0.85; '
-            '-webkit-text-stroke: 1px white; paint-order: stroke fill; color:#FAFAFA;">'
+            '<div style="font-family: Impact, Haettenschweiler, sans-serif; font-size:28px; margin-bottom:12px; '
+            'text-transform:uppercase; letter-spacing:-0.02em; '
+            'transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;">'
             '<span style="color:#FAFAFA;">VILPOM</span></div>'
             '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
             'No Games With Odds Right Now</div>'
@@ -4018,10 +4016,9 @@ def page_picks(prefix, teams, seeds_df, preds):
 def page_about():
     st.markdown(
         "<div style='text-align:center; margin:16px 0 6px;'>"
-        "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:46px; font-weight:900; "
-        "letter-spacing:-0.05em; text-transform:uppercase; display:inline-block; "
-        "transform: skewX(-14deg) scaleY(1.05); line-height:0.85; "
-        "-webkit-text-stroke: 2px white; paint-order: stroke fill; color:#FAFAFA;'>"
+        "<span style='font-family: Impact, Haettenschweiler, sans-serif; font-size:42px; "
+        "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; "
+        "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
         "<span style='color:#FAFAFA;'>VILPOM</span></span>"
         "</div>"
         "<div style='width:40px; height:2px; background:#41B6E6; "
@@ -4176,10 +4173,9 @@ def page_about():
         '<div style="color:#888; font-size:11px;">Vegas lines from major books</div></div>'
         '<div style="color:#444; font-size:18px;">&#8594;</div>'
         '<div style="text-align:center; min-width:140px;">'
-        '<div style="font-family: Saira Extra Condensed, Impact, sans-serif; font-weight:900; '
-        'font-size:18px; text-transform:uppercase; letter-spacing:-0.05em; '
-        'transform: skewX(-14deg) scaleY(1.05); display:inline-block; line-height:0.85; '
-        '-webkit-text-stroke: 0.5px white; paint-order: stroke fill; color:#FAFAFA;">'
+        '<div style="font-family: Impact, Haettenschweiler, sans-serif; '
+        'font-size:17px; text-transform:uppercase; letter-spacing:-0.02em; '
+        'transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;">'
         '<span style="color:#FAFAFA;">VILPOM</span></div>'
         '<div style="color:#888; font-size:11px;">Model vs Vegas edge detection</div></div>'
         '</div></div>',
@@ -4206,10 +4202,9 @@ conferences = load_conferences()
 # Sidebar
 st.sidebar.markdown(
     "<div style='text-align:center; padding:8px 0 4px;'>"
-    "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:42px; font-weight:900; "
-    "letter-spacing:-0.05em; text-transform:uppercase; display:inline-block; "
-    "transform: skewX(-14deg) scaleY(1.05); line-height:0.85; "
-    "-webkit-text-stroke: 1.5px white; paint-order: stroke fill; color:#FAFAFA;'>"
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; font-size:38px; "
+    "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; "
+    "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
     "<span style='color:#FAFAFA;'>VILPOM</span></span>"
     "</div>"
     "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
@@ -4237,10 +4232,9 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
     "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
-    "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-weight:900; "
-    "letter-spacing:-0.05em; display:inline-block; "
-    "transform: skewX(-14deg) scaleY(1.05); -webkit-text-stroke: 0.5px white; "
-    "paint-order: stroke fill; color:#FAFAFA;'>VILPOM</span> "
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; "
+    "letter-spacing:-0.02em; display:inline-block; "
+    "transform: skewX(-12deg); color:#FAFAFA;'>VILPOM</span> "
     "&copy; 2026 &middot; v2.0</div>"
     "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
     "For entertainment only</div>"
