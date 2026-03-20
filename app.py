@@ -91,6 +91,35 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+    /* ── Fix broken Material Icons rendering as text ── */
+    .material-icons,
+    [data-testid="stExpander"] summary svg,
+    [class*="material-icons"] {
+        font-family: 'Material Icons' !important;
+        -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
+        font-size: 24px !important;
+        overflow: hidden;
+        max-width: 24px;
+        display: inline-block !important;
+    }
+    /* Fallback: if font still fails, hide the text and use CSS arrows */
+    @font-face {
+        font-family: 'Material Icons Detect';
+        src: url('https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+    }
+    [data-testid="stExpander"] details > summary > span:first-of-type {
+        font-size: 0 !important; width: 24px; height: 24px;
+        display: inline-flex !important; align-items: center; justify-content: center;
+        overflow: hidden;
+    }
+    [data-testid="stExpander"] details > summary > span:first-of-type::after {
+        content: "▾"; font-size: 14px; color: #888;
+    }
+    [data-testid="stExpander"] details[open] > summary > span:first-of-type::after {
+        content: "▴";
+    }
+
     /* ── Foundation ── */
     .block-container { padding-top: 0.5rem; max-width: 1200px; }
     html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
