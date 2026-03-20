@@ -312,12 +312,12 @@
       "game_id": "401856528",
       "name": "Utah State Aggies at Villanova Wildcats",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:40 - 2nd",
+      "status_detail": "2:12 - 2nd",
       "home_team": "Villanova Wildcats",
-      "home_score": 53,
+      "home_score": 73,
       "home_id": "222",
       "away_team": "Utah State Aggies",
-      "away_score": 47,
+      "away_score": 78,
       "away_id": "328",
       "broadcast": "TNT",
       "start_time": "2026-03-20T20:10Z"
@@ -325,13 +325,13 @@
     {
       "game_id": "401856527",
       "name": "Miami (OH) RedHawks at Tennessee Volunteers",
-      "status": "STATUS_HALFTIME",
-      "status_detail": "Halftime",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "5:27 - 2nd",
       "home_team": "Tennessee Volunteers",
-      "home_score": 51,
+      "home_score": 70,
       "home_id": "2633",
       "away_team": "Miami (OH) RedHawks",
-      "away_score": 32,
+      "away_score": 49,
       "away_id": "193",
       "broadcast": "TBS",
       "start_time": "2026-03-20T20:25Z"
@@ -449,5 +449,5 @@
       "start_time": "2026-03-21T02:10Z"
     }
   ],
-  "fetched_at": "2026-03-20T21:37:56.813660+00:00"
+  "fetched_at": "2026-03-20T22:20:22.525960+00:00"
 }
