@@ -133,7 +133,7 @@ st.markdown("""
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background: #41B6E6;
+        background: #009CDE;
         border-right: 1px solid rgba(65, 182, 230, 0.2);
     }
     [data-testid="stSidebar"] .stRadio label { font-weight: 500; color: #FAFAFA; }
