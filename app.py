@@ -114,7 +114,7 @@ st.markdown("""
         overflow: hidden;
     }
     [data-testid="stExpander"] details > summary > span:first-of-type::after {
-        content: "▾"; font-size: 14px; color: #8899AA;
+        content: "▾"; font-size: 14px; color: #888;
     }
     [data-testid="stExpander"] details[open] > summary > span:first-of-type::after {
         content: "▴";
@@ -126,8 +126,8 @@ st.markdown("""
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background: #0d1221;
-        border-right: 1px solid #1e2a40;
+        background: #0a0c10;
+        border-right: 1px solid #1a1d24;
     }
     [data-testid="stSidebar"] .stRadio label { font-weight: 500; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
@@ -136,65 +136,62 @@ st.markdown("""
         font-size: 13px !important; border: 1px solid transparent !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
-        background: rgba(0, 156, 222, 0.05) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
-        background: rgba(0, 156, 222, 0.10) !important;
-        border-color: rgba(0, 156, 222, 0.25) !important;
+        background: rgba(255, 107, 53, 0.08) !important;
+        border-color: rgba(255, 107, 53, 0.2) !important;
     }
 
     /* ── Tabs ── */
-    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1e2a40; }
+    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1a1d24; }
     .stTabs [data-baseweb="tab"] { padding: 8px 20px; font-weight: 600; }
 
     /* ── Card ── */
     .vp-card {
-        background: #111827; border: 1px solid #1e2a40; border-radius: 8px;
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
         padding: 14px 18px; margin: 6px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     /* ── Section headers ── */
     .vp-section {
         font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-        color: #009CDE; text-transform: uppercase; margin-bottom: 10px;
-        padding-bottom: 6px; padding-left: 10px;
-        border-bottom: none; border-left: 3px solid #009CDE;
+        color: #FF6B35; text-transform: uppercase; margin-bottom: 10px;
+        padding-bottom: 6px; border-bottom: 1px solid #1e2028;
     }
 
     /* ── Page header ── */
     .vp-page-header { padding: 8px 0 10px; margin-bottom: 4px; }
     .vp-page-header h1 {
         font-size: 22px !important; font-weight: 800 !important;
-        color: #F0F4F8 !important; margin: 0 0 2px !important; line-height: 1.3 !important;
-        letter-spacing: 1px !important; text-transform: uppercase !important;
+        color: #FAFAFA !important; margin: 0 0 2px !important; line-height: 1.3 !important;
     }
-    .vp-page-header .subtitle { font-size: 12px; color: #8899AA; font-weight: 500; }
+    .vp-page-header .subtitle { font-size: 12px; color: #555; font-weight: 500; }
 
     /* ── Subheaders ── */
     [data-testid="stMarkdownContainer"] h3 {
         font-size: 14px !important; font-weight: 700 !important;
         color: #e2e8f0 !important;
-        border-bottom: 1px solid #1e2a40; padding-bottom: 8px; margin-top: 8px;
+        border-bottom: 1px solid #1a1d24; padding-bottom: 8px; margin-top: 8px;
     }
     [data-testid="stMarkdownContainer"] h2 {
-        font-size: 17px !important; font-weight: 800 !important; color: #F0F4F8 !important;
+        font-size: 17px !important; font-weight: 800 !important; color: #FAFAFA !important;
     }
 
     /* ── Captions ── */
-    [data-testid="stCaptionContainer"] p { font-size: 11px !important; color: #4A5568 !important; }
+    [data-testid="stCaptionContainer"] p { font-size: 11px !important; color: #555 !important; }
 
     /* ── Inputs ── */
     [data-testid="stSelectbox"] label, [data-testid="stTextInput"] label,
     [data-testid="stCheckbox"] label, [data-testid="stSlider"] label,
     [data-testid="stMultiSelect"] label {
         font-size: 11px !important; font-weight: 700 !important;
-        letter-spacing: 0.5px; text-transform: uppercase; color: #8899AA !important;
+        letter-spacing: 0.5px; text-transform: uppercase; color: #666 !important;
     }
 
     /* ── Dividers ── */
-    hr { border-color: #1e2a40 !important; margin: 16px 0 !important; }
+    hr { border-color: #1a1d24 !important; margin: 16px 0 !important; }
 
     /* ── Radio ── */
     [data-testid="stRadio"] > div > label { font-size: 13px !important; }
@@ -208,162 +205,159 @@ st.markdown("""
     .stButton > button:hover { background: #e55a2b !important; }
 
     /* ── Spinner ── */
-    .stSpinner > div { border-top-color: #009CDE !important; }
+    .stSpinner > div { border-top-color: #FF6B35 !important; }
 
     /* ── Expander ── */
     [data-testid="stExpander"] {
-        border: 1px solid #1e2a40 !important; border-radius: 8px !important;
-        background: #111827;
+        border: 1px solid #1e2028 !important; border-radius: 8px !important;
+        background: #14161c;
     }
     [data-testid="stExpander"] summary { font-weight: 600 !important; font-size: 13px !important; }
 
     /* ── Table ── */
     .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
     .vp-table thead th {
-        background: #0a0e1a; color: #8899AA; font-size: 9px; font-weight: 700;
+        background: #0c0e14; color: #777; font-size: 9px; font-weight: 700;
         letter-spacing: 0.8px; text-transform: uppercase; padding: 7px 8px;
-        border-bottom: 2px solid #009CDE; position: sticky; top: 0; z-index: 1;
+        border-bottom: 2px solid #FF6B35; position: sticky; top: 0; z-index: 1;
         text-align: left; white-space: nowrap;
     }
-    .vp-table tbody tr:hover { background: rgba(0, 156, 222, 0.04); }
+    .vp-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
     .vp-table tbody td {
-        padding: 5px 8px; border-bottom: 1px solid #1e2a40;
+        padding: 5px 8px; border-bottom: 1px solid #1a1d24;
         font-size: 12px; font-variant-numeric: tabular-nums;
     }
-    .vp-table .rank-cell { font-weight: 700; color: #009CDE; font-size: 12px; width: 28px; text-align: center; }
-    .vp-table .team-cell { font-weight: 600; color: #F0F4F8; white-space: nowrap; }
+    .vp-table .rank-cell { font-weight: 700; color: #FF6B35; font-size: 12px; width: 28px; text-align: center; }
+    .vp-table .team-cell { font-weight: 600; color: #FAFAFA; white-space: nowrap; }
     .vp-table .seed-badge {
-        display: inline-block; background: #D4A843; color: #0a0e1a; font-weight: 700;
+        display: inline-block; background: #FF6B35; color: #fff; font-weight: 700;
         font-size: 10px; padding: 1px 6px; border-radius: 3px; min-width: 18px; text-align: center;
     }
-    .vp-table .stat-good { color: #10B981; }
-    .vp-table .stat-bad { color: #EF4444; }
-    .vp-table .stat-neutral { color: #8899AA; }
+    .vp-table .stat-good { color: #4ade80; }
+    .vp-table .stat-bad { color: #f87171; }
+    .vp-table .stat-neutral { color: #888; }
 
     /* ── Tier badges ── */
-    .tier-elite { color: #0a0e1a; background: #D4A843; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
-    .tier-strong { color: #0a0e1a; background: #10B981; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
-    .tier-solid { color: #0a0e1a; background: #009CDE; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
-    .tier-avg { color: #F0F4F8; background: #2a3a55; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-elite { color: #fff; background: #FF6B35; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-strong { color: #000; background: #4ade80; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-solid { color: #000; background: #60a5fa; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-avg { color: #000; background: #666; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
 
-    /* ── Bracket ── */
-    .bracket { display: flex; gap: 6px; min-height: 540px; overflow-x: auto; padding: 4px 0; }
-    .round { display: flex; flex-direction: column; justify-content: space-around; min-width: 165px; }
+    /* ── Bracket (NCAA Official Style on dark bg) ── */
+    .bracket { display: flex; gap: 8px; min-height: 540px; overflow-x: auto; padding: 4px 0; }
+    .round { display: flex; flex-direction: column; justify-content: space-around; min-width: 175px; }
     .round-title {
-        text-align: center; font-size: 9px; color: #009CDE;
-        margin-bottom: 4px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        text-align: center; font-size: 10px; color: #aaa;
+        margin-bottom: 6px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
     }
     .matchup {
-        border: 1px solid #1e2a40; border-radius: 4px; overflow: hidden;
-        margin: 2px 0; background: #111827; position: relative;
+        border: 1px solid #333; border-radius: 3px; overflow: hidden;
+        margin: 2px 0; background: #18191f; position: relative;
     }
-    .matchup:hover { border-color: #2a3a55; }
-    .matchup.game-miss { border-color: #EF4444; border-width: 1px; }
-    .matchup.game-hit { border-color: #1a3a2d; }
+    .matchup:hover { border-color: #555; }
+    .matchup.game-miss { border-color: #f87171; }
+    .matchup.game-hit { border-color: #2d3a2d; }
     .team-slot {
-        padding: 4px 8px; font-size: 11px; display: flex;
+        padding: 5px 8px; font-size: 12px; display: flex;
         align-items: center; gap: 0;
-        border-bottom: 1px solid #1e2a40; color: #8899AA;
+        border-bottom: 1px solid #2a2a2a; color: #999;
     }
     .team-slot:last-child { border-bottom: none; }
-    .team-slot.winner { background: rgba(0, 156, 222, 0.08); }
-    .team-slot.winner .bk-name { color: #009CDE; font-weight: 700; }
-    .team-slot.winner .bk-seed { color: #D4A843; }
-    .team-slot.actual-winner { background: rgba(16, 185, 129, 0.08); }
-    .team-slot.actual-winner .bk-name { color: #10B981; font-weight: 700; }
-    .team-slot.actual-winner .bk-seed { color: #10B981; }
-    .team-slot.actual-loser .bk-name { color: #4A5568; }
-    .team-slot.upset-loser .bk-name { color: #4A5568; text-decoration: line-through; text-decoration-color: #EF444466; }
+    .team-slot.winner { background: rgba(255, 255, 255, 0.04); }
+    .team-slot.winner .bk-name { color: #FAFAFA; font-weight: 700; }
+    .team-slot.winner .bk-seed { color: #FAFAFA; }
+    .team-slot.actual-winner { background: rgba(74, 222, 128, 0.06); }
+    .team-slot.actual-winner .bk-name { color: #4ade80; font-weight: 700; }
+    .team-slot.actual-winner .bk-seed { color: #4ade80; }
+    .team-slot.actual-loser .bk-name { color: #555; }
+    .team-slot.upset-loser .bk-name { color: #555; text-decoration: line-through; text-decoration-color: #f8717166; }
     .bk-seed {
-        color: #D4A843; font-size: 9px; font-weight: 700; min-width: 16px;
-        text-align: right; margin-right: 5px; font-variant-numeric: tabular-nums;
+        color: #888; font-size: 10px; font-weight: 700; min-width: 18px;
+        text-align: right; margin-right: 6px; font-variant-numeric: tabular-nums;
     }
-    .bk-name { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bk-score { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; color: #4A5568; }
-    .bk-score.win { color: #10B981; }
+    .bk-name {
+        flex: 1; font-weight: 600; white-space: nowrap; overflow: hidden;
+        text-overflow: ellipsis; font-size: 12px;
+    }
+    .bk-score {
+        font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums;
+        margin-left: auto; padding-left: 8px; color: #555; min-width: 24px; text-align: right;
+    }
+    .bk-score.win { color: #FAFAFA; }
     .matchup-badge {
         position: absolute; top: -1px; right: -1px; font-size: 8px; font-weight: 800;
-        padding: 1px 5px; border-radius: 0 4px 0 4px; letter-spacing: 0.5px; z-index: 1;
+        padding: 1px 5px; border-radius: 0 3px 0 3px; letter-spacing: 0.5px; z-index: 1;
     }
-    .matchup-badge.miss { background: #EF4444; color: #0a0e1a; }
-    .matchup-badge.hit { background: #1a3a2d; color: #10B981; }
-    .prob-tag { color: #4A5568; font-size: 10px; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; }
+    .matchup-badge.miss { background: #f87171; color: #000; }
+    .matchup-badge.hit { background: #2d3a2d; color: #4ade80; }
+    .prob-tag { color: #555; font-size: 10px; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; }
     .big-prob { font-size: 36px; font-weight: 800; text-align: center; line-height: 1; margin: 4px 0; letter-spacing: -1px; }
     .stat-bar { height: 4px; border-radius: 2px; margin: 2px 0; }
     .ff-bracket { display: flex; gap: 12px; min-height: 160px; align-items: center; }
     .ff-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; min-height: 150px; }
     .champ-banner {
         text-align: center; font-size: 22px; font-weight: 800;
-        padding: 16px; border: 1px solid #D4A843; border-radius: 8px;
-        background: rgba(212, 168, 67, 0.08); color: #D4A843; margin: 8px 0;
+        padding: 16px; border: 1px solid #FF6B35; border-radius: 8px;
+        background: rgba(255, 107, 53, 0.06); color: #FF6B35; margin: 8px 0;
     }
 
     /* ── Metric cards ── */
     .vp-metric {
-        background: #111827; border: 1px solid #1e2a40; border-radius: 8px;
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
         padding: 12px; text-align: center;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
-    .vp-metric .label { color: #8899AA; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .vp-metric .label { color: #666; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .vp-metric .value { font-size: 24px; font-weight: 800; margin: 4px 0; letter-spacing: -0.5px; }
-    .vp-metric .sub { color: #8899AA; font-size: 11px; }
+    .vp-metric .sub { color: #666; font-size: 11px; }
 
     /* ── Dataframe ── */
     .stDataFrame { border-radius: 8px; overflow: hidden; }
 
     /* ── Bet cards ── */
     .vp-bet-card {
-        background: #111827; border: 1px solid #1e2a40; border-radius: 8px;
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
         padding: 14px 18px; margin: 8px 0;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
     .vp-bet-type {
-        background: #0d1221; border-radius: 6px; padding: 10px 14px;
-        flex: 1; min-width: 160px; border: 1px solid #1e2a40;
+        background: #0e1117; border-radius: 6px; padding: 10px 14px;
+        flex: 1; min-width: 160px; border: 1px solid #1a1d24;
     }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #2a3a55; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #2a2d36; border-radius: 4px; }
 
     /* ── Progress bar ── */
-    .stProgress > div > div { background: #1e2a40 !important; border-radius: 4px !important; }
-    .stProgress > div > div > div { background: #009CDE !important; border-radius: 4px !important; }
+    .stProgress > div > div { background: #1a1d24 !important; border-radius: 4px !important; }
+    .stProgress > div > div > div { background: #FF6B35 !important; border-radius: 4px !important; }
 
-    /* ── Score Bug (CBS Broadcast Style) ── */
+    /* ── Score Bug (TV Broadcast Style) ── */
     .score-bug {
-        background: #111827; border: 1px solid #1e2a40; border-radius: 6px;
+        background: #14161c; border: 1px solid #1e2028; border-radius: 4px;
         overflow: hidden; margin: 4px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     .score-bug .team-row {
-        display: flex; align-items: center; padding: 6px 12px;
-        border-bottom: 1px solid #1e2a40; gap: 8px;
+        display: flex; align-items: center; padding: 6px 10px;
+        border-bottom: 1px solid #1e2028; gap: 6px;
     }
     .score-bug .team-row:last-child { border-bottom: none; }
     .score-bug .team-row .color-bar {
-        width: 4px; height: 100%; min-height: 28px; border-radius: 2px;
+        width: 4px; height: 100%; min-height: 28px; border-radius: 1px;
         flex-shrink: 0;
     }
-    .score-bug .seed { color: #D4A843; font-size: 11px; font-weight: 700;
+    .score-bug .seed { color: #888; font-size: 11px; font-weight: 700;
         min-width: 18px; text-align: right; font-variant-numeric: tabular-nums; }
     .score-bug .team-name { flex: 1; font-weight: 600; font-size: 13px;
-        color: #F0F4F8; text-transform: uppercase; letter-spacing: 0.3px; }
-    .score-bug .team-name.loser { color: #4A5568; }
-    .score-bug .score { font-size: 18px; font-weight: 800; color: #F0F4F8;
+        color: #FAFAFA; letter-spacing: 0.3px; }
+    .score-bug .team-name.loser { color: #555; }
+    .score-bug .score { font-size: 18px; font-weight: 800; color: #FAFAFA;
         font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
-    .score-bug .score.loser { color: #4A5568; }
+    .score-bug .score.loser { color: #555; }
     .score-bug .game-info {
-        display: flex; align-items: center; gap: 8px; padding: 4px 12px;
-        background: #0a0e1a; font-size: 10px; color: #8899AA;
-        border-top: 1px solid #1e2a40;
-    }
-
-    /* ── Broadcast Bar Decoration ── */
-    .broadcast-bar {
-        background: linear-gradient(90deg, #009CDE, #006FA6);
-        height: 3px; border-radius: 2px; margin: 12px 0;
+        display: flex; align-items: center; gap: 8px; padding: 4px 10px;
+        background: #0e1117; font-size: 10px; color: #666;
+        border-top: 1px solid #1e2028;
     }
 
     /* ── Mobile ── */
@@ -392,13 +386,13 @@ st.markdown("""
         display: inline-flex; align-items: center; gap: 4px;
         padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700;
     }
-    .vp-badge-live { background: rgba(245, 158, 11, 0.20); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .vp-badge-final { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-    .vp-badge-win { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-    .vp-badge-loss { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    .vp-badge-live { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+    .vp-badge-win { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+    .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
 
     /* ── Divider ── */
-    .vp-divider { height: 1px; margin: 16px 0; background: #1e2a40; }
+    .vp-divider { height: 1px; margin: 16px 0; background: #1e2028; }
 </style>
 """, unsafe_allow_html=True)
 
