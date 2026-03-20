@@ -108,15 +108,19 @@ st.markdown("""
         font-family: 'Material Icons Detect';
         src: url('https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
     }
-    [data-testid="stExpander"] details > summary > span:first-of-type {
+    [data-testid="stExpander"] details > summary > span:first-of-type,
+    [data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+    [data-testid="stExpander"] summary span[class*="icon"] {
         font-size: 0 !important; width: 24px; height: 24px;
         display: inline-flex !important; align-items: center; justify-content: center;
-        overflow: hidden;
+        overflow: hidden; line-height: 0 !important;
     }
-    [data-testid="stExpander"] details > summary > span:first-of-type::after {
+    [data-testid="stExpander"] details > summary > span:first-of-type::after,
+    [data-testid="stExpander"] summary [data-testid="stIconMaterial"]::after {
         content: "▾"; font-size: 14px; color: #888;
     }
-    [data-testid="stExpander"] details[open] > summary > span:first-of-type::after {
+    [data-testid="stExpander"] details[open] > summary > span:first-of-type::after,
+    [data-testid="stExpander"] details[open] > summary [data-testid="stIconMaterial"]::after {
         content: "▴";
     }
 
