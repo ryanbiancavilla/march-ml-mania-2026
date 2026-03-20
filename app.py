@@ -1533,6 +1533,10 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     dog_name = n2 if fav == t1 else n1
     spread_display = lines["spread"]
 
+    # Seed tags (used in betting lines + projected score cards)
+    s1_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s1_seed)}</span>' if s1_seed else ''
+    s2_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s2_seed)}</span>' if s2_seed else ''
+
     # Betting lines — bracket-style stacked cards
     ml1_color = "#4ade80" if p >= 0.5 else "#f87171"
     ml2_color = "#4ade80" if p < 0.5 else "#f87171"
@@ -1614,8 +1618,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     t2_name_style = 'color:#FAFAFA; font-weight:700;' if t2_winning else 'color:#888;'
     t1_score_style = 'color:#FAFAFA; font-weight:800;' if t1_winning else 'color:#555;'
     t2_score_style = 'color:#FAFAFA; font-weight:800;' if t2_winning else 'color:#555;'
-    s1_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s1_seed)}</span>' if s1_seed else ''
-    s2_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s2_seed)}</span>' if s2_seed else ''
     st.markdown(
         f'<div style="max-width:400px; margin:12px auto;">'
         f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">PROJECTED SCORE</div>'
