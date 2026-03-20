@@ -133,22 +133,30 @@ st.markdown("""
 
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background: #0a0c10;
-        border-right: 1px solid #2a2a2a;
+        background: #0C2340;
+        border-right: 1px solid rgba(65, 182, 230, 0.2);
     }
-    [data-testid="stSidebar"] .stRadio label { font-weight: 500; }
+    [data-testid="stSidebar"] .stRadio label { font-weight: 500; color: #FAFAFA; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label {
         padding: 7px 12px !important; border-radius: 6px !important;
         font-size: 13px !important; border: 1px solid transparent !important;
+        color: rgba(255, 255, 255, 0.7) !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
-        background: rgba(255, 255, 255, 0.03) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #FAFAFA !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
-        background: rgba(65, 182, 230, 0.08) !important;
-        border-color: rgba(65, 182, 230, 0.2) !important;
+        background: rgba(65, 182, 230, 0.15) !important;
+        border-color: rgba(65, 182, 230, 0.3) !important;
+        color: #FAFAFA !important;
+    }
+    [data-testid="stSidebar"] hr { border-color: rgba(65, 182, 230, 0.15); }
+    [data-testid="stSidebar"] [data-testid="stMarkdown"] p,
+    [data-testid="stSidebar"] [data-testid="stRadio"] > label {
+        color: rgba(255, 255, 255, 0.8) !important;
     }
 
     /* ── Tabs ── */
