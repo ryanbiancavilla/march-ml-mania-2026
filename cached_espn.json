@@ -10,19 +10,23 @@
       "home_id": "130",
       "away_team": "Howard Bison",
       "away_score": 80,
-      "away_id": "47"
+      "away_id": "47",
+      "broadcast": "CBS",
+      "start_time": "2026-03-19T23:30Z"
     },
     {
       "game_id": "401856484",
       "name": "Texas Longhorns at BYU Cougars",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "0:58 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "BYU Cougars",
       "home_score": 71,
       "home_id": "252",
       "away_team": "Texas Longhorns",
-      "away_score": 75,
-      "away_id": "251"
+      "away_score": 79,
+      "away_id": "251",
+      "broadcast": "TBS",
+      "start_time": "2026-03-19T23:35Z"
     },
     {
       "game_id": "401856492",
@@ -34,7 +38,9 @@
       "home_id": "2608",
       "away_team": "Texas A&M Aggies",
       "away_score": 63,
-      "away_id": "245"
+      "away_id": "245",
+      "broadcast": "truTV",
+      "start_time": "2026-03-19T23:35Z"
     },
     {
       "game_id": "401856478",
@@ -46,7 +52,9 @@
       "home_id": "150",
       "away_team": "Siena Saints",
       "away_score": 65,
-      "away_id": "2561"
+      "away_id": "2561",
+      "broadcast": "CBS",
+      "start_time": "2026-03-19T19:00Z"
     },
     {
       "game_id": "401856483",
@@ -58,7 +66,9 @@
       "home_id": "127",
       "away_team": "North Dakota State Bison",
       "away_score": 67,
-      "away_id": "2449"
+      "away_id": "2449",
+      "broadcast": "TNT",
+      "start_time": "2026-03-19T20:27Z"
     },
     {
       "game_id": "401856489",
@@ -70,7 +80,9 @@
       "home_id": "158",
       "away_team": "Troy Trojans",
       "away_score": 47,
-      "away_id": "2653"
+      "away_id": "2653",
+      "broadcast": "truTV",
+      "start_time": "2026-03-19T16:40Z"
     },
     {
       "game_id": "401856481",
@@ -82,7 +94,9 @@
       "home_id": "8",
       "away_team": "Hawai'i Rainbow Warriors",
       "away_score": 78,
-      "away_id": "62"
+      "away_id": "62",
+      "broadcast": "TBS",
+      "start_time": "2026-03-19T20:27Z"
     },
     {
       "game_id": "401856480",
@@ -94,7 +108,9 @@
       "home_id": "275",
       "away_team": "High Point Panthers",
       "away_score": 83,
-      "away_id": "2272"
+      "away_id": "2272",
+      "broadcast": "TBS",
+      "start_time": "2026-03-19T17:50Z"
     },
     {
       "game_id": "401856488",
@@ -106,7 +122,9 @@
       "home_id": "238",
       "away_team": "McNeese Cowboys",
       "away_score": 68,
-      "away_id": "2377"
+      "away_id": "2377",
+      "broadcast": "truTV",
+      "start_time": "2026-03-19T19:15Z"
     },
     {
       "game_id": "401856482",
@@ -118,7 +136,9 @@
       "home_id": "97",
       "away_team": "South Florida Bulls",
       "away_score": 79,
-      "away_id": "58"
+      "away_id": "58",
+      "broadcast": "TNT",
+      "start_time": "2026-03-19T17:30Z"
     },
     {
       "game_id": "401856490",
@@ -130,7 +150,9 @@
       "home_id": "153",
       "away_team": "VCU Rams",
       "away_score": 82,
-      "away_id": "2670"
+      "away_id": "2670",
+      "broadcast": "TNT",
+      "start_time": "2026-03-19T22:50Z"
     },
     {
       "game_id": "401856479",
@@ -142,56 +164,66 @@
       "home_id": "194",
       "away_team": "TCU Horned Frogs",
       "away_score": 66,
-      "away_id": "2628"
+      "away_id": "2628",
+      "broadcast": "CBS",
+      "start_time": "2026-03-19T16:15Z"
     },
     {
       "game_id": "401856491",
       "name": "Pennsylvania Quakers at Illinois Fighting Illini",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 9:55 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "1:28 - 2nd",
       "home_team": "Illinois Fighting Illini",
-      "home_score": 0,
+      "home_score": 103,
       "home_id": "356",
       "away_team": "Pennsylvania Quakers",
-      "away_score": 0,
-      "away_id": "219"
+      "away_score": 65,
+      "away_id": "219",
+      "broadcast": "TNT",
+      "start_time": "2026-03-20T01:55Z"
     },
     {
       "game_id": "401856485",
       "name": "Kennesaw State Owls at Gonzaga Bulldogs",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 10:00 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "16:05 - 2nd",
       "home_team": "Gonzaga Bulldogs",
-      "home_score": 0,
+      "home_score": 42,
       "home_id": "2250",
       "away_team": "Kennesaw State Owls",
-      "away_score": 0,
-      "away_id": "338"
+      "away_score": 33,
+      "away_id": "338",
+      "broadcast": "TBS",
+      "start_time": "2026-03-20T02:24Z"
     },
     {
       "game_id": "401856493",
       "name": "Idaho Vandals at Houston Cougars",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 10:10 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "12:23 - 2nd",
       "home_team": "Houston Cougars",
-      "home_score": 0,
+      "home_score": 57,
       "home_id": "248",
       "away_team": "Idaho Vandals",
-      "away_score": 0,
-      "away_id": "70"
+      "away_score": 33,
+      "away_id": "70",
+      "broadcast": "truTV",
+      "start_time": "2026-03-20T02:15Z"
     },
     {
       "game_id": "401856487",
       "name": "Saint Louis Billikens at Georgia Bulldogs",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 10:10 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "11:44 - 2nd",
       "home_team": "Georgia Bulldogs",
-      "home_score": 0,
+      "home_score": 47,
       "home_id": "61",
       "away_team": "Saint Louis Billikens",
-      "away_score": 0,
-      "away_id": "139"
+      "away_score": 74,
+      "away_id": "139",
+      "broadcast": "CBS",
+      "start_time": "2026-03-20T02:10Z"
     }
   ],
-  "fetched_at": "2026-03-20T01:42:24.521836+00:00"
+  "fetched_at": "2026-03-20T03:44:25.099936+00:00"
 }
