@@ -1517,64 +1517,62 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # ── Head-to-Head History ──
     st.markdown("---")
-    st.subheader("All-Time Head-to-Head History")
+    with st.expander("📜 All-Time Head-to-Head History", expanded=True):
+        low, high = min(t1, t2), max(t1, t2)
+        h2h_rec = h2h_history.get((low, high))
+        if h2h_rec and h2h_rec["low_wins"] + h2h_rec["high_wins"] > 0:
+            t1_wins = h2h_rec["low_wins"] if t1 == low else h2h_rec["high_wins"]
+            t2_wins = h2h_rec["high_wins"] if t1 == low else h2h_rec["low_wins"]
+            total = t1_wins + t2_wins
 
-    low, high = min(t1, t2), max(t1, t2)
-    h2h_rec = h2h_history.get((low, high))
-    if h2h_rec and h2h_rec["low_wins"] + h2h_rec["high_wins"] > 0:
-        t1_wins = h2h_rec["low_wins"] if t1 == low else h2h_rec["high_wins"]
-        t2_wins = h2h_rec["high_wins"] if t1 == low else h2h_rec["low_wins"]
-        total = t1_wins + t2_wins
+            st.markdown(
+                f"**{tname(teams, t1)}** leads **{t1_wins}-{t2_wins}** "
+                f"({total} games)" if t1_wins >= t2_wins else
+                f"**{tname(teams, t2)}** leads **{t2_wins}-{t1_wins}** "
+                f"({total} games)"
+            )
 
-        st.markdown(
-            f"**{tname(teams, t1)}** leads **{t1_wins}-{t2_wins}** "
-            f"({total} games)" if t1_wins >= t2_wins else
-            f"**{tname(teams, t2)}** leads **{t2_wins}-{t1_wins}** "
-            f"({total} games)"
-        )
-
-        # Show last 5 games
-        recent = sorted(h2h_rec["games"], key=lambda g: g["season"], reverse=True)[:5]
-        if recent:
-            st.markdown("**Recent matchups:**")
-            for g in recent:
-                winner_name = tname(teams, g["winner"])
-                st.markdown(f"- {g['season']}: **{winner_name}** won {g['score']}")
-    else:
-        st.info("These teams have no recorded head-to-head history.")
+            # Show last 5 games
+            recent = sorted(h2h_rec["games"], key=lambda g: g["season"], reverse=True)[:5]
+            if recent:
+                st.markdown("**Recent matchups:**")
+                for g in recent:
+                    winner_name = tname(teams, g["winner"])
+                    st.markdown(f"- {g['season']}: **{winner_name}** won {g['score']}")
+        else:
+            st.info("These teams have no recorded head-to-head history.")
 
     # ── Seed Matchup History ──
     s1 = team_seeds.get(t1)
     s2 = team_seeds.get(t2)
     if s1 is not None and s2 is not None:
         st.markdown("---")
-        st.subheader("Seed Matchup History")
+        with st.expander("🌱 Seed Matchup History", expanded=True):
+            low_s, high_s = min(s1, s2), max(s1, s2)
+            matchup_rec = seed_history.get((low_s, high_s))
+            if matchup_rec and matchup_rec[1] > 0:
+                low_wins, total = matchup_rec
+                low_pct = round(low_wins / total * 100, 1)
+                high_pct = round(100 - low_pct, 1)
+                upsets = total - low_wins
 
-        low_s, high_s = min(s1, s2), max(s1, s2)
-        matchup_rec = seed_history.get((low_s, high_s))
-        if matchup_rec and matchup_rec[1] > 0:
-            low_wins, total = matchup_rec
-            low_pct = round(low_wins / total * 100, 1)
-            high_pct = round(100 - low_pct, 1)
-            upsets = total - low_wins
-
-            st.markdown(
-                f"In NCAA Tournament history, **{low_s}-seeds** have beaten "
-                f"**{high_s}-seeds** **{low_pct}%** of the time "
-                f"({low_wins}-{total - low_wins} in {total} games)."
-            )
-
-            if high_s - low_s >= 4 and upsets > 0:
                 st.markdown(
-                    f"There have been **{upsets} upset{'s' if upsets != 1 else ''}** "
-                    f"by {high_s}-seeds in this matchup."
+                    f"In NCAA Tournament history, **{low_s}-seeds** have beaten "
+                    f"**{high_s}-seeds** **{low_pct}%** of the time "
+                    f"({low_wins}-{total - low_wins} in {total} games)."
                 )
 
-            # Progress bar for visual
-            st.progress(low_pct / 100)
-            st.caption(f"{low_s}-seed wins: {low_pct}% | {high_s}-seed wins: {high_pct}%")
-        else:
-            st.info(f"No historical tournament data for {low_s}-seed vs {high_s}-seed matchup.")
+                if high_s - low_s >= 4 and upsets > 0:
+                    st.markdown(
+                        f"There have been **{upsets} upset{'s' if upsets != 1 else ''}** "
+                        f"by {high_s}-seeds in this matchup."
+                    )
+
+                # Progress bar for visual
+                st.progress(low_pct / 100)
+                st.caption(f"{low_s}-seed wins: {low_pct}% | {high_s}-seed wins: {high_pct}%")
+            else:
+                st.info(f"No historical tournament data for {low_s}-seed vs {high_s}-seed matchup.")
 
 
 
