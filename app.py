@@ -1181,9 +1181,20 @@ def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None,
         sc1 = f'<span class="prob-tag">{p1}</span>'
         sc2 = f'<span class="prob-tag">{p2}</span>'
 
+    # Team color bars — grey out losers/projected losers
+    tc1 = _team_color(t1) if t1 else '#333'
+    tc2 = _team_color(t2) if t2 else '#333'
+    if is_completed and actual_winner:
+        bar1 = tc1 if t1 == actual_winner else '#333'
+        bar2 = tc2 if t2 == actual_winner else '#333'
+    else:
+        bar1 = tc1 if t1 == winner else '#333'
+        bar2 = tc2 if t2 == winner else '#333'
+    bar_style = 'width:3px; min-height:22px; border-radius:1px; margin-right:5px; flex-shrink:0;'
+
     return f"""<div class="matchup {card_cls}">{badge}
-  <div class="team-slot {c1}">{s1_tag}{logo1}<span class="bk-name">{n1}</span>{sc1}</div>
-  <div class="team-slot {c2}">{s2_tag}{logo2}<span class="bk-name">{n2}</span>{sc2}</div>
+  <div class="team-slot {c1}"><div style="{bar_style} background:{bar1};"></div>{s1_tag}{logo1}<span class="bk-name">{n1}</span>{sc1}</div>
+  <div class="team-slot {c2}"><div style="{bar_style} background:{bar2};"></div>{s2_tag}{logo2}<span class="bk-name">{n2}</span>{sc2}</div>
 </div>"""
 
 
@@ -3165,15 +3176,19 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'</div>'
                 )
 
+                away_color = _team_color(away_tid) if away_tid else '#666'
+                home_color = _team_color(home_tid) if home_tid else '#666'
                 live_grid += (
                     f'<div style="background:#18191f; border:1px solid #41B6E6; border-radius:4px; overflow:hidden;">'
                     f'{status_html}'
                     f'<div style="display:flex; align-items:center; padding:6px 10px; border-bottom:1px solid #2a2a2a;">'
+                    f'<div style="width:4px; height:24px; border-radius:1px; background:{away_color}; margin-right:6px; flex-shrink:0;"></div>'
                     f'{away_seed}{_team_logo_img(away_tid, espn_map, size=18)}'
                     f'<span style="font-size:13px; flex:1; color:#ccc;">{g["away_team"]}</span>'
                     f'<span style="font-size:16px; font-weight:900; color:#FAFAFA; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["away_score"]}</span>'
                     f'</div>'
                     f'<div style="display:flex; align-items:center; padding:6px 10px;">'
+                    f'<div style="width:4px; height:24px; border-radius:1px; background:{home_color}; margin-right:6px; flex-shrink:0;"></div>'
                     f'{home_seed}{_team_logo_img(home_tid, espn_map, size=18)}'
                     f'<span style="font-size:13px; flex:1; color:#ccc;">{g["home_team"]}</span>'
                     f'<span style="font-size:16px; font-weight:900; color:#FAFAFA; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["home_score"]}</span>'
@@ -3217,10 +3232,11 @@ def page_picks(prefix, teams, seeds_df, preds):
                         f'{ml_icon} {fav_name_g} ({fav_prob_g*100:.0f}%)</div>'
                     )
 
-                # Away team row
+                # Team colors — grey out the loser
+                away_bar_color = _team_color(away_tid) if away_tid and away_won else '#333'
+                home_bar_color = _team_color(home_tid) if home_tid and home_won else '#333'
                 a_name_style = 'color:#FAFAFA; font-weight:700;' if away_won else 'color:#555;'
                 a_score_style = 'color:#FAFAFA; font-weight:800;' if away_won else 'color:#555;'
-                # Home team row
                 h_name_style = 'color:#FAFAFA; font-weight:700;' if home_won else 'color:#555;'
                 h_score_style = 'color:#FAFAFA; font-weight:800;' if home_won else 'color:#555;'
 
@@ -3228,12 +3244,14 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
                     # Away team row
                     f'<div style="display:flex; align-items:center; padding:6px 10px; border-bottom:1px solid #2a2a2a;">'
+                    f'<div style="width:4px; height:24px; border-radius:1px; background:{away_bar_color}; margin-right:6px; flex-shrink:0;"></div>'
                     f'{away_seed}{_team_logo_img(away_tid, espn_map, size=18)}'
                     f'<span style="{a_name_style} font-size:13px; flex:1;">{g["away_team"]}</span>'
                     f'<span style="{a_score_style} font-size:16px; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["away_score"]}</span>'
                     f'</div>'
                     # Home team row
                     f'<div style="display:flex; align-items:center; padding:6px 10px;">'
+                    f'<div style="width:4px; height:24px; border-radius:1px; background:{home_bar_color}; margin-right:6px; flex-shrink:0;"></div>'
                     f'{home_seed}{_team_logo_img(home_tid, espn_map, size=18)}'
                     f'<span style="{h_name_style} font-size:13px; flex:1;">{g["home_team"]}</span>'
                     f'<span style="{h_score_style} font-size:16px; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["home_score"]}</span>'
