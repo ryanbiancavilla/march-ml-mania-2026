@@ -3297,10 +3297,6 @@ def page_picks(prefix, teams, seeds_df, preds):
     # ── Live Scores ──
     if espn_data and espn_data.get("games"):
         espn_games = espn_data["games"]
-        fetched_at = espn_data.get("fetched_at", "")
-        if fetched_at:
-            st.caption(f"Scores last updated: {fetched_at[:16].replace('T', ' ')} UTC")
-
         live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
@@ -3389,11 +3385,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 }
 
     # ── Model Picks vs Vegas ──
-    st.markdown("---")
-    st.subheader("Model Picks")
-    st.caption(
-        "Our model vs Vegas for every upcoming game, sorted by tip-off time."
-    )
+    st.markdown('<div class="vp-section" style="margin-top:16px;">MODEL PICKS</div>', unsafe_allow_html=True)
 
     # Auto-use live Vegas odds when available
     has_live_odds = odds_data and odds_data.get("games")
@@ -3405,8 +3397,14 @@ def page_picks(prefix, teams, seeds_df, preds):
 
     if odds_matched:
         fetched_at = odds_data.get("fetched_at", "")
-        st.success(f"Comparing model vs Vegas for {len(odds_matched)} games"
-                   + (f" (odds updated {fetched_at[:16].replace('T', ' ')} UTC)" if fetched_at else ""))
+        odds_ts = f" &middot; odds {fetched_at[:16].replace('T', ' ')} UTC" if fetched_at else ""
+        espn_ts = espn_data.get("fetched_at", "") if espn_data else ""
+        scores_ts = f" &middot; scores {espn_ts[:16].replace('T', ' ')} UTC" if espn_ts else ""
+        st.markdown(
+            f'<div style="font-size:11px; color:#666; margin-bottom:8px;">'
+            f'{len(odds_matched)} games{odds_ts}{scores_ts}</div>',
+            unsafe_allow_html=True,
+        )
 
         for gm in odds_matched:
             t1, t2 = gm["t1"], gm["t2"]
@@ -3712,7 +3710,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     # Upcoming games first (sorted by tip-off), then finals at the bottom
     game_cards.sort(key=lambda x: (x.get("game_final", False), x["commence_time"] or "9999", -x["best_rating"]))
 
-    # ── Today's Record Summary ──
+    # ── Tournament Record Summary ──
     graded = [c for c in game_cards if c.get("game_final")]
     if graded:
         ml_w = sum(1 for c in graded if c["ml"].get("result") == "WIN")
@@ -3721,28 +3719,30 @@ def page_picks(prefix, teams, seeds_df, preds):
         ats_l = sum(1 for c in graded if c["spread"].get("result") == "LOSS")
         ou_w = sum(1 for c in graded if c["total"].get("result") == "WIN")
         ou_l = sum(1 for c in graded if c["total"].get("result") == "LOSS")
-        kc1, kc2, kc3 = st.columns(3)
-        ml_c = "#4ade80" if ml_w > ml_l else "#f87171" if ml_l > ml_w else "#41B6E6"
-        ats_c = "#4ade80" if ats_w > ats_l else "#f87171" if ats_l > ats_w else "#41B6E6"
-        ou_c = "#4ade80" if ou_w > ou_l else "#f87171" if ou_l > ou_w else "#41B6E6"
-        with kc1:
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid {ml_c};">'
-                f'<div class="label">TODAY\'S ML</div>'
-                f'<div class="value" style="color:{ml_c};">{ml_w}-{ml_l}</div>'
-                f'</div>', unsafe_allow_html=True)
-        with kc2:
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid {ats_c};">'
-                f'<div class="label">TODAY\'S ATS</div>'
-                f'<div class="value" style="color:{ats_c};">{ats_w}-{ats_l}</div>'
-                f'</div>', unsafe_allow_html=True)
-        with kc3:
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid {ou_c};">'
-                f'<div class="label">TODAY\'S O/U</div>'
-                f'<div class="value" style="color:{ou_c};">{ou_w}-{ou_l}</div>'
-                f'</div>', unsafe_allow_html=True)
+        ml_c = "#4ade80" if ml_w > ml_l else "#f87171" if ml_l > ml_w else "#888"
+        ats_c = "#4ade80" if ats_w > ats_l else "#f87171" if ats_l > ats_w else "#888"
+        ou_c = "#4ade80" if ou_w > ou_l else "#f87171" if ou_l > ou_w else "#888"
+        st.markdown(
+            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; padding:10px 16px; '
+            f'display:flex; justify-content:space-around; align-items:center; margin-bottom:12px;">'
+            f'<div style="text-align:center;">'
+            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">MONEYLINE</div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ml_c};">{ml_w}-{ml_l}</div></div>'
+            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="text-align:center;">'
+            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">ATS</div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ats_c};">{ats_w}-{ats_l}</div></div>'
+            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="text-align:center;">'
+            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">O/U</div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ou_c};">{ou_w}-{ou_l}</div></div>'
+            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="text-align:center;">'
+            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">GAMES</div>'
+            f'<div style="font-size:20px; font-weight:900; color:#FAFAFA;">{len(graded)}</div></div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     # ── Render Game Cards (condensed sportsbook-style grid) ──
     grid_html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">'
