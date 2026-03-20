@@ -2308,7 +2308,8 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                 actual_matchups[(w_tid, l_tid)] = f"{w_score}-{l_score}"
                 actual_winners_map[frozenset({w_tid, l_tid})] = w_tid
 
-    # Infer play-in results: if a play-in team won an R1 game, they must have won their play-in
+    # Infer play-in results: if a play-in team appeared in ANY R1 game (win or loss),
+    # they must have won their play-in
     seed_to_team = dict(zip(seeds_df.Seed, seeds_df.TeamID))
     playin_slots = [s for s in seeds_df.Seed.unique() if len(s) > 3 and s[-1] in ("a", "b")]
     playin_pairs = {}  # base (e.g. "Z11") -> {"a": tid, "b": tid}
@@ -2316,16 +2317,18 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
         base = s[:-1]
         suffix = s[-1]
         playin_pairs.setdefault(base, {})[suffix] = seed_to_team.get(s)
+    # All teams that appeared in any actual game (winners OR losers)
+    all_actual_participants = actual_winners_set | actual_losers
     for base, pair in playin_pairs.items():
         a_tid, b_tid = pair.get("a"), pair.get("b")
         if a_tid and b_tid:
             key = frozenset({a_tid, b_tid})
             if key not in actual_winners_map:
-                # If one of them won an R1 game, they won the play-in
-                if a_tid in actual_winners_set:
+                # If one of them played in an R1 game (win or loss), they won the play-in
+                if a_tid in all_actual_participants:
                     actual_winners_map[key] = a_tid
                     actual_losers.add(b_tid)
-                elif b_tid in actual_winners_set:
+                elif b_tid in all_actual_participants:
                     actual_winners_map[key] = b_tid
                     actual_losers.add(a_tid)
 
@@ -3168,10 +3171,9 @@ def _build_odds_name_map(teams, prefix="M"):
         "houston christian huskies": "Houston Chr",
         "cal baptist lancers": "Cal Baptist",
         "prairie view panthers": "Prairie View",
-        "penn quakers": "Pennsylvania",
-        "pennsylvania quakers": "Pennsylvania",
-        "connecticut huskies": "UConn",
-        "uconn huskies": "UConn",
+        "penn quakers": "Penn",
+        "pennsylvania quakers": "Penn",
+        "connecticut huskies": "Connecticut",
         "smu mustangs": "SMU",
         "lsu tigers": "LSU",
         "tcu horned frogs": "TCU",
@@ -3207,7 +3209,7 @@ def _build_odds_name_map(teams, prefix="M"):
         "tennessee state tigers": "Tennessee St",
         "wright st raiders": "Wright St",
         "wright state raiders": "Wright St",
-        "saint louis billikens": "Saint Louis",
+        "saint louis billikens": "St Louis",
         "texas a&m aggies": "Texas A&M",
         "byu cougars": "BYU",
         "arkansas pine bluff golden lions": "Ark Pine Bluff",
