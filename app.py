@@ -89,6 +89,7 @@ if not check_password():
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
     /* ── Foundation ── */
     .block-container { padding-top: 0.5rem; max-width: 1200px; }
@@ -1495,7 +1496,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # ── Similar Opponents ──
     st.markdown("---")
-    with st.expander("🔍 Similar Opponents Analysis", expanded=True):
+    with st.expander("Similar Opponents Analysis", expanded=True):
         st.caption(
             "We find the 5 teams most statistically similar to each opponent, "
             "then check how the other team fared against those similar teams this season."
@@ -1541,7 +1542,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # ── Head-to-Head History ──
     st.markdown("---")
-    with st.expander("📜 All-Time Head-to-Head History", expanded=True):
+    with st.expander("All-Time Head-to-Head History", expanded=True):
         low, high = min(t1, t2), max(t1, t2)
         h2h_rec = h2h_history.get((low, high))
         if h2h_rec and h2h_rec["low_wins"] + h2h_rec["high_wins"] > 0:
@@ -1571,7 +1572,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     s2 = team_seeds.get(t2)
     if s1 is not None and s2 is not None:
         st.markdown("---")
-        with st.expander("🌱 Seed Matchup History", expanded=True):
+        with st.expander("Seed Matchup History", expanded=True):
             low_s, high_s = min(s1, s2), max(s1, s2)
             matchup_rec = seed_history.get((low_s, high_s))
             if matchup_rec and matchup_rec[1] > 0:
@@ -3016,7 +3017,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-size:32px; margin-bottom:12px;">🏀</div>'
+            '<div style="font-size:16px; margin-bottom:12px; color:#FF6B35; font-weight:800;">VILPOM</div>'
             '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
             'No Games With Odds Right Now</div>'
             '<div style="font-size:13px; color:#888; max-width:400px; margin:0 auto;">'
