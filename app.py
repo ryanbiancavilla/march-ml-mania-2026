@@ -622,14 +622,14 @@ def compute_season_stats(prefix):
 
     stats["WinPct"] = stats["Wins"] / stats["Games"]
     stats["Margin"] = stats["PPG"] - stats["OppPPG"]
-    stats["FGPct"] = (stats["FGM"] / stats["FGA"] * 100).round(1)
-    stats["FG3Pct"] = (stats["FGM3"] / stats["FGA3"] * 100).round(1)
-    stats["FTPct"] = (stats["FTM"] / stats["FTA"] * 100).round(1)
+    stats["FGPct"] = (stats["FGM"] / stats["FGA"].clip(lower=1) * 100).round(1)
+    stats["FG3Pct"] = (stats["FGM3"] / stats["FGA3"].clip(lower=1) * 100).round(1)
+    stats["FTPct"] = (stats["FTM"] / stats["FTA"].clip(lower=1) * 100).round(1)
     stats["RPG"] = stats["ORB"] + stats["DRB"]
-    stats["EffFGPct"] = ((stats["FGM"] + 0.5 * stats["FGM3"]) / stats["FGA"] * 100).round(1)
+    stats["EffFGPct"] = ((stats["FGM"] + 0.5 * stats["FGM3"]) / stats["FGA"].clip(lower=1) * 100).round(1)
 
-    stats["Poss"] = stats["FGA"] - stats["ORB"] + stats["TOPG"] + 0.475 * stats["FTA"]
-    stats["OppPoss"] = stats["OppFGA"] - stats["OppOR"] + stats["OppTO"] + 0.475 * stats["OppFTA"]
+    stats["Poss"] = (stats["FGA"] - stats["ORB"] + stats["TOPG"] + 0.475 * stats["FTA"]).clip(lower=1)
+    stats["OppPoss"] = (stats["OppFGA"] - stats["OppOR"] + stats["OppTO"] + 0.475 * stats["OppFTA"]).clip(lower=1)
     stats["OffEff"] = (stats["PPG"] / stats["Poss"] * 100).round(1)
     stats["DefEff"] = (stats["OppPPG"] / stats["OppPoss"] * 100).round(1)
     stats["NetEff"] = (stats["OffEff"] - stats["DefEff"]).round(1)
@@ -714,12 +714,12 @@ def project_team_props(stats, team, opp):
     # Adjust stats based on matchup — blend team avg with opponent allowed avg
     props = {
         "Points": round(project_team_points(stats, team, opp), 1),
-        "Total Rebounds": round((st.RPG + (st.RPG * (so.RPG / stats["RPG"].mean()))) / 2, 1),
-        "Assists": round((st.APG + (st.APG * (so.OppPPG / stats["OppPPG"].mean()))) / 2, 1),
+        "Total Rebounds": round((st.RPG + (st.RPG * (so.RPG / max(stats["RPG"].mean(), 1)))) / 2, 1),
+        "Assists": round((st.APG + (st.APG * (so.OppPPG / max(stats["OppPPG"].mean(), 1)))) / 2, 1),
         "3-Pointers Made": round(st.FGM3, 1),
-        "Steals": round((st.SPG + (st.SPG * (so.TOPG / stats["TOPG"].mean()))) / 2, 1),
+        "Steals": round((st.SPG + (st.SPG * (so.TOPG / max(stats["TOPG"].mean(), 0.1)))) / 2, 1),
         "Blocks": round(st.BPG, 1),
-        "Turnovers": round((st.TOPG + (st.TOPG * (so.SPG / stats["SPG"].mean()))) / 2, 1),
+        "Turnovers": round((st.TOPG + (st.TOPG * (so.SPG / max(stats["SPG"].mean(), 0.1)))) / 2, 1),
     }
     return props
 
@@ -729,8 +729,11 @@ def compute_betting_lines(stats, preds, t1, t2):
     p = get_pred(preds, t1, t2)
     spread = prob_to_spread(p)
     total = project_game_total(stats, t1, t2)
-    t1_pts = project_team_points(stats, t1, t2)
-    t2_pts = project_team_points(stats, t2, t1)
+    # Derive individual scores from total + spread so they're consistent:
+    # t1_pts - t2_pts == -spread (spread negative = t1 favored = t1 scores more)
+    # t1_pts + t2_pts == total
+    t1_pts = round((total - spread) / 2 * 2) / 2  # round to 0.5
+    t2_pts = round((total + spread) / 2 * 2) / 2
 
     return {
         "t1_prob": p,
