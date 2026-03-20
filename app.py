@@ -2831,16 +2831,48 @@ def page_picks(prefix, teams, seeds_df, preds):
         if live_games:
             st.markdown('<div class="vp-section" style="margin-top:8px;">LIVE NOW</div>', unsafe_allow_html=True)
             for g in live_games:
+                # Resolve teams to model IDs for prediction
+                home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
+                away_tid = _resolve_odds_team(g["away_team"], odds_map_lookup, name_to_tid_lookup)
+                pick_html = ""
+                if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
+                    t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
+                    pg = get_pred(preds, t1g, t2g)
+                    lines_g = compute_betting_lines(stats, preds, t1g, t2g)
+                    fav_g = t1g if pg >= 0.5 else t2g
+                    fav_prob_g = pg if fav_g == t1g else 1 - pg
+                    fav_name_g = tname(teams, fav_g)
+                    m_spread_g = lines_g["spread"]
+                    m_total_g = lines_g["total"]
+
+                    pick_html = (
+                        f'<div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap;">'
+                        f'<span style="font-size:11px; font-weight:600; color:#fbbf24;">'
+                        f'Pick: {fav_name_g} ({fav_prob_g*100:.0f}%)</span>'
+                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
+                        f'Spread: {m_spread_g:+.1f}</span>'
+                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
+                        f'Total: {m_total_g:.0f}</span>'
+                        f'</div>'
+                    )
+
+                broadcast = g.get("broadcast", "")
+                tv_html = f'<span style="font-size:10px; font-weight:700; color:#555; margin-right:8px;">{broadcast}</span>' if broadcast else ""
+
                 st.markdown(
-                    f'<div class="vp-card" style="border-left:3px solid #fbbf24; display:flex; '
-                    f'justify-content:space-between; align-items:center;">'
+                    f'<div class="vp-card" style="border-left:3px solid #fbbf24;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:600;">'
                     f'<span style="color:#aaa;">{g["away_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["away_score"]}</span>'
                     f'<span style="color:#444; margin:0 10px; font-size:12px;">@</span>'
                     f'<span style="color:#aaa;">{g["home_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["home_score"]}</span></div>'
+                    f'<div style="display:flex; align-items:center; gap:6px;">'
+                    f'{tv_html}'
                     f'<span class="vp-badge vp-badge-live">{g["status_detail"]}</span>'
+                    f'</div></div>'
+                    f'{pick_html}'
                     f'</div>', unsafe_allow_html=True)
 
         if final_games:
