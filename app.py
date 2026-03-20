@@ -1471,49 +1471,49 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 
     # ── Similar Opponents ──
     st.markdown("---")
-    st.subheader("Similar Opponents Analysis")
-    st.caption(
-        "We find the 5 teams most statistically similar to each opponent, "
-        "then check how the other team fared against those similar teams this season."
-    )
+    with st.expander("🔍 Similar Opponents Analysis", expanded=True):
+        st.caption(
+            "We find the 5 teams most statistically similar to each opponent, "
+            "then check how the other team fared against those similar teams this season."
+        )
 
-    for team_a, team_b in [(t1, t2), (t2, t1)]:
-        st.markdown(f"**How did {tname(teams, team_a)} do vs teams similar to {tname(teams, team_b)}?**")
+        for team_a, team_b in [(t1, t2), (t2, t1)]:
+            st.markdown(f"**How did {tname(teams, team_a)} do vs teams similar to {tname(teams, team_b)}?**")
 
-        similar = neighbors_map.get(team_b, [])
-        if not similar:
-            st.info(f"No KNN data available for {tname(teams, team_b)}")
-            continue
+            similar = neighbors_map.get(team_b, [])
+            if not similar:
+                st.info(f"No KNN data available for {tname(teams, team_b)}")
+                continue
 
-        sim_rows = []
-        total_w, total_g, total_margin = 0, 0, 0
-        for neighbor_id, dist in similar:
-            results = game_results.get((team_a, neighbor_id), [])
-            wins = sum(1 for w, _ in results if w == 1)
-            games = len(results)
-            avg_margin = round(sum(m for _, m in results) / games, 1) if games > 0 else 0
-            total_w += wins
-            total_g += games
-            total_margin += sum(m for _, m in results)
-            sim_rows.append({
-                "Similar Team": tname(teams, neighbor_id),
-                "Games": games,
-                "Record": f"{wins}-{games - wins}" if games > 0 else "Did not play",
-                "Avg Margin": f"{avg_margin:+.1f}" if games > 0 else "—",
-            })
+            sim_rows = []
+            total_w, total_g, total_margin = 0, 0, 0
+            for neighbor_id, dist in similar:
+                results = game_results.get((team_a, neighbor_id), [])
+                wins = sum(1 for w, _ in results if w == 1)
+                games = len(results)
+                avg_margin = round(sum(m for _, m in results) / games, 1) if games > 0 else 0
+                total_w += wins
+                total_g += games
+                total_margin += sum(m for _, m in results)
+                sim_rows.append({
+                    "Similar Team": tname(teams, neighbor_id),
+                    "Games": games,
+                    "Record": f"{wins}-{games - wins}" if games > 0 else "Did not play",
+                    "Avg Margin": f"{avg_margin:+.1f}" if games > 0 else "—",
+                })
 
-        sim_df = pd.DataFrame(sim_rows)
-        _styled_df(sim_df)
+            sim_df = pd.DataFrame(sim_rows)
+            _styled_df(sim_df)
 
-        if total_g > 0:
-            avg_m = round(total_margin / total_g, 1)
-            st.markdown(
-                f"**Overall vs similar teams:** {total_w}-{total_g - total_w} "
-                f"(Avg margin: {avg_m:+.1f})"
-            )
-        else:
-            st.markdown("*No games played against similar teams this season.*")
-        st.markdown("")
+            if total_g > 0:
+                avg_m = round(total_margin / total_g, 1)
+                st.markdown(
+                    f"**Overall vs similar teams:** {total_w}-{total_g - total_w} "
+                    f"(Avg margin: {avg_m:+.1f})"
+                )
+            else:
+                st.markdown("*No games played against similar teams this season.*")
+            st.markdown("")
 
     # ── Head-to-Head History ──
     st.markdown("---")
