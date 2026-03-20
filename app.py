@@ -34,8 +34,8 @@ def check_password():
     st.markdown(
         "<div style='text-align:center; margin-top:100px;'>"
         "<div style='font-size:64px; font-weight:900; letter-spacing:-3px; margin-bottom:6px;'>"
-        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></div>"
-        "<div style='width:50px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
+        "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></div>"
+        "<div style='width:50px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
         "margin:12px auto;'></div>"
         "<div style='color:#555; font-size:10px; letter-spacing:4px; font-weight:700;'>"
         "NCAA ANALYTICS & BETTING INTELLIGENCE</div>"
@@ -56,8 +56,8 @@ def check_password():
             transition: all 0.25s ease !important;
         }
         input[type="password"]:focus {
-            border-color: rgba(255, 107, 53, 0.5) !important;
-            box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.3), 0 4px 16px rgba(255, 107, 53, 0.1) !important;
+            border-color: rgba(65, 182, 230, 0.5) !important;
+            box-shadow: 0 0 0 1px rgba(65, 182, 230, 0.3), 0 4px 16px rgba(65, 182, 230, 0.1) !important;
         }
         </style>""",
         unsafe_allow_html=True,
@@ -127,7 +127,7 @@ st.markdown("""
     /* ── Sidebar ── */
     [data-testid="stSidebar"] {
         background: #0a0c10;
-        border-right: 1px solid #1a1d24;
+        border-right: 1px solid #2a2a2a;
     }
     [data-testid="stSidebar"] .stRadio label { font-weight: 500; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
@@ -140,25 +140,25 @@ st.markdown("""
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
-        background: rgba(255, 107, 53, 0.08) !important;
-        border-color: rgba(255, 107, 53, 0.2) !important;
+        background: rgba(65, 182, 230, 0.08) !important;
+        border-color: rgba(65, 182, 230, 0.2) !important;
     }
 
     /* ── Tabs ── */
-    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1a1d24; }
+    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #2a2a2a; }
     .stTabs [data-baseweb="tab"] { padding: 8px 20px; font-weight: 600; }
 
     /* ── Card ── */
     .vp-card {
-        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        background: #18191f; border: 1px solid #2a2a2a; border-radius: 8px;
         padding: 14px 18px; margin: 6px 0;
     }
 
     /* ── Section headers ── */
     .vp-section {
         font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-        color: #FF6B35; text-transform: uppercase; margin-bottom: 10px;
-        padding-bottom: 6px; border-bottom: 1px solid #1e2028;
+        color: #41B6E6; text-transform: uppercase; margin-bottom: 10px;
+        padding-bottom: 6px; border-bottom: 1px solid #2a2a2a;
     }
 
     /* ── Page header ── */
@@ -173,7 +173,7 @@ st.markdown("""
     [data-testid="stMarkdownContainer"] h3 {
         font-size: 14px !important; font-weight: 700 !important;
         color: #e2e8f0 !important;
-        border-bottom: 1px solid #1a1d24; padding-bottom: 8px; margin-top: 8px;
+        border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; margin-top: 8px;
     }
     [data-testid="stMarkdownContainer"] h2 {
         font-size: 17px !important; font-weight: 800 !important; color: #FAFAFA !important;
@@ -191,46 +191,46 @@ st.markdown("""
     }
 
     /* ── Dividers ── */
-    hr { border-color: #1a1d24 !important; margin: 16px 0 !important; }
+    hr { border-color: #2a2a2a !important; margin: 16px 0 !important; }
 
     /* ── Radio ── */
     [data-testid="stRadio"] > div > label { font-size: 13px !important; }
 
     /* ── Buttons ── */
     .stButton > button {
-        background: #FF6B35 !important; color: #fff !important; font-weight: 700 !important;
+        background: #41B6E6 !important; color: #fff !important; font-weight: 700 !important;
         border: none !important; border-radius: 6px !important;
         padding: 8px 24px !important;
     }
-    .stButton > button:hover { background: #e55a2b !important; }
+    .stButton > button:hover { background: #2d95c4 !important; }
 
     /* ── Spinner ── */
-    .stSpinner > div { border-top-color: #FF6B35 !important; }
+    .stSpinner > div { border-top-color: #41B6E6 !important; }
 
     /* ── Expander ── */
     [data-testid="stExpander"] {
-        border: 1px solid #1e2028 !important; border-radius: 8px !important;
-        background: #14161c;
+        border: 1px solid #2a2a2a !important; border-radius: 8px !important;
+        background: #18191f;
     }
     [data-testid="stExpander"] summary { font-weight: 600 !important; font-size: 13px !important; }
 
     /* ── Table ── */
     .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
     .vp-table thead th {
-        background: #0c0e14; color: #777; font-size: 9px; font-weight: 700;
+        background: #131418; color: #777; font-size: 9px; font-weight: 700;
         letter-spacing: 0.8px; text-transform: uppercase; padding: 7px 8px;
-        border-bottom: 2px solid #FF6B35; position: sticky; top: 0; z-index: 1;
+        border-bottom: 2px solid #41B6E6; position: sticky; top: 0; z-index: 1;
         text-align: left; white-space: nowrap;
     }
     .vp-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
     .vp-table tbody td {
-        padding: 5px 8px; border-bottom: 1px solid #1a1d24;
+        padding: 5px 8px; border-bottom: 1px solid #2a2a2a;
         font-size: 12px; font-variant-numeric: tabular-nums;
     }
-    .vp-table .rank-cell { font-weight: 700; color: #FF6B35; font-size: 12px; width: 28px; text-align: center; }
+    .vp-table .rank-cell { font-weight: 700; color: #41B6E6; font-size: 12px; width: 28px; text-align: center; }
     .vp-table .team-cell { font-weight: 600; color: #FAFAFA; white-space: nowrap; }
     .vp-table .seed-badge {
-        display: inline-block; background: #FF6B35; color: #fff; font-weight: 700;
+        display: inline-block; background: #41B6E6; color: #fff; font-weight: 700;
         font-size: 10px; padding: 1px 6px; border-radius: 3px; min-width: 18px; text-align: center;
     }
     .vp-table .stat-good { color: #4ade80; }
@@ -238,7 +238,7 @@ st.markdown("""
     .vp-table .stat-neutral { color: #888; }
 
     /* ── Tier badges ── */
-    .tier-elite { color: #fff; background: #FF6B35; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-elite { color: #fff; background: #41B6E6; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
     .tier-strong { color: #000; background: #4ade80; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
     .tier-solid { color: #000; background: #60a5fa; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
     .tier-avg { color: #000; background: #666; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
@@ -297,13 +297,13 @@ st.markdown("""
     .ff-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; min-height: 150px; }
     .champ-banner {
         text-align: center; font-size: 22px; font-weight: 800;
-        padding: 16px; border: 1px solid #FF6B35; border-radius: 8px;
-        background: rgba(255, 107, 53, 0.06); color: #FF6B35; margin: 8px 0;
+        padding: 16px; border: 1px solid #41B6E6; border-radius: 8px;
+        background: rgba(65, 182, 230, 0.06); color: #41B6E6; margin: 8px 0;
     }
 
     /* ── Metric cards ── */
     .vp-metric {
-        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        background: #18191f; border: 1px solid #2a2a2a; border-radius: 8px;
         padding: 12px; text-align: center;
     }
     .vp-metric .label { color: #666; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
@@ -315,31 +315,31 @@ st.markdown("""
 
     /* ── Bet cards ── */
     .vp-bet-card {
-        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        background: #18191f; border: 1px solid #2a2a2a; border-radius: 8px;
         padding: 14px 18px; margin: 8px 0;
     }
     .vp-bet-type {
-        background: #0e1117; border-radius: 6px; padding: 10px 14px;
-        flex: 1; min-width: 160px; border: 1px solid #1a1d24;
+        background: #131418; border-radius: 6px; padding: 10px 14px;
+        flex: 1; min-width: 160px; border: 1px solid #2a2a2a;
     }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #2a2d36; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
     /* ── Progress bar ── */
-    .stProgress > div > div { background: #1a1d24 !important; border-radius: 4px !important; }
-    .stProgress > div > div > div { background: #FF6B35 !important; border-radius: 4px !important; }
+    .stProgress > div > div { background: #2a2a2a !important; border-radius: 4px !important; }
+    .stProgress > div > div > div { background: #41B6E6 !important; border-radius: 4px !important; }
 
     /* ── Score Bug (TV Broadcast Style) ── */
     .score-bug {
-        background: #14161c; border: 1px solid #1e2028; border-radius: 4px;
+        background: #18191f; border: 1px solid #2a2a2a; border-radius: 4px;
         overflow: hidden; margin: 4px 0;
     }
     .score-bug .team-row {
         display: flex; align-items: center; padding: 6px 10px;
-        border-bottom: 1px solid #1e2028; gap: 6px;
+        border-bottom: 1px solid #2a2a2a; gap: 6px;
     }
     .score-bug .team-row:last-child { border-bottom: none; }
     .score-bug .team-row .color-bar {
@@ -356,8 +356,8 @@ st.markdown("""
     .score-bug .score.loser { color: #555; }
     .score-bug .game-info {
         display: flex; align-items: center; gap: 8px; padding: 4px 10px;
-        background: #0e1117; font-size: 10px; color: #666;
-        border-top: 1px solid #1e2028;
+        background: #131418; font-size: 10px; color: #666;
+        border-top: 1px solid #2a2a2a;
     }
 
     /* ── Mobile ── */
@@ -392,7 +392,7 @@ st.markdown("""
     .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
 
     /* ── Divider ── */
-    .vp-divider { height: 1px; margin: 16px 0; background: #1e2028; }
+    .vp-divider { height: 1px; margin: 16px 0; background: #2a2a2a; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -407,7 +407,7 @@ def _styled_table(rows, columns=None, max_height=None):
     columns = [c for c in columns if not c.startswith("_")]
     h = max_height or 0
     wrapper_style = f'max-height:{h}px; overflow-y:auto; ' if h else ''
-    html = f'<div style="{wrapper_style}border-radius:10px; border:1px solid #2a2d36;">'
+    html = f'<div style="{wrapper_style}border-radius:10px; border:1px solid #333;">'
     html += '<table class="vp-table"><thead><tr>'
     for c in columns:
         html += f'<th>{c.upper()}</th>'
@@ -1370,7 +1370,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
     max_elo = max((r["Elo"] for r in rows), default=1700)
 
     # Build premium HTML table
-    html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #2a2d36;">'
+    html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #333;">'
     html += '<table class="vp-table"><thead><tr>'
     html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th><th>SEED</th>'
     html += '<th>RECORD</th><th>TIER</th><th>ELO</th>'
@@ -1472,8 +1472,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     n1, n2 = tname(teams, t1), tname(teams, t2)
     s1_seed = team_seeds.get(t1)
     s2_seed = team_seeds.get(t2)
-    s1_txt = f'<span style="color:#FF6B35; font-size:13px; font-weight:700;">({s1_seed})</span> ' if s1_seed else ''
-    s2_txt = f' <span style="color:#FF6B35; font-size:13px; font-weight:700;">({s2_seed})</span>' if s2_seed else ''
+    s1_txt = f'<span style="color:#41B6E6; font-size:13px; font-weight:700;">({s1_seed})</span> ' if s1_seed else ''
+    s2_txt = f' <span style="color:#41B6E6; font-size:13px; font-weight:700;">({s2_seed})</span>' if s2_seed else ''
     color1 = "#4ade80" if p >= 0.5 else "#f87171"
     color2 = "#4ade80" if (1 - p) >= 0.5 else "#f87171"
     fav_glow = f"0 0 30px rgba({','.join(str(int(color1[i:i+2], 16)) for i in (1,3,5))}, 0.15)"
@@ -1529,8 +1529,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         ml1_color = "#4ade80" if p >= 0.5 else "#f87171"
         ml2_color = "#4ade80" if p < 0.5 else "#f87171"
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2d34;">'
+            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
+            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
             f'<span>{n1}</span><span style="font-weight:700; color:{ml1_color};">{lines["t1_ml"]}</span></div>'
             f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
             f'<span>{n2}</span><span style="font-weight:700; color:{ml2_color};">{lines["t2_ml"]}</span></div>'
@@ -1547,8 +1547,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             s1_spread = f"+{spread_display:.1f}"
             s2_spread = f"{-spread_display:.1f}"
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2d34;">'
+            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
+            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
             f'<span>{n1}</span><span style="font-weight:700; color:#60a5fa;">{s1_spread}</span></div>'
             f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
             f'<span>{n2}</span><span style="font-weight:700; color:#60a5fa;">{s2_spread}</span></div>'
@@ -1559,8 +1559,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     with lc3:
         st.markdown("**Game Total (O/U)**")
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2d34;">'
+            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
+            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
             f'<span>Over</span><span style="font-weight:700; color:#fbbf24;">{lines["total"]:.1f}</span></div>'
             f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
             f'<span>Under</span><span style="font-weight:700; color:#fbbf24;">{lines["total"]:.1f}</span></div>'
@@ -1590,12 +1590,12 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 for prop_name, val in props.items():
                     prop_rows += (
                         f'<div style="display:flex; justify-content:space-between; '
-                        f'padding:5px 0; border-bottom:1px solid #2a2d34;">'
+                        f'padding:5px 0; border-bottom:1px solid #333;">'
                         f'<span style="color:#aaa;">{prop_name}</span>'
                         f'<span style="font-weight:600; color:#e2e8f0;">{val}</span></div>'
                     )
                 st.markdown(
-                    f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:12px;">'
+                    f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px;">'
                     f'<div style="font-weight:700; margin-bottom:8px; color:#60a5fa;">{_team_logo_img(tid, espn_map, size=16)}{team_name}</div>'
                     f'{prop_rows}</div>',
                     unsafe_allow_html=True,
@@ -1680,7 +1680,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 f'<tr>'
                 f'<td style="text-align:right; padding:6px 14px; font-variant-numeric:tabular-nums;" '
                 f'class="{c1_cls}"><span style="font-weight:600;">{v1}</span>{dot1}</td>'
-                f'<td style="text-align:center; padding:6px 14px; color:#FF6B35; font-weight:700; '
+                f'<td style="text-align:center; padding:6px 14px; color:#41B6E6; font-weight:700; '
                 f'font-size:11px; letter-spacing:0.5px; text-transform:uppercase;">{label}</td>'
                 f'<td style="text-align:left; padding:6px 14px; font-variant-numeric:tabular-nums;" '
                 f'class="{c2_cls}">{dot2}<span style="font-weight:600;">{v2}</span></td>'
@@ -1688,11 +1688,11 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             )
 
         st.markdown(
-            f'<div style="border-radius:10px; border:1px solid #2a2d36; overflow:hidden; max-width:560px; margin:auto;">'
+            f'<div style="border-radius:10px; border:1px solid #333; overflow:hidden; max-width:560px; margin:auto;">'
             f'<table class="vp-table" style="margin:0;">'
             f'<thead><tr>'
             f'<th style="text-align:right; width:40%;">{_team_logo_img(t1, espn_map, size=18)}{tname(teams, t1)}</th>'
-            f'<th style="text-align:center; width:20%; color:#FF6B35;">STAT</th>'
+            f'<th style="text-align:center; width:20%; color:#41B6E6;">STAT</th>'
             f'<th style="text-align:left; width:40%;">{_team_logo_img(t2, espn_map, size=18)}{tname(teams, t2)}</th>'
             f'</tr></thead><tbody>'
             f'{rows_html}</tbody></table></div>',
@@ -1715,7 +1715,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                                 else "No tournament games")
                     st.markdown(
                         f'<div class="vp-card">'
-                        f'<div style="font-weight:700; color:#FF6B35; font-size:11px; letter-spacing:1px; '
+                        f'<div style="font-weight:700; color:#41B6E6; font-size:11px; letter-spacing:1px; '
                         f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
                         f'<div style="font-size:18px; font-weight:700; margin-bottom:10px;">{info["name"]}</div>'
                         f'<div style="display:flex; gap:20px;">'
@@ -1729,7 +1729,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 else:
                     st.markdown(
                         f'<div class="vp-card">'
-                        f'<div style="font-weight:700; color:#FF6B35; font-size:11px; letter-spacing:1px; '
+                        f'<div style="font-weight:700; color:#41B6E6; font-size:11px; letter-spacing:1px; '
                         f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
                         f'<div style="color:#666;">Coach data not available</div>'
                         f'</div>',
@@ -1948,11 +1948,11 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     # Top 20 futures board styled like a sportsbook
     top_futures = futures_df.head(20)
     massey_hdr = '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:48px; text-align:right;">MASSEY</span>' if has_massey else ''
-    board_html = '<div style="max-width:900px; margin:auto; border-radius:10px; border:1px solid #2a2d36; overflow:hidden;">'
+    board_html = '<div style="max-width:900px; margin:auto; border-radius:10px; border:1px solid #333; overflow:hidden;">'
     # Header row
     board_html += (
         '<div style="display:flex; justify-content:space-between; align-items:center; '
-        'padding:10px 16px; background:#12141a; border-bottom:2px solid #FF6B35;">'
+        'padding:10px 16px; background:#18191f; border-bottom:2px solid #41B6E6;">'
         '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px;">TEAM</span>'
         '<div style="display:flex; gap:16px;">'
         '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:36px; text-align:right;">ELO</span>'
@@ -1966,8 +1966,8 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     for idx, (_, fr) in enumerate(top_futures.iterrows()):
         rank = idx + 1
         seed_txt = f'<span class="seed-badge" style="margin-right:8px;">{int(fr["Seed"])}</span>'
-        odds_color = "#FF6B35" if fr["_cp"] >= 0.10 else "#4ade80" if fr["_cp"] >= 0.03 else "#e2e8f0"
-        bg = 'rgba(255,107,53,0.04)' if rank <= 4 else '#14161c'
+        odds_color = "#41B6E6" if fr["_cp"] >= 0.10 else "#4ade80" if fr["_cp"] >= 0.03 else "#e2e8f0"
+        bg = 'rgba(255,107,53,0.04)' if rank <= 4 else '#18191f'
         elo_val = fr.get("_elo", 1500)
         elo_color = "#4ade80" if elo_val >= 1650 else "#e2e8f0" if elo_val >= 1550 else "#888"
         e8_pct = fr.get("_e8", 0) * 100
@@ -1982,7 +1982,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
                 massey_cell = '<span style="color:#444; font-size:13px; min-width:48px; text-align:right;">—</span>'
         board_html += (
             f'<div style="display:flex; justify-content:space-between; align-items:center; '
-            f'padding:10px 16px; border-bottom:1px solid #1e2028; background:{bg}; '
+            f'padding:10px 16px; border-bottom:1px solid #2a2a2a; background:{bg}; '
             f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(255,107,53,0.08)\'" '
             f'onmouseout="this.style.background=\'{bg}\'">'
             f'<div style="display:flex; align-items:center; gap:8px;">'
@@ -2157,7 +2157,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                     border_color = "#f87171"
                     elim_txt = '<div style="color:#f87171; font-size:11px; font-weight:700; margin-top:4px; letter-spacing:1px;">ELIMINATED</div>'
                 else:
-                    border_color = "#FF6B35"
+                    border_color = "#41B6E6"
                     elim_txt = ""
                 st.markdown(
                     f'<div class="vp-card" style="border-top:3px solid {border_color}; text-align:center; padding:20px;">'
@@ -2190,7 +2190,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
             '<span style="display:inline-block; width:10px; height:10px; background:#f87171; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
             'Missed pick</span>'
             '<span style="font-size:11px; color:#888;">'
-            '<span style="display:inline-block; width:10px; height:10px; background:#1e2028; border:1px solid #2a2d36; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
+            '<span style="display:inline-block; width:10px; height:10px; background:#2a2a2a; border:1px solid #333; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
             'Prediction (not yet played)</span>'
             '</div>',
             unsafe_allow_html=True,
@@ -3109,7 +3109,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             """Return a small seed number prefix like '1 ' for TV-style display."""
             s = team_seeds.get(tid)
             if s:
-                return f'<span style="color:#FF6B35; font-weight:700; font-size:11px; margin-right:3px;">{int(s)}</span>'
+                return f'<span style="color:#41B6E6; font-weight:700; font-size:11px; margin-right:3px;">{int(s)}</span>'
             return ""
 
         if live_games:
@@ -3197,7 +3197,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 winner_tid_g = home_tid if home_score > away_score else away_tid
                 border_c = _team_color(winner_tid_g) if winner_tid_g else "rgba(74, 222, 128, 0.3)"
                 grid_html += (
-                    f'<div style="background:#14161c; border:1px solid #1e2028; border-radius:6px; '
+                    f'<div style="background:#18191f; border:1px solid #2a2a2a; border-radius:6px; '
                     f'padding:8px 12px; border-left:3px solid {border_c};">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-size:12px;">'
@@ -3368,7 +3368,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-size:16px; margin-bottom:12px; color:#FF6B35; font-weight:800;">VILPOM</div>'
+            '<div style="font-size:16px; margin-bottom:12px; color:#41B6E6; font-weight:800;">VILPOM</div>'
             '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
             'No Games With Odds Right Now</div>'
             '<div style="font-size:13px; color:#888; max-width:400px; margin:0 auto;">'
@@ -3746,7 +3746,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 
             bet_types_html += (
                 f'<div class="vp-bet-type">'
-                f'<div style="font-size:9px; color:#FF6B35; font-weight:700; letter-spacing:0.8px; margin-bottom:4px;">{btype}</div>'
+                f'<div style="font-size:9px; color:#41B6E6; font-weight:700; letter-spacing:0.8px; margin-bottom:4px;">{btype}</div>'
                 f'<div style="font-size:14px; font-weight:700; color:{col}; margin-bottom:6px;">{data["pick"]}</div>'
                 f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Model: <span style="color:#ccc; font-weight:600;">{data["model"]}</span></div>'
                 f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Vegas: <span style="color:#ccc; font-weight:600;">{data["vegas"]}</span></div>'
@@ -3787,9 +3787,9 @@ def page_about():
     st.markdown(
         "<div style='text-align:center; margin:16px 0 6px;'>"
         "<span style='font-size:36px; font-weight:900; letter-spacing:-2px;'>"
-        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
+        "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
         "</div>"
-        "<div style='width:40px; height:2px; background:#FF6B35; "
+        "<div style='width:40px; height:2px; background:#41B6E6; "
         "margin:6px auto 10px;'></div>"
         "<div style='text-align:center; color:#555; font-size:10px; letter-spacing:3px; font-weight:700; margin-bottom:16px;'>"
         "NCAA TOURNAMENT ANALYTICS</div>",
@@ -3819,9 +3819,9 @@ def page_about():
         )
     with p3:
         st.markdown(
-            '<div class="vp-metric" style="border-top:3px solid #FF6B35;">'
+            '<div class="vp-metric" style="border-top:3px solid #41B6E6;">'
             '<div class="label">ENSEMBLE</div>'
-            '<div class="value" style="color:#FF6B35;">3</div>'
+            '<div class="value" style="color:#41B6E6;">3</div>'
             '<div class="sub">XGBoost + LightGBM + CatBoost</div></div>',
             unsafe_allow_html=True,
         )
@@ -3846,7 +3846,7 @@ def page_about():
     with fa1:
         st.markdown(
             '<div class="vp-card">'
-            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Elo Ratings</div>'
+            '<div style="font-weight:700; color:#41B6E6; margin-bottom:6px;">Elo Ratings</div>'
             '<div style="color:#aaa; font-size:12px;">Custom Elo system with margin-of-victory scaling, '
             'home-court adjustment, and season decay. Tracks every game back to 1985.</div></div>',
             unsafe_allow_html=True,
@@ -3898,7 +3898,7 @@ def page_about():
         st.markdown(
             '<div class="vp-card" style="text-align:center;">'
             '<div style="font-size:28px; margin-bottom:8px;">1</div>'
-            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Train</div>'
+            '<div style="font-weight:700; color:#41B6E6; margin-bottom:6px;">Train</div>'
             '<div style="color:#aaa; font-size:12px;">Three models independently learn from 20+ years of '
             'tournament results using Optuna-tuned hyperparameters and temporal cross-validation.</div></div>',
             unsafe_allow_html=True,
@@ -3941,7 +3941,7 @@ def page_about():
         '<div style="color:#888; font-size:11px;">Vegas lines from major books</div></div>'
         '<div style="color:#444; font-size:18px;">&#8594;</div>'
         '<div style="text-align:center; min-width:140px;">'
-        '<div style="color:#FF6B35; font-weight:700; font-size:13px;">Vilpom</div>'
+        '<div style="color:#41B6E6; font-weight:700; font-size:13px;">Vilpom</div>'
         '<div style="color:#888; font-size:11px;">Model vs Vegas edge detection</div></div>'
         '</div></div>',
         unsafe_allow_html=True,
@@ -3968,11 +3968,11 @@ conferences = load_conferences()
 st.sidebar.markdown(
     "<div style='text-align:center; padding:8px 0 4px;'>"
     "<span style='font-size:32px; font-weight:900; letter-spacing:-1.5px;'>"
-    "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
+    "<span style='color:#41B6E6;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
     "</div>"
     "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
     "ANALYTICS & INTELLIGENCE</div>"
-    "<div style='width:40px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
+    "<div style='width:40px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
     "margin:0 auto 4px; border-radius:2px;'></div>",
     unsafe_allow_html=True,
 )
@@ -3996,7 +3996,7 @@ st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
     "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
     "VILPOM &copy; 2026 &middot; v2.0</div>"
-    "<div style='color:#2a2d36; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
+    "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
     "For entertainment only</div>"
     "</div>",
     unsafe_allow_html=True,
