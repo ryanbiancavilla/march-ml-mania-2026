@@ -129,7 +129,18 @@ st.markdown("""
 
     /* ── Foundation ── */
     .block-container { padding-top: 0.5rem; max-width: 1200px; }
-    html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    html, body, [class*="st-"], [data-testid],
+    input, button, select, textarea,
+    .stTabs [data-baseweb="tab"],
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] span,
+    [data-testid="stMarkdownContainer"] div,
+    [data-testid="stMarkdownContainer"] td,
+    [data-testid="stMarkdownContainer"] th,
+    [data-testid="stMetricValue"], [data-testid="stMetricLabel"],
+    [data-testid="stExpander"] summary {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
     /* ── Sidebar (NCAA Navy) ── */
     [data-testid="stSidebar"] {
