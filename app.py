@@ -2816,24 +2816,24 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'{pick_html}'
                     f'</div>', unsafe_allow_html=True)
 
-    # ── Build ESPN broadcast + score lookup ──
-    espn_broadcast = {}
-    espn_scores = {}  # keyed by lowercased team fragments for flexible matching
+    # ── Build ESPN broadcast + score lookup keyed by resolved team ID pairs ──
+    espn_by_ids = {}  # keyed by frozenset({tid1, tid2}) for reliable matching
     if espn_data and espn_data.get("games"):
         for g in espn_data["games"]:
-            key = g.get("name", "").lower()
-            espn_broadcast[key] = {
-                "broadcast": g.get("broadcast", ""),
-                "start_time": g.get("start_time", ""),
-            }
-            # Store scores for grading picks on final games
-            espn_scores[key] = {
-                "status": g.get("status", ""),
-                "home_team": g.get("home_team", ""),
-                "away_team": g.get("away_team", ""),
-                "home_score": int(g.get("home_score", 0)),
-                "away_score": int(g.get("away_score", 0)),
-            }
+            htid = _resolve_odds_team(g.get("home_team", ""), odds_map_lookup, name_to_tid_lookup)
+            atid = _resolve_odds_team(g.get("away_team", ""), odds_map_lookup, name_to_tid_lookup)
+            if htid and atid:
+                pair = frozenset({htid, atid})
+                espn_by_ids[pair] = {
+                    "broadcast": g.get("broadcast", ""),
+                    "start_time": g.get("start_time", ""),
+                    "status": g.get("status", ""),
+                    "home_team": g.get("home_team", ""),
+                    "away_team": g.get("away_team", ""),
+                    "home_score": int(g.get("home_score", 0)),
+                    "away_score": int(g.get("away_score", 0)),
+                    "home_tid": htid,
+                }
 
     # ── Model Picks vs Vegas ──
     st.markdown("---")
@@ -3007,67 +3007,29 @@ def page_picks(prefix, teams, seeds_df, preds):
             except Exception:
                 game_time_display = ""
 
-        # Try to find broadcast + final score from ESPN data
+        # Try to find broadcast + final score from ESPN data via resolved team IDs
         game_final = False
-        final_home_score = 0
-        final_away_score = 0
-        final_home_team = ""
-        for ekey, edata in espn_broadcast.items():
-            if (n1.lower() in ekey and n2.lower() in ekey):
-                broadcast_display = edata.get("broadcast", "")
-                if not game_time_display and edata.get("start_time"):
-                    try:
-                        ct = datetime.fromisoformat(edata["start_time"].replace("Z", "+00:00"))
-                        et = ct - timedelta(hours=4)
-                        game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
-                    except Exception:
-                        pass
-                break
-
-        # Check if game is final for grading
-        for ekey, sc in espn_scores.items():
-            if n1.lower() in ekey and n2.lower() in ekey:
-                if sc["status"] == "STATUS_FINAL":
-                    game_final = True
-                    final_home_score = sc["home_score"]
-                    final_away_score = sc["away_score"]
-                    final_home_team = sc["home_team"]
-                break
-
-        # Determine actual scores mapped to t1/t2
         t1_final_score = 0
         t2_final_score = 0
-        if game_final:
-            # Figure out which ESPN team maps to t1 vs t2
-            # Try multiple matching strategies; skip grading if uncertain
-            home_name = pick.get("home", "")
-            mapped = False
-
-            # Strategy 1: Match via odds API home/away names stored in pick
-            if home_name:
-                if n1.lower() in home_name.lower():
-                    t1_final_score = final_home_score
-                    t2_final_score = final_away_score
-                    mapped = True
-                elif n2.lower() in home_name.lower():
-                    t1_final_score = final_away_score
-                    t2_final_score = final_home_score
-                    mapped = True
-
-            # Strategy 2: Match via ESPN home_team name
-            if not mapped and final_home_team:
-                if n1.lower() in final_home_team.lower():
-                    t1_final_score = final_home_score
-                    t2_final_score = final_away_score
-                    mapped = True
-                elif n2.lower() in final_home_team.lower():
-                    t1_final_score = final_away_score
-                    t2_final_score = final_home_score
-                    mapped = True
-
-            # If we couldn't confidently map, don't grade this game
-            if not mapped:
-                game_final = False
+        espn_match = espn_by_ids.get(frozenset({t1, t2}))
+        if espn_match:
+            broadcast_display = espn_match.get("broadcast", "")
+            if not game_time_display and espn_match.get("start_time"):
+                try:
+                    ct = datetime.fromisoformat(espn_match["start_time"].replace("Z", "+00:00"))
+                    et = ct - timedelta(hours=4)
+                    game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
+                except Exception:
+                    pass
+            if espn_match["status"] == "STATUS_FINAL":
+                game_final = True
+                # Map scores to t1/t2 using resolved home_tid
+                if espn_match["home_tid"] == t1:
+                    t1_final_score = espn_match["home_score"]
+                    t2_final_score = espn_match["away_score"]
+                else:
+                    t1_final_score = espn_match["away_score"]
+                    t2_final_score = espn_match["home_score"]
 
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",
@@ -3136,9 +3098,11 @@ def page_picks(prefix, teams, seeds_df, preds):
             spread_label, spread_color = _edge_label(spread_score)
 
             if m_spread < v_spread:
-                pick_text = f"{fav_name} {v_spread:+.1f}"
+                # Model says t1 is better than Vegas → take t1 side
+                pick_text = f"{n1} {v_spread:+.1f}"
             else:
-                pick_text = f"{dog_name} {-v_spread:+.1f}"
+                # Model says t2 is better than Vegas → take t2 side
+                pick_text = f"{n2} {-v_spread:+.1f}"
 
             card["spread"] = {
                 "pick": pick_text,
