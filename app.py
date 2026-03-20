@@ -1489,23 +1489,29 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     color2 = "#4ade80" if (1 - p) >= 0.5 else "#f87171"
     fav_glow = f"0 0 30px rgba({','.join(str(int(color1[i:i+2], 16)) for i in (1,3,5))}, 0.15)"
 
+    t1_prob_winning = p >= 0.5
+    t2_prob_winning = (1 - p) >= 0.5
+    t1_prob_name_style = 'color:#FAFAFA; font-weight:700;' if t1_prob_winning else 'color:#888;'
+    t2_prob_name_style = 'color:#FAFAFA; font-weight:700;' if t2_prob_winning else 'color:#888;'
+    t1_bar_color = _team_color(t1) if t1_prob_winning else '#333'
+    t2_bar_color = _team_color(t2) if t2_prob_winning else '#333'
     st.markdown(
-        f'<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin:20px 0;">'
-        # Team 1
-        f'<div class="vp-metric" style="flex:1; border-top:3px solid {_team_color(t1)};">'
-        f'<div class="big-prob" style="color:{color1}; margin:4px 0;">{p*100:.1f}%</div>'
-        f'<div style="text-align:center; font-size:18px; font-weight:700;">{s1_txt}{_team_logo_img(t1, espn_map, size=22)}{n1}</div>'
+        f'<div style="max-width:480px; margin:20px auto;">'
+        f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">WIN PROBABILITY</div>'
+        f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+        f'<div style="display:flex; align-items:center; padding:10px 14px; border-bottom:1px solid #2a2a2a;">'
+        f'<div style="width:4px; height:32px; border-radius:1px; background:{t1_bar_color}; margin-right:8px;"></div>'
+        f'{s1_txt}{_team_logo_img(t1, espn_map, size=22)}'
+        f'<span style="{t1_prob_name_style} font-size:18px; flex:1;">{n1}</span>'
+        f'<span class="big-prob" style="color:{color1}; font-size:28px; font-weight:900; min-width:70px; text-align:right;">{p*100:.1f}%</span>'
         f'</div>'
-        # VS
-        f'<div style="text-align:center; padding:0 8px;">'
-        f'<div style="font-size:12px; color:#444; font-weight:700; letter-spacing:2px;">VS</div>'
+        f'<div style="display:flex; align-items:center; padding:10px 14px;">'
+        f'<div style="width:4px; height:32px; border-radius:1px; background:{t2_bar_color}; margin-right:8px;"></div>'
+        f'{s2_txt}{_team_logo_img(t2, espn_map, size=22)}'
+        f'<span style="{t2_prob_name_style} font-size:18px; flex:1;">{n2}</span>'
+        f'<span class="big-prob" style="color:{color2}; font-size:28px; font-weight:900; min-width:70px; text-align:right;">{(1-p)*100:.1f}%</span>'
         f'</div>'
-        # Team 2
-        f'<div class="vp-metric" style="flex:1; border-top:3px solid {_team_color(t2)};">'
-        f'<div class="big-prob" style="color:{color2}; margin:4px 0;">{(1-p)*100:.1f}%</div>'
-        f'<div style="text-align:center; font-size:18px; font-weight:700;">{_team_logo_img(t2, espn_map, size=22)}{n2}{s2_txt}</div>'
-        f'</div>'
-        f'</div>',
+        f'</div></div>',
         unsafe_allow_html=True,
     )
 
@@ -1777,8 +1783,11 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                                 else "No tournament games")
                     st.markdown(
                         f'<div class="vp-card">'
-                        f'<div style="font-weight:700; color:#41B6E6; font-size:11px; letter-spacing:1px; '
-                        f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
+                        f'<div style="display:flex; align-items:center; margin-bottom:8px;">'
+                        f'<div style="width:3px; height:18px; border-radius:1px; background:{_team_color(tid)}; margin-right:6px;"></div>'
+                        f'{_team_logo_img(tid, espn_map, size=16)}'
+                        f'<span style="font-weight:700; color:{_team_color(tid)}; font-size:11px; letter-spacing:1px; '
+                        f'text-transform:uppercase;">{tname(teams, tid)}</span></div>'
                         f'<div style="font-size:18px; font-weight:700; margin-bottom:10px;">{info["name"]}</div>'
                         f'<div style="display:flex; gap:20px;">'
                         f'<div><div style="color:#888; font-size:10px; letter-spacing:0.5px;">TENURE</div>'
@@ -1791,8 +1800,11 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 else:
                     st.markdown(
                         f'<div class="vp-card">'
-                        f'<div style="font-weight:700; color:#41B6E6; font-size:11px; letter-spacing:1px; '
-                        f'text-transform:uppercase; margin-bottom:8px;">{tname(teams, tid)}</div>'
+                        f'<div style="display:flex; align-items:center; margin-bottom:8px;">'
+                        f'<div style="width:3px; height:18px; border-radius:1px; background:{_team_color(tid)}; margin-right:6px;"></div>'
+                        f'{_team_logo_img(tid, espn_map, size=16)}'
+                        f'<span style="font-weight:700; color:{_team_color(tid)}; font-size:11px; letter-spacing:1px; '
+                        f'text-transform:uppercase;">{tname(teams, tid)}</span></div>'
                         f'<div style="color:#666;">Coach data not available</div>'
                         f'</div>',
                         unsafe_allow_html=True,
@@ -1807,14 +1819,24 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         )
 
         for team_a, team_b in [(t1, t2), (t2, t1)]:
-            st.markdown(f"**How did {tname(teams, team_a)} do vs teams similar to {tname(teams, team_b)}?**")
+            st.markdown(
+                f'<div style="font-weight:700; font-size:14px; margin:12px 0 6px;">How did '
+                f'<span style="display:inline-flex; align-items:center; gap:2px;">'
+                f'<span style="width:3px; height:14px; border-radius:1px; background:{_team_color(team_a)}; display:inline-block;"></span>'
+                f'{_team_logo_img(team_a, espn_map, size=16)}{tname(teams, team_a)}</span>'
+                f' do vs teams similar to '
+                f'<span style="display:inline-flex; align-items:center; gap:2px;">'
+                f'<span style="width:3px; height:14px; border-radius:1px; background:{_team_color(team_b)}; display:inline-block;"></span>'
+                f'{_team_logo_img(team_b, espn_map, size=16)}{tname(teams, team_b)}</span>?</div>',
+                unsafe_allow_html=True,
+            )
 
             similar = neighbors_map.get(team_b, [])
             if not similar:
                 st.info(f"No KNN data available for {tname(teams, team_b)}")
                 continue
 
-            sim_rows = []
+            sim_rows_data = []
             total_w, total_g, total_margin = 0, 0, 0
             for neighbor_id, dist in similar:
                 results = game_results.get((team_a, neighbor_id), [])
@@ -1824,15 +1846,22 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 total_w += wins
                 total_g += games
                 total_margin += sum(m for _, m in results)
-                sim_rows.append({
-                    "Similar Team": tname(teams, neighbor_id),
-                    "Games": games,
-                    "Record": f"{wins}-{games - wins}" if games > 0 else "Did not play",
-                    "Avg Margin": f"{avg_margin:+.1f}" if games > 0 else "—",
-                })
+                sim_rows_data.append((neighbor_id, games, wins, avg_margin))
 
-            sim_df = pd.DataFrame(sim_rows)
-            _styled_df(sim_df)
+            for nb_id, nb_games, nb_wins, nb_margin in sim_rows_data:
+                record_txt = f"{nb_wins}-{nb_games - nb_wins}" if nb_games > 0 else "—"
+                margin_txt = f"{nb_margin:+.1f}" if nb_games > 0 else "—"
+                st.markdown(
+                    f'<div style="display:flex; align-items:center; gap:8px; margin:3px 0;">'
+                    f'<div style="display:flex; align-items:center; min-width:180px;">'
+                    f'<div style="width:3px; height:16px; border-radius:1px; background:{_team_color(nb_id)}; margin-right:5px; flex-shrink:0;"></div>'
+                    f'{_team_logo_img(nb_id, espn_map, size=14)}'
+                    f'<span style="font-size:13px; color:#FAFAFA;">{tname(teams, nb_id)}</span></div>'
+                    f'<span style="font-size:12px; color:#888; min-width:40px;">{record_txt}</span>'
+                    f'<span style="font-size:12px; color:#888; min-width:40px;">{margin_txt}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
 
             if total_g > 0:
                 avg_m = round(total_margin / total_g, 1)
@@ -1854,11 +1883,28 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             t2_wins = h2h_rec["high_wins"] if t1 == low else h2h_rec["low_wins"]
             total = t1_wins + t2_wins
 
+            leader = t1 if t1_wins >= t2_wins else t2
+            trailer = t2 if leader == t1 else t1
+            lead_wins = max(t1_wins, t2_wins)
+            trail_wins = min(t1_wins, t2_wins)
             st.markdown(
-                f"**{tname(teams, t1)}** leads **{t1_wins}-{t2_wins}** "
-                f"({total} games)" if t1_wins >= t2_wins else
-                f"**{tname(teams, t2)}** leads **{t2_wins}-{t1_wins}** "
-                f"({total} games)"
+                f'<div style="max-width:380px; margin:8px 0;">'
+                f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; margin-bottom:4px;">ALL-TIME SERIES ({total} GAMES)</div>'
+                f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+                f'<div style="display:flex; align-items:center; padding:6px 10px; border-bottom:1px solid #2a2a2a;">'
+                f'<div style="width:3px; height:20px; border-radius:1px; background:{_team_color(leader)}; margin-right:6px; flex-shrink:0;"></div>'
+                f'{_team_logo_img(leader, espn_map, size=16)}'
+                f'<span style="font-size:14px; font-weight:700; color:#FAFAFA; flex:1;">{tname(teams, leader)}</span>'
+                f'<span style="font-size:16px; font-weight:800; color:#FAFAFA; min-width:28px; text-align:right;">{lead_wins}</span>'
+                f'</div>'
+                f'<div style="display:flex; align-items:center; padding:6px 10px;">'
+                f'<div style="width:3px; height:20px; border-radius:1px; background:#333; margin-right:6px; flex-shrink:0;"></div>'
+                f'{_team_logo_img(trailer, espn_map, size=16)}'
+                f'<span style="font-size:14px; color:#888; flex:1;">{tname(teams, trailer)}</span>'
+                f'<span style="font-size:16px; color:#555; min-width:28px; text-align:right;">{trail_wins}</span>'
+                f'</div>'
+                f'</div></div>',
+                unsafe_allow_html=True,
             )
 
             # Show last 5 games — bracket-style mini cards
@@ -2563,6 +2609,7 @@ def _load_cached_espn():
 
 
 def page_backtest(prefix, teams):
+    espn_map = _build_espn_id_map(teams, prefix)
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Model Backtest</h1>'
@@ -2747,20 +2794,35 @@ def page_backtest(prefix, teams):
     st.subheader("Biggest Upsets & Misses")
 
     upsets = bt[bt.ML_Correct == False].sort_values("Fav_Prob", ascending=False).head(15)
-    upset_rows = []
-    for _, u in upsets.iterrows():
-        fav_name = tname(teams, u.Fav)
-        winner_name = tname(teams, u.Winner)
-        upset_rows.append({
-            "Season": int(u.Season),
-            "Our Pick": f"({int(u.Fav_Seed)}) {fav_name}" if pd.notna(u.Fav_Seed) else fav_name,
-            "Confidence": f"{u.Fav_Prob * 100:.1f}%",
-            "Actual Winner": f"({int(u.Dog_Seed)}) {winner_name}" if pd.notna(u.Dog_Seed) else winner_name,
-            "Score": f"{int(u.W_Score)}-{int(u.L_Score)}",
-            "Spread": f"{u.Spread:+.1f}",
-        })
-    if upset_rows:
-        _styled_table(upset_rows)
+    if len(upsets) > 0:
+        for _, u in upsets.iterrows():
+            fav_tid = u.Fav
+            winner_tid = u.Winner
+            fav_seed = f'{int(u.Fav_Seed)}' if pd.notna(u.Fav_Seed) else ''
+            dog_seed = f'{int(u.Dog_Seed)}' if pd.notna(u.Dog_Seed) else ''
+            fav_seed_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px;">{fav_seed}</span>' if fav_seed else ''
+            dog_seed_tag = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px;">{dog_seed}</span>' if dog_seed else ''
+            st.markdown(
+                f'<div style="display:flex; align-items:center; gap:10px; margin:4px 0;">'
+                f'<span style="color:#666; font-size:11px; min-width:32px;">{int(u.Season)}</span>'
+                f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; min-width:240px;">'
+                f'<div style="display:flex; align-items:center; padding:4px 8px; border-bottom:1px solid #2a2a2a;">'
+                f'<div style="width:3px; height:18px; border-radius:1px; background:{_team_color(winner_tid)}; margin-right:6px; flex-shrink:0;"></div>'
+                f'{dog_seed_tag}{_team_logo_img(winner_tid, espn_map, size=14)}'
+                f'<span style="font-size:13px; font-weight:700; color:#FAFAFA; flex:1;">{tname(teams, winner_tid)}</span>'
+                f'<span style="font-size:14px; font-weight:800; color:#FAFAFA; min-width:24px; text-align:right;">{int(u.W_Score)}</span>'
+                f'</div>'
+                f'<div style="display:flex; align-items:center; padding:4px 8px;">'
+                f'<div style="width:3px; height:18px; border-radius:1px; background:#333; margin-right:6px; flex-shrink:0;"></div>'
+                f'{fav_seed_tag}{_team_logo_img(fav_tid, espn_map, size=14)}'
+                f'<span style="font-size:13px; color:#888; flex:1;">{tname(teams, fav_tid)}</span>'
+                f'<span style="font-size:14px; color:#555; min-width:24px; text-align:right;">{int(u.L_Score)}</span>'
+                f'</div>'
+                f'</div>'
+                f'<span style="font-size:11px; color:#888;">Conf: {u.Fav_Prob*100:.0f}%</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
     # ── Calibration ──
     st.markdown("---")
@@ -2830,15 +2892,14 @@ def page_backtest(prefix, teams):
                 ats_w += ats_hit; ats_l += not ats_hit
                 ou_o += is_over; ou_u += not is_over
 
+                loser = gt2 if winner == gt1 else gt1
                 live_rows.append({
-                    "Matchup": f"{tname(teams, gt1)} vs {tname(teams, gt2)}",
-                    "Pred": f"{fav_prob*100:.0f}% {tname(teams, fav)}",
-                    "Spread": f"{spread:+.1f}",
-                    "Total": f"{proj_total:.1f}",
-                    "Result": f"{tname(teams, winner)} {w_score}-{l_score}",
-                    "ML": "HIT" if ml_hit else "MISS",
-                    "ATS": "HIT" if ats_hit else "MISS",
-                    "O/U": f"{'OVER' if is_over else 'UNDER'} ({actual_total})",
+                    "_winner": winner, "_loser": loser,
+                    "_w_score": w_score, "_l_score": l_score,
+                    "_fav": fav, "_fav_prob": fav_prob,
+                    "_spread": spread, "_proj_total": proj_total,
+                    "_actual_total": actual_total,
+                    "_ml_hit": ml_hit, "_ats_hit": ats_hit, "_is_over": is_over,
                 })
 
             lc1, lc2, lc3 = st.columns(3)
@@ -2863,7 +2924,37 @@ def page_backtest(prefix, teams):
                     f'<div class="value" style="color:#41B6E6;">{ou_o}O-{ou_u}U</div></div>',
                     unsafe_allow_html=True)
 
-            _styled_table(live_rows)
+            for lr in live_rows:
+                w_tid, l_tid = lr["_winner"], lr["_loser"]
+                w_c = _team_color(w_tid)
+                ml_badge = f'<span style="background:#4ade80; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">HIT</span>' if lr["_ml_hit"] else '<span style="background:#f87171; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">MISS</span>'
+                ats_badge = f'<span style="background:#4ade80; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">HIT</span>' if lr["_ats_hit"] else '<span style="background:#f87171; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">MISS</span>'
+                ou_label = "OVER" if lr["_is_over"] else "UNDER"
+                ou_badge = f'<span style="background:#41B6E6; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">{ou_label}</span>'
+                st.markdown(
+                    f'<div style="display:flex; align-items:center; gap:10px; margin:4px 0;">'
+                    f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; min-width:260px;">'
+                    f'<div style="display:flex; align-items:center; padding:4px 8px; border-bottom:1px solid #2a2a2a;">'
+                    f'<div style="width:3px; height:18px; border-radius:1px; background:{w_c}; margin-right:6px; flex-shrink:0;"></div>'
+                    f'{_team_logo_img(w_tid, espn_map, size=14)}'
+                    f'<span style="font-size:13px; font-weight:700; color:#FAFAFA; flex:1;">{tname(teams, w_tid)}</span>'
+                    f'<span style="font-size:14px; font-weight:800; color:#FAFAFA; min-width:24px; text-align:right;">{lr["_w_score"]}</span>'
+                    f'</div>'
+                    f'<div style="display:flex; align-items:center; padding:4px 8px;">'
+                    f'<div style="width:3px; height:18px; border-radius:1px; background:#333; margin-right:6px; flex-shrink:0;"></div>'
+                    f'{_team_logo_img(l_tid, espn_map, size=14)}'
+                    f'<span style="font-size:13px; color:#888; flex:1;">{tname(teams, l_tid)}</span>'
+                    f'<span style="font-size:14px; color:#555; min-width:24px; text-align:right;">{lr["_l_score"]}</span>'
+                    f'</div>'
+                    f'</div>'
+                    f'<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">'
+                    f'<span style="font-size:10px; color:#888;">ML</span>{ml_badge}'
+                    f'<span style="font-size:10px; color:#888;">ATS</span>{ats_badge}'
+                    f'<span style="font-size:10px; color:#888;">O/U</span>{ou_badge}'
+                    f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
 
 
 # ──────────────────────────── Page: Betting Picks ────────────────────────────
