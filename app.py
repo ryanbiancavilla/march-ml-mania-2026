@@ -2605,6 +2605,9 @@ def page_picks(prefix, teams, seeds_df, preds):
                 return data[f"{bet_type}_pct"]
         return 50.0
 
+    # ── Pre-compute odds matching for use in FINAL grading ──
+    odds_map_lookup, name_to_tid_lookup = _build_odds_name_map(teams, prefix)
+
     # ── Live Scores ──
     if espn_data and espn_data.get("games"):
         espn_games = espn_data["games"]
@@ -2632,13 +2635,59 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'</div>', unsafe_allow_html=True)
 
         if final_games:
-            st.markdown('<div class="vp-section" style="margin-top:8px;">FINAL</div>', unsafe_allow_html=True)
+            st.markdown('<div class="vp-section" style="margin-top:8px;">FINAL — MODEL PICKS</div>', unsafe_allow_html=True)
             for g in final_games:
-                a_bold = 'font-weight:800; color:#FAFAFA;' if int(g["away_score"]) > int(g["home_score"]) else ''
-                h_bold = 'font-weight:800; color:#FAFAFA;' if int(g["home_score"]) > int(g["away_score"]) else ''
+                away_score = int(g["away_score"])
+                home_score = int(g["home_score"])
+                a_bold = 'font-weight:800; color:#FAFAFA;' if away_score > home_score else ''
+                h_bold = 'font-weight:800; color:#FAFAFA;' if home_score > away_score else ''
+
+                # Try to resolve ESPN teams to model IDs for pick display
+                home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
+                away_tid = _resolve_odds_team(g["away_team"], odds_map_lookup, name_to_tid_lookup)
+                pick_html = ""
+                if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
+                    t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
+                    pg = get_pred(preds, t1g, t2g)
+                    lines_g = compute_betting_lines(stats, preds, t1g, t2g)
+                    fav_g = t1g if pg >= 0.5 else t2g
+                    fav_prob_g = pg if fav_g == t1g else 1 - pg
+                    fav_name_g = tname(teams, fav_g)
+                    m_spread_g = lines_g["spread"]
+                    m_total_g = lines_g["total"]
+
+                    # Determine actual margin (t1 perspective)
+                    t1_score = home_score if home_tid == t1g else away_score
+                    t2_score = away_score if home_tid == t1g else home_score
+                    actual_total = t1_score + t2_score
+
+                    # ML result
+                    winner_tid = home_tid if home_score > away_score else away_tid
+                    ml_correct = (fav_g == winner_tid)
+                    ml_icon = "✓" if ml_correct else "✗"
+                    ml_color = "#4ade80" if ml_correct else "#f87171"
+
+                    # Spread pick direction
+                    spread_side = fav_name_g if m_spread_g < 0 else tname(teams, t2g if fav_g == t1g else t1g)
+
+                    # O/U pick
+                    ou_pick = "OVER" if m_total_g > actual_total - 5 and m_total_g > 130 else ""
+                    ou_pick = "OVER" if m_total_g > 0 else "UNDER"  # simplified
+
+                    pick_html = (
+                        f'<div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap;">'
+                        f'<span style="font-size:11px; font-weight:600; color:{ml_color};">'
+                        f'{ml_icon} ML: {fav_name_g} ({fav_prob_g*100:.0f}%)</span>'
+                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
+                        f'Spread: {m_spread_g:+.1f}</span>'
+                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
+                        f'Total: {m_total_g:.0f} (Actual: {actual_total})</span>'
+                        f'</div>'
+                    )
+
                 st.markdown(
-                    f'<div class="vp-card" style="border-left:3px solid #4ade80; display:flex; '
-                    f'justify-content:space-between; align-items:center;">'
+                    f'<div class="vp-card" style="border-left:3px solid #4ade80;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:500;">'
                     f'<span style="color:#aaa; {a_bold}">{g["away_team"]}</span> '
                     f'<span style="font-size:18px; {a_bold}">{g["away_score"]}</span>'
@@ -2646,13 +2695,9 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<span style="color:#aaa; {h_bold}">{g["home_team"]}</span> '
                     f'<span style="font-size:18px; {h_bold}">{g["home_score"]}</span></div>'
                     f'<span style="color:#4ade80; font-weight:700; font-size:10px; letter-spacing:1px;">FINAL</span>'
+                    f'</div>'
+                    f'{pick_html}'
                     f'</div>', unsafe_allow_html=True)
-
-    # ── Historic Model Performance ──
-    st.markdown("---")
-    st.markdown('<div class="vp-section">HISTORIC MODEL RESULTS</div>', unsafe_allow_html=True)
-    st.caption("Model performance across 20+ years of tournament games vs. closing Vegas lines.")
-    _render_summary_cards(bt)
 
     # ── Build ESPN broadcast + score lookup ──
     espn_broadcast = {}
