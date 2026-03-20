@@ -2568,6 +2568,7 @@ def _match_odds_teams(teams, stats, odds_cache, prefix="M"):
             "home": home, "away": away, "bk_title": bk_title,
             "v_ml1": v_ml1, "v_ml2": v_ml2,
             "v_spread": v_spread, "v_total": v_total,
+            "commence_time": game.get("commence_time", ""),
         })
 
     return matched
@@ -2647,12 +2648,27 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<span style="color:#4ade80; font-weight:700; font-size:10px; letter-spacing:1px;">FINAL</span>'
                     f'</div>', unsafe_allow_html=True)
 
+    # ── Historic Model Performance ──
+    st.markdown("---")
+    st.markdown('<div class="vp-section">HISTORIC MODEL RESULTS</div>', unsafe_allow_html=True)
+    st.caption("Model performance across 20+ years of tournament games vs. closing Vegas lines.")
+    _render_summary_cards(bt)
+
+    # ── Build ESPN broadcast lookup ──
+    espn_broadcast = {}
+    if espn_data and espn_data.get("games"):
+        for g in espn_data["games"]:
+            key = g.get("name", "").lower()
+            espn_broadcast[key] = {
+                "broadcast": g.get("broadcast", ""),
+                "start_time": g.get("start_time", ""),
+            }
+
     # ── Model Picks vs Vegas ──
     st.markdown("---")
     st.subheader("Model Picks")
     st.caption(
-        "Our model vs Vegas for every upcoming game. "
-        "Picks are ranked by edge strength — the bigger the disagreement, the stronger the play."
+        "Our model vs Vegas for every upcoming game, sorted by tip-off time."
     )
 
     # Try to auto-load live odds first
@@ -2699,6 +2715,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "vegas_ml_t1": gm["v_ml1"], "vegas_ml_t2": gm["v_ml2"],
                 "vegas_spread": gm["v_spread"], "vegas_total": gm["v_total"],
                 "region": "",
+                "commence_time": gm.get("commence_time", ""),
             })
 
     elif data_source == "Tournament Bracket":
@@ -2804,10 +2821,42 @@ def page_picks(prefix, teams, seeds_df, preds):
         m_spread = pick["model_spread"]
         m_total = pick["model_total"]
 
+        # Get game time from odds API commence_time
+        commence_time = pick.get("commence_time", "")
+        game_time_display = ""
+        broadcast_display = ""
+        if commence_time:
+            try:
+                from datetime import datetime, timezone, timedelta
+                ct = datetime.fromisoformat(commence_time.replace("Z", "+00:00"))
+                et = ct - timedelta(hours=4)  # Convert UTC to EDT
+                game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
+            except Exception:
+                game_time_display = ""
+
+        # Try to find broadcast from ESPN data
+        matchup_key = f"{n2} vs. {n1}".lower()  # ESPN uses "Away vs. Home" format with period
+        matchup_key2 = f"{n1} vs. {n2}".lower()
+        for ekey, edata in espn_broadcast.items():
+            if (n1.lower() in ekey and n2.lower() in ekey):
+                broadcast_display = edata.get("broadcast", "")
+                if not game_time_display and edata.get("start_time"):
+                    try:
+                        from datetime import datetime, timedelta
+                        ct = datetime.fromisoformat(edata["start_time"].replace("Z", "+00:00"))
+                        et = ct - timedelta(hours=4)
+                        game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
+                    except Exception:
+                        pass
+                break
+
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",
             "ml": None, "spread": None, "total": None,
             "best_rating": 0,
+            "commence_time": commence_time,
+            "game_time_display": game_time_display,
+            "broadcast_display": broadcast_display,
         }
 
         # ── Moneyline Pick ──
@@ -2934,20 +2983,37 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "_color": data["color"],
             })
 
-    # Sort games by best edge
-    game_cards.sort(key=lambda x: x["best_rating"], reverse=True)
+    # Sort games by tip-off time (next game first), then by edge as tiebreaker
+    game_cards.sort(key=lambda x: (x["commence_time"] or "9999", -x["best_rating"]))
 
     # ── Render Game Cards ──
     for card in game_cards:
         best = card["best_rating"]
         border_color = "#4ade80" if best >= 70 else "#fbbf24" if best >= 45 else "#60a5fa" if best >= 25 else "#444"
 
+        # Build game info line (time + broadcast)
+        info_parts = []
+        if card.get("game_time_display"):
+            info_parts.append(f'<span style="color:#fbbf24; font-weight:600;">{card["game_time_display"]}</span>')
+        if card.get("broadcast_display"):
+            info_parts.append(f'<span style="color:#60a5fa; font-weight:600;">{card["broadcast_display"]}</span>')
+        info_line = ""
+        if info_parts:
+            info_line = (
+                f'<div style="font-size:12px; margin-top:2px; display:flex; gap:12px; align-items:center;">'
+                + " &middot; ".join(info_parts)
+                + '</div>'
+            )
+
         st.markdown(
             f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
             f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+            f'<div>'
             f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}</div>'
+            f'{info_line}'
+            f'</div>'
             f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
-            f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">TOP EDGE: {best}</span>'
+            f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">EDGE: {best}</span>'
             f'</div>'
             f'<div style="display:flex; gap:12px; flex-wrap:wrap;">',
             unsafe_allow_html=True,

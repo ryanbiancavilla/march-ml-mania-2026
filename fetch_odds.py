@@ -61,6 +61,17 @@ def fetch_espn_scores():
 
         home = competitors[0]
         away = competitors[1]
+        # Extract broadcast info
+        broadcasts = comp.get("broadcasts", [])
+        broadcast_names = []
+        for b in broadcasts:
+            for name_entry in b.get("names", []):
+                broadcast_names.append(name_entry)
+        broadcast = ", ".join(broadcast_names) if broadcast_names else ""
+
+        # Extract game start time
+        start_time = comp.get("date", ev.get("date", ""))
+
         games.append({
             "game_id": ev.get("id"),
             "name": ev.get("name", ""),
@@ -72,6 +83,8 @@ def fetch_espn_scores():
             "away_team": away.get("team", {}).get("displayName", ""),
             "away_score": int(away.get("score", 0)),
             "away_id": away.get("team", {}).get("id", ""),
+            "broadcast": broadcast,
+            "start_time": start_time,
         })
 
     print(f"ESPN: {len(games)} games fetched")
