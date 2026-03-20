@@ -1859,13 +1859,36 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 f"({total} games)"
             )
 
-            # Show last 5 games
+            # Show last 5 games — bracket-style mini cards
             recent = sorted(h2h_rec["games"], key=lambda g: g["season"], reverse=True)[:5]
             if recent:
                 st.markdown("**Recent matchups:**")
                 for g in recent:
-                    winner_name = tname(teams, g["winner"])
-                    st.markdown(f"- {g['season']}: **{winner_name}** won {g['score']}")
+                    g_winner = g["winner"]
+                    g_loser = t2 if g_winner == t1 else t1
+                    w_color = _team_color(g_winner)
+                    l_color = '#333'
+                    score_parts = g["score"].split("-") if "-" in g["score"] else [g["score"], ""]
+                    st.markdown(
+                        f'<div style="max-width:380px; margin:4px 0;">'
+                        f'<div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">'
+                        f'<span style="color:#666; font-size:11px; min-width:32px;">{g["season"]}</span>'
+                        f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; flex:1;">'
+                        f'<div style="display:flex; align-items:center; padding:4px 8px; border-bottom:1px solid #2a2a2a;">'
+                        f'<div style="width:3px; height:18px; border-radius:1px; background:{w_color}; margin-right:6px; flex-shrink:0;"></div>'
+                        f'{_team_logo_img(g_winner, espn_map, size=14)}'
+                        f'<span style="font-size:13px; font-weight:700; color:#FAFAFA; flex:1;">{tname(teams, g_winner)}</span>'
+                        f'<span style="font-size:14px; font-weight:800; color:#FAFAFA; min-width:24px; text-align:right;">{score_parts[0].strip()}</span>'
+                        f'</div>'
+                        f'<div style="display:flex; align-items:center; padding:4px 8px;">'
+                        f'<div style="width:3px; height:18px; border-radius:1px; background:{l_color}; margin-right:6px; flex-shrink:0;"></div>'
+                        f'{_team_logo_img(g_loser, espn_map, size=14)}'
+                        f'<span style="font-size:13px; color:#888; flex:1;">{tname(teams, g_loser)}</span>'
+                        f'<span style="font-size:14px; color:#555; min-width:24px; text-align:right;">{score_parts[1].strip() if len(score_parts) > 1 else ""}</span>'
+                        f'</div>'
+                        f'</div></div></div>',
+                        unsafe_allow_html=True,
+                    )
         else:
             st.info("These teams have no recorded head-to-head history.")
 
