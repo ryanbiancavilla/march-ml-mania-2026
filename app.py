@@ -3366,70 +3366,8 @@ def page_picks(prefix, teams, seeds_df, preds):
             live_grid += '</div>'
             st.markdown(live_grid, unsafe_allow_html=True)
 
-        if final_games:
-            st.markdown('<div class="vp-section" style="margin-top:16px;">FINAL SCORES</div>', unsafe_allow_html=True)
-            # NCAA bracket-style 2-column grid — each game is a stacked card
-            grid_html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">'
-            for g in final_games:
-                away_score = int(g["away_score"])
-                home_score = int(g["home_score"])
-                away_won = away_score > home_score
-                home_won = home_score > away_score
-
-                home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
-                away_tid = _resolve_odds_team(g["away_team"], odds_map_lookup, name_to_tid_lookup)
-                away_seed = _seed_tag(away_tid) if away_tid else ""
-                home_seed = _seed_tag(home_tid) if home_tid else ""
-
-                # Model pick indicator
-                pick_icon = ""
-                if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
-                    t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
-                    pg = get_pred(preds, t1g, t2g)
-                    fav_g = t1g if pg >= 0.5 else t2g
-                    fav_prob_g = pg if fav_g == t1g else 1 - pg
-                    fav_name_g = tname(teams, fav_g)
-                    winner_tid = home_tid if home_won else away_tid
-                    ml_correct = (fav_g == winner_tid)
-                    ml_icon = "✓" if ml_correct else "✗"
-                    ml_color = "#4ade80" if ml_correct else "#f87171"
-                    pick_icon = (
-                        f'<div style="padding:2px 8px; font-size:10px; font-weight:600; color:{ml_color}; '
-                        f'background:#131418; border-top:1px solid #2a2a2a; display:flex; align-items:center; gap:3px;">'
-                        f'<span style="width:2px; height:12px; border-radius:1px; background:{_team_color(fav_g)};"></span>'
-                        f'{_team_logo_img(fav_g, espn_map, size=12)}'
-                        f'{ml_icon} {fav_name_g} ({fav_prob_g*100:.0f}%)</div>'
-                    )
-
-                # Team colors — grey out the loser
-                away_bar_color = _team_color(away_tid) if away_tid and away_won else '#333'
-                home_bar_color = _team_color(home_tid) if home_tid and home_won else '#333'
-                a_name_style = 'color:#FAFAFA; font-weight:700;' if away_won else 'color:#555;'
-                a_score_style = 'color:#FAFAFA; font-weight:800;' if away_won else 'color:#555;'
-                h_name_style = 'color:#FAFAFA; font-weight:700;' if home_won else 'color:#555;'
-                h_score_style = 'color:#FAFAFA; font-weight:800;' if home_won else 'color:#555;'
-
-                grid_html += (
-                    f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
-                    # Away team row
-                    f'<div style="display:flex; align-items:center; padding:6px 10px; border-bottom:1px solid #2a2a2a;">'
-                    f'<div style="width:4px; height:24px; border-radius:1px; background:{away_bar_color}; margin-right:6px; flex-shrink:0;"></div>'
-                    f'{away_seed}{_team_logo_img(away_tid, espn_map, size=18)}'
-                    f'<span style="{a_name_style} font-size:13px; flex:1;">{g["away_team"]}</span>'
-                    f'<span style="{a_score_style} font-size:16px; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["away_score"]}</span>'
-                    f'</div>'
-                    # Home team row
-                    f'<div style="display:flex; align-items:center; padding:6px 10px;">'
-                    f'<div style="width:4px; height:24px; border-radius:1px; background:{home_bar_color}; margin-right:6px; flex-shrink:0;"></div>'
-                    f'{home_seed}{_team_logo_img(home_tid, espn_map, size=18)}'
-                    f'<span style="{h_name_style} font-size:13px; flex:1;">{g["home_team"]}</span>'
-                    f'<span style="{h_score_style} font-size:16px; font-variant-numeric:tabular-nums; min-width:28px; text-align:right;">{g["home_score"]}</span>'
-                    f'</div>'
-                    f'{pick_icon}'
-                    f'</div>'
-                )
-            grid_html += '</div>'
-            st.markdown(grid_html, unsafe_allow_html=True)
+        # Final scores are shown in the Model Picks grid below (with W/L grading),
+        # so we skip a separate FINAL SCORES section to avoid duplication.
 
     # ── Build ESPN broadcast + score lookup keyed by resolved team ID pairs ──
     espn_by_ids = {}  # keyed by frozenset({tid1, tid2}) for reliable matching
@@ -3514,8 +3452,8 @@ def page_picks(prefix, teams, seeds_df, preds):
         n1, n2 = tname(teams, t1), tname(teams, t2)
         s1 = team_seeds.get(t1, "")
         s2 = team_seeds.get(t2, "")
-        s1t = f"({s1}) " if s1 else ""
-        s2t = f"({s2}) " if s2 else ""
+        s1t = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s1)}</span>' if s1 else ""
+        s2t = f'<span style="color:#888; font-weight:700; font-size:11px; margin-right:4px; min-width:16px; display:inline-block; text-align:right;">{int(s2)}</span>' if s2 else ""
         p = pick["model_prob_t1"]
         fav = t1 if p >= 0.5 else t2
         fav_name = n1 if fav == t1 else n2
@@ -3771,7 +3709,8 @@ def page_picks(prefix, teams, seeds_df, preds):
         game_cards.append(card)
 
     # Sort games by tip-off time (next game first), then by edge as tiebreaker
-    game_cards.sort(key=lambda x: (x["commence_time"] or "9999", -x["best_rating"]))
+    # Upcoming games first (sorted by tip-off), then finals at the bottom
+    game_cards.sort(key=lambda x: (x.get("game_final", False), x["commence_time"] or "9999", -x["best_rating"]))
 
     # ── Today's Record Summary ──
     graded = [c for c in game_cards if c.get("game_final")]
