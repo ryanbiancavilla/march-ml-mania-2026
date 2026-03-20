@@ -1126,12 +1126,8 @@ def page_rankings(prefix, teams, seeds_df, conferences):
             "NetEff": round(s.NetEff, 1),
             "OffEff": round(s.OffEff, 1),
             "DefEff": round(s.DefEff, 1),
-            "Tempo": round(s.Tempo, 1),
-            "PPG": round(s.PPG, 1),
-            "OppPPG": round(s.OppPPG, 1),
             "Margin": round(s.Margin, 1),
             "eFG%": round(s.EffFGPct, 1),
-            "FG%": round(s.FGPct, 1),
             "3P%": round(s.FG3Pct, 1),
             "FT%": round(s.FTPct, 1),
         })
@@ -1159,9 +1155,9 @@ def page_rankings(prefix, teams, seeds_df, conferences):
     html += '<table class="vp-table"><thead><tr>'
     html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th><th>SEED</th>'
     html += '<th>RECORD</th><th>TIER</th><th>ELO</th>'
-    html += '<th>NET EFF</th><th>OFF EFF</th><th>DEF EFF</th><th>TEMPO</th>'
-    html += '<th>PPG</th><th>OPP PPG</th><th>MARGIN</th>'
-    html += '<th>eFG%</th><th>FG%</th><th>3P%</th><th>FT%</th>'
+    html += '<th>NET EFF</th><th>OFF EFF</th><th>DEF EFF</th>'
+    html += '<th>MARGIN</th>'
+    html += '<th>eFG%</th><th>3P%</th><th>FT%</th>'
     html += '</tr></thead><tbody>'
 
     # Compute averages for relative coloring of OffEff/DefEff
@@ -1187,12 +1183,8 @@ def page_rankings(prefix, teams, seeds_df, conferences):
         html += f'<td class="{net_cls}" style="font-weight:600;">{r["NetEff"]:+.1f}</td>'
         html += f'<td class="{off_cls}">{r["OffEff"]:.1f}</td>'
         html += f'<td class="{def_cls}">{r["DefEff"]:.1f}</td>'
-        html += f'<td style="color:#aaa;">{r["Tempo"]:.1f}</td>'
-        html += f'<td>{r["PPG"]}</td>'
-        html += f'<td>{r["OppPPG"]}</td>'
         html += f'<td class="{margin_cls}" style="font-weight:600;">{r["Margin"]:+.1f}</td>'
         html += f'<td>{r["eFG%"]:.1f}</td>'
-        html += f'<td>{r["FG%"]:.1f}</td>'
         html += f'<td>{r["3P%"]:.1f}</td>'
         html += f'<td>{r["FT%"]:.1f}</td>'
         html += '</tr>'
@@ -1281,7 +1273,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     # ── Projected Betting Lines ──
     st.markdown("---")
     st.subheader("Projected Betting Lines")
-    st.caption("Projected lines from our ensemble model. For entertainment purposes only.")
+    st.caption("Projected lines from our ensemble model.")
 
     lines = compute_betting_lines(stats, preds, t1, t2)
     n1, n2 = tname(teams, t1), tname(teams, t2)
@@ -1505,7 +1497,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             total_margin += sum(m for _, m in results)
             sim_rows.append({
                 "Similar Team": tname(teams, neighbor_id),
-                "Distance": dist,
                 "Games": games,
                 "Record": f"{wins}-{games - wins}" if games > 0 else "Did not play",
                 "Avg Margin": f"{avg_margin:+.1f}" if games > 0 else "—",
@@ -1585,31 +1576,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         else:
             st.info(f"No historical tournament data for {low_s}-seed vs {high_s}-seed matchup.")
 
-    # ── Elo vs Ensemble ──
-    st.markdown("---")
-    st.subheader("Elo vs Ensemble Model")
-    elo1 = elo.get(t1, 1500)
-    elo2 = elo.get(t2, 1500)
-    elo_diff = elo1 - elo2
-    elo_wp = 1 / (1 + 10 ** (-elo_diff / 400))
-    diff_pp = (p - elo_wp) * 100
-
-    ec1, ec2 = st.columns(2)
-    with ec1:
-        st.markdown(
-            f'<div class="vp-metric">'
-            f'<div class="label">ELO ONLY</div>'
-            f'<div class="value" style="color:#60a5fa;">{elo_wp*100:.1f}%</div>'
-            f'<div class="sub">{int(elo1)} vs {int(elo2)}</div>'
-            f'</div>', unsafe_allow_html=True)
-    with ec2:
-        delta_color = "#4ade80" if diff_pp > 0 else "#f87171" if diff_pp < 0 else "#888"
-        st.markdown(
-            f'<div class="vp-metric">'
-            f'<div class="label">FULL ENSEMBLE</div>'
-            f'<div class="value" style="color:#FF6B35;">{p*100:.1f}%</div>'
-            f'<div class="sub" style="color:{delta_color}; font-weight:600;">{diff_pp:+.1f}pp vs Elo</div>'
-            f'</div>', unsafe_allow_html=True)
 
 
 # ──────────────────────────── Page: Tournament Odds ────────────────────────────
@@ -1650,7 +1616,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 
     # ── Championship Futures / Betting Odds ──
     st.subheader("Championship Futures")
-    st.caption("Odds generated from 10,000 simulated tournaments. For entertainment purposes only.")
+    st.caption("Odds generated from 10,000 simulated tournaments.")
 
     futures_rows = []
     for _, row in df.iterrows():
@@ -1901,120 +1867,6 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
         st.markdown(html, unsafe_allow_html=True)
         st.markdown("")
 
-    # ── Projected Betting Lines for All Round 1 Games ──
-    st.markdown("---")
-    st.subheader("Projected Betting Lines — Round of 64")
-    st.caption("Projected lines for every first-round matchup. For entertainment purposes only.")
-
-    stats = compute_season_stats(prefix)
-
-    for region in ["W", "X", "Y", "Z"]:
-        st.markdown(f"**{region_labels[region]}**")
-        r1_slots = [f"R1{region}{n}" for n in [1, 8, 5, 4, 6, 3, 7, 2]]
-        game_rows = []
-        for slot in r1_slots:
-            r = sim_results.get(slot, {})
-            gt1, gt2 = r.get("t1"), r.get("t2")
-            if gt1 is None or gt2 is None:
-                continue
-            gl = compute_betting_lines(stats, preds, gt1, gt2)
-            gs1 = team_seed_map.get(gt1, "")
-            gs2 = team_seed_map.get(gt2, "")
-            seed1_txt = f"({gs1}) " if gs1 else ""
-            seed2_txt = f"({gs2}) " if gs2 else ""
-            game_rows.append({
-                "Matchup": f"{seed1_txt}{tname(teams, gt1)} vs {seed2_txt}{tname(teams, gt2)}",
-                "Spread": f"{gl['spread']:+.1f}",
-                "ML (T1)": gl["t1_ml"],
-                "ML (T2)": gl["t2_ml"],
-                "Total": f"{gl['total']:.1f}",
-                "Proj Score": f"{gl['t1_pts']:.0f}-{gl['t2_pts']:.0f}",
-            })
-
-        if game_rows:
-            _styled_table(game_rows)
-        st.markdown("")
-
-    # ── Championship Odds (Monte Carlo) ──
-    st.markdown("---")
-    st.subheader("Championship Odds")
-    elim_count = len(actual_losers) if actual_losers else 0
-    if elim_count:
-        st.caption(f"Based on 10,000 simulated tournaments. {elim_count} eliminated teams removed from projections.")
-    else:
-        st.caption("Based on 10,000 simulated tournaments.")
-
-    with st.spinner("Running 10,000 tournament simulations..."):
-        probs, round_labels = monte_carlo_odds(
-            seeds_df, slots_df, preds,
-            eliminated=frozenset(actual_losers) if actual_losers else None,
-        )
-
-    team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
-    elo = compute_elo(prefix)
-
-    odds_rows = []
-    for tid, p_list in probs.items():
-        is_elim = tid in actual_losers
-        odds_rows.append({
-            "Team": tname(teams, tid),
-            "Seed": team_seeds.get(tid, 99),
-            "Elo": int(elo.get(tid, 1500)),
-            "R32": f"{p_list[1]*100:.1f}%",
-            "S16": f"{p_list[2]*100:.1f}%",
-            "E8": f"{p_list[3]*100:.1f}%",
-            "FF": f"{p_list[4]*100:.1f}%",
-            "CG": f"{p_list[5]*100:.1f}%",
-            "Champ": f"{p_list[6]*100:.1f}%",
-            "_champ_pct": p_list[6],
-            "_eliminated": is_elim,
-        })
-
-    odds_df = pd.DataFrame(odds_rows).sort_values("_champ_pct", ascending=False).reset_index(drop=True)
-    odds_df.index = odds_df.index + 1
-    odds_df.index.name = "#"
-
-    # Top 20 futures board styled like a sportsbook (exclude eliminated teams)
-    futures_rows = []
-    for _, row in odds_df.iterrows():
-        if row.get("_eliminated", False):
-            continue
-        cp = row["_champ_pct"]
-        if cp > 0:
-            ml = prob_to_moneyline(cp)
-        else:
-            ml = "+99999"
-        futures_rows.append({
-            "Team": row["Team"],
-            "Seed": row["Seed"],
-            "Champ %": f"{cp*100:.1f}%",
-            "Futures Odds": ml,
-            "_cp": cp,
-        })
-
-    futures_df = pd.DataFrame(futures_rows).sort_values("_cp", ascending=False).reset_index(drop=True)
-    top_futures = futures_df.head(20)
-    board_html = '<div style="max-width:700px; margin:auto;">'
-    for _, fr in top_futures.iterrows():
-        seed_txt = f'<span style="color:#888; margin-right:6px;">({int(fr["Seed"])})</span>'
-        odds_color = "#4ade80" if fr["_cp"] >= 0.10 else "#fbbf24" if fr["_cp"] >= 0.03 else "#e2e8f0"
-        board_html += (
-            f'<div style="display:flex; justify-content:space-between; align-items:center; '
-            f'padding:8px 16px; border-bottom:1px solid #2a2d34; background:#1a1d24; margin:1px 0;">'
-            f'<span>{seed_txt}{fr["Team"]}</span>'
-            f'<div style="display:flex; gap:24px; align-items:center;">'
-            f'<span style="color:#aaa; font-size:13px;">{fr["Champ %"]}</span>'
-            f'<span style="font-weight:700; font-size:16px; color:{odds_color}; min-width:80px; text-align:right;">'
-            f'{fr["Futures Odds"]}</span>'
-            f'</div></div>'
-        )
-    board_html += '</div>'
-    st.markdown(board_html, unsafe_allow_html=True)
-
-    st.markdown("")
-    st.subheader("Full Round-by-Round Advancement Odds")
-    active_df = odds_df[~odds_df["_eliminated"]].drop(columns=["_champ_pct", "_eliminated"])
-    _styled_df(active_df, max_height=600)
 
 
 # ──────────────────────────── Page: Model Backtest ────────────────────────────
@@ -2337,74 +2189,73 @@ def page_backtest(prefix, teams):
 
     # ── Totals Deep Dive ──
     st.markdown("---")
-    st.subheader("Totals Performance Deep Dive")
-
     ou_valid = bt[~bt.OU_Push]
-    if len(ou_valid) > 0:
-        tc1, tc2, tc3 = st.columns(3)
-        with tc1:
-            avg_proj = bt.Proj_Total.mean()
-            avg_actual = bt.Actual_Total.mean()
-            bias = avg_proj - avg_actual
-            bias_color = "#f87171" if abs(bias) > 3 else "#4ade80"
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid {bias_color};">'
-                f'<div class="label">PROJECTION BIAS</div>'
-                f'<div class="value" style="color:{bias_color};">{bias:+.1f}</div>'
-                f'<div class="sub">Avg Proj: {avg_proj:.1f} | Actual: {avg_actual:.1f}</div>'
-                f'</div>', unsafe_allow_html=True)
-        with tc2:
-            rmse = (bt.Total_Diff ** 2).mean() ** 0.5
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid #60a5fa;">'
-                f'<div class="label">RMSE</div>'
-                f'<div class="value" style="color:#60a5fa;">{rmse:.1f}</div>'
-                f'<div class="sub">Root Mean Squared Error</div>'
-                f'</div>', unsafe_allow_html=True)
-        with tc3:
-            within_5 = (bt.Total_Diff.abs() <= 5).sum()
-            within_10 = (bt.Total_Diff.abs() <= 10).sum()
-            st.markdown(
-                f'<div class="vp-metric" style="border-top:3px solid #fbbf24;">'
-                f'<div class="label">ACCURACY</div>'
-                f'<div class="value" style="color:#fbbf24;">'
-                f'{within_5/total_games*100:.0f}%</div>'
-                f'<div class="sub">Within 5 pts: {within_5} | '
-                f'Within 10: {within_10} ({within_10/total_games*100:.0f}%)</div>'
-                f'</div>', unsafe_allow_html=True)
+    with st.expander("Totals Performance Deep Dive"):
+        if len(ou_valid) > 0:
+            tc1, tc2, tc3 = st.columns(3)
+            with tc1:
+                avg_proj = bt.Proj_Total.mean()
+                avg_actual = bt.Actual_Total.mean()
+                bias = avg_proj - avg_actual
+                bias_color = "#f87171" if abs(bias) > 3 else "#4ade80"
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid {bias_color};">'
+                    f'<div class="label">PROJECTION BIAS</div>'
+                    f'<div class="value" style="color:{bias_color};">{bias:+.1f}</div>'
+                    f'<div class="sub">Avg Proj: {avg_proj:.1f} | Actual: {avg_actual:.1f}</div>'
+                    f'</div>', unsafe_allow_html=True)
+            with tc2:
+                rmse = (bt.Total_Diff ** 2).mean() ** 0.5
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid #60a5fa;">'
+                    f'<div class="label">RMSE</div>'
+                    f'<div class="value" style="color:#60a5fa;">{rmse:.1f}</div>'
+                    f'<div class="sub">Root Mean Squared Error</div>'
+                    f'</div>', unsafe_allow_html=True)
+            with tc3:
+                within_5 = (bt.Total_Diff.abs() <= 5).sum()
+                within_10 = (bt.Total_Diff.abs() <= 10).sum()
+                st.markdown(
+                    f'<div class="vp-metric" style="border-top:3px solid #fbbf24;">'
+                    f'<div class="label">ACCURACY</div>'
+                    f'<div class="value" style="color:#fbbf24;">'
+                    f'{within_5/total_games*100:.0f}%</div>'
+                    f'<div class="sub">Within 5 pts: {within_5} | '
+                    f'Within 10: {within_10} ({within_10/total_games*100:.0f}%)</div>'
+                    f'</div>', unsafe_allow_html=True)
 
-        # Totals by projected range
-        st.markdown("**Performance by Projected Total Range**")
-        total_tiers = [
-            ("Low (< 125)", 0, 125), ("Mid-Low (125-135)", 125, 135),
-            ("Mid (135-145)", 135, 145), ("Mid-High (145-155)", 145, 155),
-            ("High (155+)", 155, 999),
-        ]
-        total_tier_rows = []
-        for label, lo, hi in total_tiers:
-            tb = bt[(bt.Proj_Total >= lo) & (bt.Proj_Total < hi)]
-            if len(tb) == 0:
-                continue
-            tv = tb[~tb.OU_Push]
-            over_ct = int(tv.OU_Over.sum()) if len(tv) > 0 else 0
-            total_tier_rows.append({
-                "Range": label, "Games": len(tb),
-                "Avg Projected": f"{tb.Proj_Total.mean():.1f}",
-                "Avg Actual": f"{tb.Actual_Total.mean():.1f}",
-                "Bias": f"{(tb.Proj_Total.mean() - tb.Actual_Total.mean()):+.1f}",
-                "Over/Under": f"{over_ct}/{len(tv) - over_ct}" if len(tv) > 0 else "—",
-                "MAE": f"{tb.Total_Diff.abs().mean():.1f}",
-            })
-        if total_tier_rows:
-            _styled_table(total_tier_rows)
+            # Totals by projected range
+            st.markdown("**Performance by Projected Total Range**")
+            total_tiers = [
+                ("Low (< 125)", 0, 125), ("Mid-Low (125-135)", 125, 135),
+                ("Mid (135-145)", 135, 145), ("Mid-High (145-155)", 145, 155),
+                ("High (155+)", 155, 999),
+            ]
+            total_tier_rows = []
+            for label, lo, hi in total_tiers:
+                tb = bt[(bt.Proj_Total >= lo) & (bt.Proj_Total < hi)]
+                if len(tb) == 0:
+                    continue
+                tv = tb[~tb.OU_Push]
+                over_ct = int(tv.OU_Over.sum()) if len(tv) > 0 else 0
+                total_tier_rows.append({
+                    "Range": label, "Games": len(tb),
+                    "Avg Projected": f"{tb.Proj_Total.mean():.1f}",
+                    "Avg Actual": f"{tb.Actual_Total.mean():.1f}",
+                    "Bias": f"{(tb.Proj_Total.mean() - tb.Actual_Total.mean()):+.1f}",
+                    "Over/Under": f"{over_ct}/{len(tv) - over_ct}" if len(tv) > 0 else "—",
+                    "MAE": f"{tb.Total_Diff.abs().mean():.1f}",
+                })
+            if total_tier_rows:
+                _styled_table(total_tier_rows)
 
-        # Distribution chart
-        st.markdown("**Projection Error Distribution**")
-        hist_data = bt[["Total_Diff"]].rename(columns={"Total_Diff": "Error (Actual - Projected)"})
-        st.bar_chart(
-            hist_data["Error (Actual - Projected)"].value_counts().sort_index(),
-            height=250,
-        )
+            # Distribution chart
+            st.markdown("**Projection Error Distribution**")
+            hist_data = bt[["Total_Diff"]].rename(columns={"Total_Diff": "Error (Actual - Projected)"})
+            st.bar_chart(
+                hist_data["Error (Actual - Projected)"].value_counts().sort_index(),
+                height=250,
+            )
 
     # ── Season-by-Season Breakdown ──
     st.markdown("---")
@@ -2448,29 +2299,28 @@ def page_backtest(prefix, teams):
 
     # ── Performance by Confidence Tier ──
     st.markdown("---")
-    st.subheader("Performance by Confidence Tier")
-
-    tiers = [
-        ("Coin Flip (50-55%)", 0.50, 0.55), ("Lean (55-65%)", 0.55, 0.65),
-        ("Confident (65-75%)", 0.65, 0.75), ("Strong (75-85%)", 0.75, 0.85),
-        ("Lock (85%+)", 0.85, 1.01),
-    ]
-    tier_rows = []
-    for label, lo, hi in tiers:
-        tb = bt[(bt.Fav_Prob >= lo) & (bt.Fav_Prob < hi)]
-        if len(tb) == 0:
-            continue
-        tw = int(tb.ML_Correct.sum())
-        tier_rows.append({
-            "Tier": label, "Games": len(tb),
-            "ML Record": f"{tw}-{len(tb) - tw}",
-            "ML Win %": f"{tw / len(tb) * 100:.1f}%",
-            "ML Profit": f"{'+'if tb.ML_Profit.sum() >= 0 else ''}{tb.ML_Profit.sum():.0f}u",
-            "Avg Spread": f"{tb.Spread.mean():.1f}",
-            "ATS Win %": f"{tb[~tb.ATS_Push].ATS_Correct.mean() * 100:.1f}%" if len(tb[~tb.ATS_Push]) > 0 else "—",
-            "Total MAE": f"{tb.Total_Diff.abs().mean():.1f}",
-        })
-    _styled_table(tier_rows)
+    with st.expander("Performance by Confidence Tier"):
+        tiers = [
+            ("Coin Flip (50-55%)", 0.50, 0.55), ("Lean (55-65%)", 0.55, 0.65),
+            ("Confident (65-75%)", 0.65, 0.75), ("Strong (75-85%)", 0.75, 0.85),
+            ("Lock (85%+)", 0.85, 1.01),
+        ]
+        tier_rows = []
+        for label, lo, hi in tiers:
+            tb = bt[(bt.Fav_Prob >= lo) & (bt.Fav_Prob < hi)]
+            if len(tb) == 0:
+                continue
+            tw = int(tb.ML_Correct.sum())
+            tier_rows.append({
+                "Tier": label, "Games": len(tb),
+                "ML Record": f"{tw}-{len(tb) - tw}",
+                "ML Win %": f"{tw / len(tb) * 100:.1f}%",
+                "ML Profit": f"{'+'if tb.ML_Profit.sum() >= 0 else ''}{tb.ML_Profit.sum():.0f}u",
+                "Avg Spread": f"{tb.Spread.mean():.1f}",
+                "ATS Win %": f"{tb[~tb.ATS_Push].ATS_Correct.mean() * 100:.1f}%" if len(tb[~tb.ATS_Push]) > 0 else "—",
+                "Total MAE": f"{tb.Total_Diff.abs().mean():.1f}",
+            })
+        _styled_table(tier_rows)
 
     # ── Upset Tracker ──
     st.markdown("---")
@@ -2494,30 +2344,30 @@ def page_backtest(prefix, teams):
 
     # ── Calibration ──
     st.markdown("---")
-    st.subheader("Model Calibration")
-    st.caption("If the model says 70%, the favorite should win ~70% of the time.")
+    with st.expander("Model Calibration"):
+        st.caption("If the model says 70%, the favorite should win ~70% of the time.")
 
-    cal_data = []
-    for lo_edge in range(50, 96, 5):
-        hi_edge = lo_edge + 5
-        bucket = bt[(bt.Fav_Prob * 100 >= lo_edge) & (bt.Fav_Prob * 100 < hi_edge)]
-        if len(bucket) >= 3:
-            actual_pct = bucket.ML_Correct.mean() * 100
-            predicted_pct = (lo_edge + hi_edge) / 2
-            cal_data.append({
-                "Predicted": f"{lo_edge}-{hi_edge}%",
-                "Actual Win %": round(actual_pct, 1),
-                "Expected": predicted_pct,
-                "Games": len(bucket),
-                "Diff": round(actual_pct - predicted_pct, 1),
-            })
-    if cal_data:
-        cal_df = pd.DataFrame(cal_data)
-        cc1, cc2 = st.columns([2, 1])
-        with cc1:
-            st.bar_chart(cal_df.set_index("Predicted")[["Actual Win %", "Expected"]], height=300)
-        with cc2:
-            _styled_df(cal_df)
+        cal_data = []
+        for lo_edge in range(50, 96, 5):
+            hi_edge = lo_edge + 5
+            bucket = bt[(bt.Fav_Prob * 100 >= lo_edge) & (bt.Fav_Prob * 100 < hi_edge)]
+            if len(bucket) >= 3:
+                actual_pct = bucket.ML_Correct.mean() * 100
+                predicted_pct = (lo_edge + hi_edge) / 2
+                cal_data.append({
+                    "Predicted": f"{lo_edge}-{hi_edge}%",
+                    "Actual Win %": round(actual_pct, 1),
+                    "Expected": predicted_pct,
+                    "Games": len(bucket),
+                    "Diff": round(actual_pct - predicted_pct, 1),
+                })
+        if cal_data:
+            cal_df = pd.DataFrame(cal_data)
+            cc1, cc2 = st.columns([2, 1])
+            with cc1:
+                st.bar_chart(cal_df.set_index("Predicted")[["Actual Win %", "Expected"]], height=300)
+            with cc2:
+                _styled_df(cal_df)
 
     # ── Live Results Tracker ──
     live_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "live_results.json")
@@ -3150,7 +3000,6 @@ def page_picks(prefix, teams, seeds_df, preds):
         return
 
     # ── Build game cards with all three bet types per game ──
-    all_bets = []  # for summary table
     game_cards = []  # for game-by-game display
 
     for pick in picks:
@@ -3385,17 +3234,6 @@ def page_picks(prefix, teams, seeds_df, preds):
 
         game_cards.append(card)
 
-        # Also build flat list for board table
-        for btype, data in [("Moneyline", card["ml"]), ("Spread", card["spread"]), ("O/U", card["total"])]:
-            all_bets.append({
-                "Game": card["game"], "Bet Type": btype,
-                "Pick": data["pick"], "Model": data["model"], "Vegas": data["vegas"],
-                "Edge": data["edge"], "EV ($100)": data["ev"],
-                "Kelly %": data["kelly"], "Signal": data["label"],
-                "Rating": data["score"],
-                "_color": data["color"],
-            })
-
     # Sort games by tip-off time (next game first), then by edge as tiebreaker
     game_cards.sort(key=lambda x: (x["commence_time"] or "9999", -x["best_rating"]))
 
@@ -3521,16 +3359,8 @@ def page_picks(prefix, teams, seeds_df, preds):
 
         st.markdown('</div></div>', unsafe_allow_html=True)
 
-    # ── Full Bet Board (table) ──
-    st.markdown("---")
-    st.subheader("Full Bet Board")
-
-    all_bets.sort(key=lambda x: x["Rating"], reverse=True)
-    board_rows = [{k: v for k, v in b.items() if not k.startswith("_")} for b in all_bets]
-    if board_rows:
-        _styled_table(board_rows)
-
     # ── Legend ──
+    st.markdown("---")
     with st.expander("How to read this page"):
         st.markdown("""
 **Every game gets three picks:** Moneyline (who wins), Spread (margin of victory), and O/U (total points).
@@ -3640,27 +3470,6 @@ probabilities drive spreads, totals, and moneylines.
         )
 
     st.markdown("---")
-    st.markdown('<div class="vp-section">GLOSSARY</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<table class="vp-table"><thead><tr>'
-        '<th>TERM</th><th>DEFINITION</th></tr></thead><tbody>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">Spread</td>'
-        '<td>Projected margin of victory. Negative = favored.</td></tr>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">Moneyline</td>'
-        '<td>Odds to win outright. Negative = favorite, positive = underdog.</td></tr>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">Over/Under</td>'
-        '<td>Projected combined score of both teams.</td></tr>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">Edge Rating</td>'
-        '<td>Confidence score 0-100. Higher = stronger play.</td></tr>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">EV</td>'
-        '<td>Expected profit on a $100 bet. Positive = long-term profitable.</td></tr>'
-        '<tr><td style="font-weight:600; color:#FF6B35;">Kelly %</td>'
-        '<td>Optimal bet size as % of bankroll based on edge.</td></tr>'
-        '</tbody></table>',
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("---")
     st.markdown(
         "<div style='text-align:center; color:#555; font-size:12px; padding:20px;'>"
         "For entertainment purposes only. Past performance does not guarantee future results. "
@@ -3701,7 +3510,7 @@ gender_slots = m_slots if prefix == "M" else w_slots
 page = st.sidebar.radio(
     "Navigate",
     ["\U0001f4b0 Betting Picks", "\U0001f93c Head-to-Head", "\U0001f4ca Rankings",
-     "\U0001f3c6 Bracket", "\U0001f9ea Backtest", "\u2139\ufe0f About"],
+     "\U0001f3c6 Bracket", "\U0001f4b8 Championship Odds", "\U0001f9ea Backtest", "\u2139\ufe0f About"],
 )
 
 st.sidebar.markdown("---")
@@ -3727,6 +3536,8 @@ elif "Rankings" in page:
     page_rankings(prefix, teams, gender_seeds, conferences)
 elif "Bracket" in page:
     page_bracket(prefix, teams, gender_seeds, gender_slots, preds)
+elif "Championship Odds" in page:
+    page_odds(prefix, teams, gender_seeds, gender_slots, preds)
 elif "Backtest" in page:
     page_backtest(prefix, teams)
 elif "About" in page:
