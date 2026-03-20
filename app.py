@@ -1,6 +1,6 @@
 """
-March ML Mania 2026 — Interactive Dashboard
-ESPN/KenPom-style stats, head-to-head odds, tournament odds, and bracket.
+Vilpom — NCAA Tournament Analytics & Betting Intelligence
+Advanced ML-powered predictions, efficiency ratings, and edge detection.
 """
 
 import os
@@ -17,8 +17,8 @@ SEASON = 2026
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 st.set_page_config(
-    page_title="March ML Mania 2026",
-    page_icon="\U0001f3c0",
+    page_title="Vilpom",
+    page_icon="\U0001f4c8",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -31,8 +31,9 @@ def check_password():
         return True
 
     st.markdown(
-        "<h1 style='text-align:center;'>&#127936; March ML Mania 2026</h1>"
-        "<p style='text-align:center;color:#888;'>Enter access code to continue</p>",
+        "<h1 style='text-align:center; font-weight:900; letter-spacing:-1px;'>"
+        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></h1>"
+        "<p style='text-align:center;color:#888;font-size:14px;letter-spacing:2px;'>NCAA ANALYTICS & BETTING INTELLIGENCE</p>",
         unsafe_allow_html=True,
     )
     # CSS to disable copy/paste/select on the password field
@@ -54,7 +55,7 @@ def check_password():
                 st.rerun()
             else:
                 st.error("Incorrect access code.")
-        st.caption("Do not share this access code with others.")
+        st.caption("Members only. Do not share this access code.")
     return False
 
 
@@ -64,24 +65,87 @@ if not check_password():
 # ──────────────────────────── Custom CSS ────────────────────────────
 st.markdown("""
 <style>
-    .block-container { padding-top: 1rem; }
-    .stTabs [data-baseweb="tab-list"] { gap: 2px; }
-    .stTabs [data-baseweb="tab"] {
-        padding: 8px 20px;
-        font-weight: 600;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    .block-container { padding-top: 1rem; max-width: 1200px; }
+    html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    /* Premium sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0a0c10 0%, #12141a 100%);
+        border-right: 1px solid #1e2028;
     }
+    [data-testid="stSidebar"] .stRadio label {
+        font-weight: 500; letter-spacing: 0.3px;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1e2028; }
+    .stTabs [data-baseweb="tab"] {
+        padding: 10px 24px; font-weight: 600; letter-spacing: 0.3px;
+        border-radius: 6px 6px 0 0;
+    }
+
+    /* Premium card base */
+    .vp-card {
+        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+        border: 1px solid #2a2d36; border-radius: 10px;
+        padding: 16px 20px; margin: 6px 0;
+        transition: border-color 0.2s;
+    }
+    .vp-card:hover { border-color: #FF6B35; }
+
+    /* Section headers */
+    .vp-section {
+        font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+        color: #FF6B35; text-transform: uppercase; margin-bottom: 12px;
+    }
+
+    /* Rankings table */
+    .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .vp-table thead th {
+        background: #12141a; color: #888; font-size: 11px; font-weight: 700;
+        letter-spacing: 0.8px; text-transform: uppercase; padding: 10px 12px;
+        border-bottom: 2px solid #FF6B35; position: sticky; top: 0; z-index: 1;
+        text-align: left;
+    }
+    .vp-table tbody tr { transition: background 0.15s; }
+    .vp-table tbody tr:hover { background: rgba(255, 107, 53, 0.06); }
+    .vp-table tbody td {
+        padding: 8px 12px; border-bottom: 1px solid #1a1d24;
+        font-size: 13px; font-variant-numeric: tabular-nums;
+    }
+    .vp-table .rank-cell {
+        font-weight: 800; color: #FF6B35; font-size: 14px; width: 36px; text-align: center;
+    }
+    .vp-table .team-cell { font-weight: 600; color: #FAFAFA; }
+    .vp-table .seed-badge {
+        display: inline-block; background: #FF6B35; color: #000; font-weight: 700;
+        font-size: 10px; padding: 1px 6px; border-radius: 3px; min-width: 20px; text-align: center;
+    }
+    .vp-table .stat-good { color: #4ade80; }
+    .vp-table .stat-bad { color: #f87171; }
+    .vp-table .stat-neutral { color: #aaa; }
+
+    /* Tier badges */
+    .tier-elite { color: #000; background: #FF6B35; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
+    .tier-strong { color: #000; background: #4ade80; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
+    .tier-solid { color: #000; background: #60a5fa; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
+    .tier-avg { color: #000; background: #888; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 10px; }
+
+    /* Bracket */
     .bracket { display: flex; gap: 6px; min-height: 540px; overflow-x: auto; }
     .round {
         display: flex; flex-direction: column; justify-content: space-around;
         min-width: 165px;
     }
     .round-title {
-        text-align: center; font-size: 11px; color: #888;
-        margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;
+        text-align: center; font-size: 11px; color: #FF6B35;
+        margin-bottom: 4px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     }
     .matchup {
-        border: 1px solid #333; border-radius: 4px; overflow: hidden;
-        margin: 2px 0; background: #1a1d24;
+        border: 1px solid #2a2d36; border-radius: 6px; overflow: hidden;
+        margin: 2px 0; background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
     }
     .team-slot {
         padding: 3px 8px; font-size: 12px; display: flex;
@@ -90,31 +154,98 @@ st.markdown("""
     }
     .team-slot:last-child { border-bottom: none; }
     .team-slot.winner {
-        background: rgba(34, 197, 94, 0.13); color: #4ade80;
+        background: rgba(255, 107, 53, 0.12); color: #FF6B35;
         font-weight: 700;
     }
     .seed-tag { color: #666; margin-right: 4px; font-size: 11px; }
     .prob-tag { color: #666; font-size: 10px; }
     .big-prob {
-        font-size: 48px; font-weight: 800; text-align: center;
-        line-height: 1.1; margin: 10px 0;
+        font-size: 48px; font-weight: 900; text-align: center;
+        line-height: 1.1; margin: 10px 0; letter-spacing: -2px;
     }
-    .stat-bar {
-        height: 6px; border-radius: 3px; margin: 2px 0;
-    }
+    .stat-bar { height: 6px; border-radius: 3px; margin: 2px 0; }
     .ff-bracket { display: flex; gap: 12px; min-height: 180px; align-items: center; }
     .ff-round {
         display: flex; flex-direction: column; justify-content: space-around;
         min-width: 180px; min-height: 160px;
     }
     .champ-banner {
-        text-align: center; font-size: 28px; font-weight: 800;
-        padding: 16px; border: 2px solid #fbbf24; border-radius: 8px;
-        background: rgba(251, 191, 36, 0.08); color: #fbbf24;
-        margin: 12px 0;
+        text-align: center; font-size: 28px; font-weight: 900;
+        padding: 20px; border: 2px solid #FF6B35; border-radius: 10px;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.04) 100%);
+        color: #FF6B35; margin: 12px 0; letter-spacing: -0.5px;
     }
+
+    /* Metric cards */
+    .vp-metric {
+        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+        border: 1px solid #2a2d36; border-radius: 10px;
+        padding: 16px; text-align: center;
+    }
+    .vp-metric .label { color: #888; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .vp-metric .value { font-size: 28px; font-weight: 800; margin: 4px 0; }
+    .vp-metric .sub { color: #aaa; font-size: 12px; }
+
+    /* Hide streamlit dataframe styling overrides */
+    .stDataFrame { border-radius: 10px; overflow: hidden; }
+    [data-testid="stDataFrame"] > div { border-radius: 10px; }
+
+    /* Betting card upgrades */
+    .vp-bet-card {
+        background: linear-gradient(135deg, #1a1d24 0%, #14161c 100%);
+        border: 1px solid #2a2d36; border-radius: 10px;
+        padding: 16px 20px; margin: 10px 0;
+    }
+    .vp-bet-type {
+        background: #0e1117; border-radius: 8px; padding: 12px 16px;
+        flex: 1; min-width: 180px;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0e1117; }
+    ::-webkit-scrollbar-thumb { background: #2a2d36; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
 </style>
 """, unsafe_allow_html=True)
+
+
+def _styled_table(rows, columns=None, max_height=None):
+    """Render a list of dicts as a premium styled HTML table."""
+    if not rows:
+        return
+    if columns is None:
+        columns = list(rows[0].keys())
+    # Filter out internal columns starting with _
+    columns = [c for c in columns if not c.startswith("_")]
+    h = max_height or 0
+    wrapper_style = f'max-height:{h}px; overflow-y:auto; ' if h else ''
+    html = f'<div style="{wrapper_style}border-radius:10px; border:1px solid #2a2d36;">'
+    html += '<table class="vp-table"><thead><tr>'
+    for c in columns:
+        html += f'<th>{c.upper()}</th>'
+    html += '</tr></thead><tbody>'
+    for r in rows:
+        html += '<tr>'
+        for c in columns:
+            val = r.get(c, "")
+            style = ''
+            sval = str(val)
+            if sval.startswith('+') or 'HIT' in sval:
+                style = ' style="color:#4ade80; font-weight:600;"'
+            elif 'MISS' in sval:
+                style = ' style="color:#f87171; font-weight:600;"'
+            html += f'<td{style}>{val}</td>'
+        html += '</tr>'
+    html += '</tbody></table></div>'
+    st.markdown(html, unsafe_allow_html=True)
+
+
+def _styled_df(df, max_height=None):
+    """Convert a pandas DataFrame to a premium styled HTML table."""
+    rows = df.to_dict('records')
+    columns = list(df.columns)
+    _styled_table(rows, columns, max_height)
 
 
 # ──────────────────────────── Data Loading ────────────────────────────
@@ -716,8 +847,32 @@ def final_four_html(sim_results, teams, team_seed_map):
 
 # ──────────────────────────── Page: Rankings ────────────────────────────
 
+def _tier_badge(elo_val, max_elo):
+    """Return a tier badge based on Elo percentile."""
+    pct = (elo_val - 1200) / max(max_elo - 1200, 1)
+    if pct >= 0.90:
+        return '<span class="tier-elite">ELITE</span>'
+    elif pct >= 0.70:
+        return '<span class="tier-strong">STRONG</span>'
+    elif pct >= 0.45:
+        return '<span class="tier-solid">SOLID</span>'
+    else:
+        return '<span class="tier-avg">AVG</span>'
+
+
+def _eff_color(val, higher_better=True):
+    """Return CSS color class for efficiency values."""
+    if higher_better:
+        return "stat-good" if val > 5 else "stat-bad" if val < -5 else "stat-neutral"
+    else:
+        return "stat-good" if val < 0 else "stat-bad" if val > 5 else "stat-neutral"
+
+
 def page_rankings(prefix, teams, seeds_df, conferences):
-    st.header(f"{'Men' if prefix == 'M' else 'Women'}'s Rankings")
+    st.markdown(
+        f'<div class="vp-section">{"MEN" if prefix == "M" else "WOMEN"}\'S POWER RANKINGS</div>',
+        unsafe_allow_html=True,
+    )
 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
@@ -728,62 +883,91 @@ def page_rankings(prefix, teams, seeds_df, conferences):
     for tid in stats.index:
         s = stats.loc[tid]
         rows.append({
+            "tid": tid,
             "Team": tname(teams, tid),
             "Conf": conferences.get(tid, ""),
             "Seed": team_seeds.get(tid, ""),
             "Record": f"{int(s.Wins)}-{int(s.Games - s.Wins)}",
             "Elo": int(elo.get(tid, 1500)),
-            "NetEff": s.NetEff,
-            "OffEff": s.OffEff,
-            "DefEff": s.DefEff,
-            "Tempo": s.Tempo,
+            "NetEff": round(s.NetEff, 1),
+            "OffEff": round(s.OffEff, 1),
+            "DefEff": round(s.DefEff, 1),
+            "Tempo": round(s.Tempo, 1),
             "PPG": round(s.PPG, 1),
             "OppPPG": round(s.OppPPG, 1),
             "Margin": round(s.Margin, 1),
-            "eFG%": s.EffFGPct,
-            "FG%": s.FGPct,
-            "3P%": s.FG3Pct,
-            "FT%": s.FTPct,
-            "RPG": round(s.RPG, 1),
-            "APG": round(s.APG, 1),
-            "TOPG": round(s.TOPG, 1),
-            "SPG": round(s.SPG, 1),
-            "BPG": round(s.BPG, 1),
+            "eFG%": round(s.EffFGPct, 1),
+            "FG%": round(s.FGPct, 1),
+            "3P%": round(s.FG3Pct, 1),
+            "FT%": round(s.FTPct, 1),
         })
 
-    df = pd.DataFrame(rows).sort_values("Elo", ascending=False).reset_index(drop=True)
-    df.index = df.index + 1
-    df.index.name = "Rank"
+    rows.sort(key=lambda r: r["Elo"], reverse=True)
 
     col1, col2 = st.columns([1, 3])
     with col1:
         show_tourney_only = st.checkbox("Tournament teams only", value=False)
-        conf_filter = st.selectbox("Conference", ["All"] + sorted(df["Conf"].unique().tolist()))
+        conf_filter = st.selectbox("Conference", ["All"] + sorted(set(r["Conf"] for r in rows if r["Conf"])))
     with col2:
         search = st.text_input("Search team", "")
 
     if show_tourney_only:
-        df = df[df["Seed"] != ""]
+        rows = [r for r in rows if r["Seed"] != ""]
     if conf_filter != "All":
-        df = df[df["Conf"] == conf_filter]
+        rows = [r for r in rows if r["Conf"] == conf_filter]
     if search:
-        df = df[df["Team"].str.contains(search, case=False)]
+        rows = [r for r in rows if search.lower() in r["Team"].lower()]
 
-    st.dataframe(
-        df, use_container_width=True, height=600,
-        column_config={
-            "Elo": st.column_config.NumberColumn("Elo", format="%d"),
-            "NetEff": st.column_config.NumberColumn("Net Eff", format="%.1f"),
-            "OffEff": st.column_config.NumberColumn("Off Eff", format="%.1f"),
-            "DefEff": st.column_config.NumberColumn("Def Eff", format="%.1f"),
-        },
-    )
+    max_elo = max((r["Elo"] for r in rows), default=1700)
+
+    # Build premium HTML table
+    html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #2a2d36;">'
+    html += '<table class="vp-table"><thead><tr>'
+    html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th><th>SEED</th>'
+    html += '<th>RECORD</th><th>TIER</th><th>ELO</th>'
+    html += '<th>NET EFF</th><th>OFF EFF</th><th>DEF EFF</th><th>TEMPO</th>'
+    html += '<th>PPG</th><th>OPP PPG</th><th>MARGIN</th>'
+    html += '<th>eFG%</th><th>FG%</th><th>3P%</th><th>FT%</th>'
+    html += '</tr></thead><tbody>'
+
+    for i, r in enumerate(rows, 1):
+        seed_html = f'<span class="seed-badge">{r["Seed"]}</span>' if r["Seed"] else ""
+        tier_html = _tier_badge(r["Elo"], max_elo)
+        net_cls = _eff_color(r["NetEff"])
+        off_cls = _eff_color(r["OffEff"])
+        def_cls = _eff_color(r["DefEff"], higher_better=False)
+        margin_cls = "stat-good" if r["Margin"] > 0 else "stat-bad" if r["Margin"] < 0 else "stat-neutral"
+
+        html += f'<tr>'
+        html += f'<td class="rank-cell">{i}</td>'
+        html += f'<td class="team-cell">{r["Team"]}</td>'
+        html += f'<td style="color:#888;">{r["Conf"]}</td>'
+        html += f'<td>{seed_html}</td>'
+        html += f'<td>{r["Record"]}</td>'
+        html += f'<td>{tier_html}</td>'
+        html += f'<td style="font-weight:700;">{r["Elo"]}</td>'
+        html += f'<td class="{net_cls}" style="font-weight:600;">{r["NetEff"]:+.1f}</td>'
+        html += f'<td class="{off_cls}">{r["OffEff"]:.1f}</td>'
+        html += f'<td class="{def_cls}">{r["DefEff"]:.1f}</td>'
+        html += f'<td style="color:#aaa;">{r["Tempo"]:.1f}</td>'
+        html += f'<td>{r["PPG"]}</td>'
+        html += f'<td>{r["OppPPG"]}</td>'
+        html += f'<td class="{margin_cls}" style="font-weight:600;">{r["Margin"]:+.1f}</td>'
+        html += f'<td>{r["eFG%"]:.1f}</td>'
+        html += f'<td>{r["FG%"]:.1f}</td>'
+        html += f'<td>{r["3P%"]:.1f}</td>'
+        html += f'<td>{r["FT%"]:.1f}</td>'
+        html += '</tr>'
+
+    html += '</tbody></table></div>'
+    st.markdown(html, unsafe_allow_html=True)
+    st.caption(f"Showing {len(rows)} teams")
 
 
 # ──────────────────────────── Page: Head-to-Head ────────────────────────────
 
 def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, seed_history):
-    st.header("Head-to-Head Matchup")
+    st.markdown('<div class="vp-section">HEAD-TO-HEAD MATCHUP</div>', unsafe_allow_html=True)
 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
@@ -1053,7 +1237,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             })
 
         sim_df = pd.DataFrame(sim_rows)
-        st.dataframe(sim_df, use_container_width=True, hide_index=True)
+        _styled_df(sim_df)
 
         if total_g > 0:
             avg_m = round(total_margin / total_g, 1)
@@ -1145,7 +1329,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
 # ──────────────────────────── Page: Tournament Odds ────────────────────────────
 
 def page_odds(prefix, teams, seeds_df, slots_df, preds):
-    st.header("Tournament Championship Odds")
+    st.markdown('<div class="vp-section">CHAMPIONSHIP ODDS</div>', unsafe_allow_html=True)
 
     with st.spinner("Running 10,000 tournament simulations..."):
         probs, round_labels = monte_carlo_odds(seeds_df, slots_df, preds)
@@ -1242,7 +1426,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     ff_df = pd.DataFrame(ff_rows).sort_values("_ff", ascending=False).reset_index(drop=True)
     ff_df.index = ff_df.index + 1
     ff_df.index.name = "#"
-    st.dataframe(ff_df.drop(columns=["_ff"]).head(30), use_container_width=True, hide_index=False)
+    _styled_df(ff_df.drop(columns=["_ff"]).head(30))
 
     # Top contenders bar chart
     st.markdown("---")
@@ -1255,16 +1439,13 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 
     # Full table
     st.subheader("Full Round-by-Round Advancement Odds")
-    st.dataframe(
-        df.drop(columns=["_champ_pct"]),
-        use_container_width=True, height=600,
-    )
+    _styled_df(df.drop(columns=["_champ_pct"]), max_height=600)
 
 
 # ──────────────────────────── Page: Bracket ────────────────────────────
 
 def page_bracket(prefix, teams, seeds_df, slots_df, preds):
-    st.header("Predicted Tournament Bracket")
+    st.markdown('<div class="vp-section">PREDICTED BRACKET</div>', unsafe_allow_html=True)
 
     sim_results, slot_winners = simulate_bracket(seeds_df, slots_df, preds, deterministic=True)
 
@@ -1336,7 +1517,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
             })
 
         if game_rows:
-            st.dataframe(pd.DataFrame(game_rows), use_container_width=True, hide_index=True)
+            _styled_table(game_rows)
         st.markdown("")
 
     # ── Championship Odds (Monte Carlo) ──
@@ -1406,10 +1587,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
 
     st.markdown("")
     st.subheader("Full Round-by-Round Advancement Odds")
-    st.dataframe(
-        odds_df.drop(columns=["_champ_pct"]),
-        use_container_width=True, height=600,
-    )
+    _styled_df(odds_df.drop(columns=["_champ_pct"]), max_height=600)
 
 
 # ──────────────────────────── Page: Model Backtest ────────────────────────────
@@ -1684,7 +1862,7 @@ def _load_cached_espn():
 
 
 def page_backtest(prefix, teams):
-    st.header("Model Backtest")
+    st.markdown('<div class="vp-section">MODEL BACKTEST</div>', unsafe_allow_html=True)
     st.caption(
         "How would our model have performed betting past NCAA tournaments? "
         "Every prediction uses only data available before that tournament — no hindsight."
@@ -1788,7 +1966,7 @@ def page_backtest(prefix, teams):
                 "MAE": f"{tb.Total_Diff.abs().mean():.1f}",
             })
         if total_tier_rows:
-            st.dataframe(pd.DataFrame(total_tier_rows), use_container_width=True, hide_index=True)
+            _styled_table(total_tier_rows)
 
         # Distribution chart
         st.markdown("**Projection Error Distribution**")
@@ -1825,7 +2003,7 @@ def page_backtest(prefix, teams):
             "Total MAE": f"{s_mae:.1f}",
         })
 
-    st.dataframe(pd.DataFrame(season_rows), use_container_width=True, hide_index=True)
+    _styled_table(season_rows)
 
     # ── Cumulative Profit Chart ──
     st.subheader("Cumulative Profit (Units)")
@@ -1862,7 +2040,7 @@ def page_backtest(prefix, teams):
             "ATS Win %": f"{tb[~tb.ATS_Push].ATS_Correct.mean() * 100:.1f}%" if len(tb[~tb.ATS_Push]) > 0 else "—",
             "Total MAE": f"{tb.Total_Diff.abs().mean():.1f}",
         })
-    st.dataframe(pd.DataFrame(tier_rows), use_container_width=True, hide_index=True)
+    _styled_table(tier_rows)
 
     # ── Upset Tracker ──
     st.markdown("---")
@@ -1882,7 +2060,7 @@ def page_backtest(prefix, teams):
             "Spread": f"{u.Spread:+.1f}",
         })
     if upset_rows:
-        st.dataframe(pd.DataFrame(upset_rows), use_container_width=True, hide_index=True)
+        _styled_table(upset_rows)
 
     # ── Calibration ──
     st.markdown("---")
@@ -1909,7 +2087,7 @@ def page_backtest(prefix, teams):
         with cc1:
             st.bar_chart(cal_df.set_index("Predicted")[["Actual Win %", "Expected"]], height=300)
         with cc2:
-            st.dataframe(cal_df, use_container_width=True, hide_index=True)
+            _styled_df(cal_df)
 
     # ── Live Results Tracker ──
     live_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "live_results.json")
@@ -1971,7 +2149,7 @@ def page_backtest(prefix, teams):
                 st.markdown(f'<div style="text-align:center;font-size:20px;font-weight:700;color:#fbbf24;">O/U: {ou_o}O-{ou_u}U</div>',
                             unsafe_allow_html=True)
 
-            st.dataframe(pd.DataFrame(live_rows), use_container_width=True, hide_index=True)
+            _styled_table(live_rows)
 
 
 # ──────────────────────────── Page: Betting Picks ────────────────────────────
@@ -2250,7 +2428,7 @@ def _match_odds_teams(teams, stats, odds_cache, prefix="M"):
 
 
 def page_picks(prefix, teams, seeds_df, preds):
-    st.header("Today's Games & Picks")
+    st.markdown('<div class="vp-section">TODAY\'S PICKS</div>', unsafe_allow_html=True)
     st.caption("Live scores, Vegas odds, and our model's best bets.")
 
     # ── Load data ──
@@ -2606,9 +2784,12 @@ def page_picks(prefix, teams, seeds_df, preds):
         border_color = "#4ade80" if best >= 70 else "#fbbf24" if best >= 45 else "#60a5fa" if best >= 25 else "#444"
 
         st.markdown(
-            f'<div style="background:#1a1d24; border:1px solid {border_color}; border-left:4px solid {border_color}; '
-            f'border-radius:6px; padding:14px 18px; margin:10px 0;">'
-            f'<div style="font-weight:700; font-size:16px; margin-bottom:10px;">{card["game"]}</div>'
+            f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
+            f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
+            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}</div>'
+            f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
+            f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">TOP EDGE: {best}</span>'
+            f'</div>'
             f'<div style="display:flex; gap:12px; flex-wrap:wrap;">',
             unsafe_allow_html=True,
         )
@@ -2621,14 +2802,15 @@ def page_picks(prefix, teams, seeds_df, preds):
             edge_display = data["edge"]
 
             st.markdown(
-                f'<div style="flex:1; min-width:180px; background:#12141a; border-radius:6px; padding:10px 14px;">'
-                f'<div style="font-size:11px; color:#888; font-weight:600; letter-spacing:0.5px; margin-bottom:4px;">{btype}</div>'
-                f'<div style="font-size:16px; font-weight:700; color:{col}; margin-bottom:6px;">{data["pick"]}</div>'
-                f'<div style="font-size:12px; color:#aaa;">Model: {data["model"]} &nbsp;|&nbsp; Vegas: {data["vegas"]}</div>'
-                f'<div style="font-size:12px; color:#aaa;">Edge: {edge_display} &nbsp;|&nbsp; EV: {data["ev"]}</div>'
-                f'<div style="margin-top:6px;">'
-                f'<span style="background:{col}; color:#000; font-weight:700; padding:2px 8px; '
-                f'border-radius:3px; font-size:11px;">{lbl} ({sc})</span></div>'
+                f'<div class="vp-bet-type">'
+                f'<div style="font-size:10px; color:#FF6B35; font-weight:700; letter-spacing:1px; margin-bottom:6px;">{btype}</div>'
+                f'<div style="font-size:16px; font-weight:700; color:{col}; margin-bottom:8px;">{data["pick"]}</div>'
+                f'<div style="font-size:12px; color:#aaa; margin-bottom:3px;">Model: <span style="color:#e2e8f0; font-weight:600;">{data["model"]}</span></div>'
+                f'<div style="font-size:12px; color:#aaa; margin-bottom:3px;">Vegas: <span style="color:#e2e8f0; font-weight:600;">{data["vegas"]}</span></div>'
+                f'<div style="font-size:12px; color:#aaa; margin-bottom:8px;">Edge: <span style="color:#e2e8f0; font-weight:600;">{edge_display}</span> &nbsp; EV: <span style="color:#e2e8f0; font-weight:600;">{data["ev"]}</span></div>'
+                f'<div>'
+                f'<span style="background:{col}; color:#000; font-weight:700; padding:3px 10px; '
+                f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">{lbl} ({sc})</span></div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -2642,7 +2824,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     all_bets.sort(key=lambda x: x["Rating"], reverse=True)
     board_rows = [{k: v for k, v in b.items() if not k.startswith("_")} for b in all_bets]
     if board_rows:
-        st.dataframe(pd.DataFrame(board_rows), use_container_width=True, hide_index=True)
+        _styled_table(board_rows)
 
     # ── Legend ──
     with st.expander("How to read this page"):
@@ -2669,61 +2851,116 @@ def page_picks(prefix, teams, seeds_df, preds):
 # ──────────────────────────── Page: About ────────────────────────────
 
 def page_about():
-    st.header("About This Dashboard")
+    st.markdown(
+        "<div style='text-align:center; margin:40px 0 20px;'>"
+        "<span style='font-size:48px; font-weight:900; letter-spacing:-2px;'>"
+        "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
+        "</div>"
+        "<div style='text-align:center; color:#888; font-size:12px; letter-spacing:3px; font-weight:600; margin-bottom:40px;'>"
+        "NCAA TOURNAMENT ANALYTICS & BETTING INTELLIGENCE</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("---")
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(
+            '<div class="vp-metric">'
+            '<div class="label">MODELS</div>'
+            '<div class="value" style="color:#FF6B35;">3</div>'
+            '<div class="sub">XGBoost + CatBoost + LightGBM</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c2:
+        st.markdown(
+            '<div class="vp-metric">'
+            '<div class="label">TRAINING DATA</div>'
+            '<div class="value" style="color:#4ade80;">20+ YRS</div>'
+            '<div class="sub">Tournament games since 2003</div></div>',
+            unsafe_allow_html=True,
+        )
+    with c3:
+        st.markdown(
+            '<div class="vp-metric">'
+            '<div class="label">SIMULATIONS</div>'
+            '<div class="value" style="color:#60a5fa;">10K</div>'
+            '<div class="sub">Monte Carlo per bracket</div></div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("---")
+
+    st.markdown('<div class="vp-section">THE ENGINE</div>', unsafe_allow_html=True)
     st.markdown("""
-This dashboard uses **machine learning** to predict NCAA tournament outcomes and help you
-find smart betting opportunities during March Madness.
+Vilpom's ensemble model processes **50+ features per team** including efficiency ratings,
+strength of schedule, coaching track records, Elo trajectories, and shooting profiles.
+Three gradient-boosted models independently evaluate every matchup, then consensus
+probabilities drive spreads, totals, and moneylines.
+""")
 
----
+    st.markdown('<div class="vp-section">WHAT YOU GET</div>', unsafe_allow_html=True)
 
-### How It Works
+    f1, f2 = st.columns(2)
+    with f1:
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Power Rankings</div>'
+            '<div style="color:#aaa; font-size:13px;">Elo ratings, net efficiency, and tier classifications '
+            'updated through the full regular season.</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#4ade80; margin-bottom:6px;">Live Betting Picks</div>'
+            '<div style="color:#aaa; font-size:13px;">Model vs. Vegas comparisons with edge ratings, EV, '
+            'and Kelly sizing on every available market.</div></div>',
+            unsafe_allow_html=True,
+        )
+    with f2:
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#60a5fa; margin-bottom:6px;">Head-to-Head Analysis</div>'
+            '<div style="color:#aaa; font-size:13px;">Stat comparisons, projected lines, similar opponent '
+            'analysis, and coaching matchup data.</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#fbbf24; margin-bottom:6px;">Bracket & Futures</div>'
+            '<div style="color:#aaa; font-size:13px;">Full bracket predictions, championship futures odds, '
+            'and round-by-round advancement probabilities.</div></div>',
+            unsafe_allow_html=True,
+        )
 
-We look at every team's full season of data — points scored, rebounds, shooting percentages,
-turnovers, assists, steals, blocks, and more. On top of that, we factor in:
+    st.markdown("---")
+    st.markdown('<div class="vp-section">GLOSSARY</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<table class="vp-table"><thead><tr>'
+        '<th>TERM</th><th>DEFINITION</th></tr></thead><tbody>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">Spread</td>'
+        '<td>Projected margin of victory. Negative = favored.</td></tr>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">Moneyline</td>'
+        '<td>Odds to win outright. Negative = favorite, positive = underdog.</td></tr>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">Over/Under</td>'
+        '<td>Projected combined score of both teams.</td></tr>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">Edge Rating</td>'
+        '<td>Confidence score 0-100. Higher = stronger play.</td></tr>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">EV</td>'
+        '<td>Expected profit on a $100 bet. Positive = long-term profitable.</td></tr>'
+        '<tr><td style="font-weight:600; color:#FF6B35;">Kelly %</td>'
+        '<td>Optimal bet size as % of bankroll based on edge.</td></tr>'
+        '</tbody></table>',
+        unsafe_allow_html=True,
+    )
 
-- **Strength of schedule** — beating good teams matters more than running up the score on weak ones
-- **Historical tournament performance** — some teams (and coaches) just know how to win in March
-- **Elo ratings** — a chess-style rating system that tracks how good each team really is, game by game
-- **Coaching track records** — tenure, tournament wins, and overall postseason experience
-
-Our model learns patterns from **20+ years of tournament games** to estimate win probabilities
-for every possible matchup.
-
-### The Secret Sauce
-
-We combine **three different AI models** and average their predictions to get the best possible
-accuracy. Think of it like asking three expert analysts for their opinion and going with the
-consensus. (For the nerds: XGBoost, CatBoost, and LightGBM in an ensemble.)
-
----
-
-### Key Features
-
-- **Elo Ratings** — Live power rankings that update after every game
-- **Efficiency Metrics** — Points per possession, offensive/defensive ratings
-- **Similar Opponent Analysis** — How did teams perform against opponents that play like their next matchup?
-- **Historical Betting Performance** — Backtested against 20+ years of real tournament results
-- **Monte Carlo Simulations** — 10,000 simulated tournaments to estimate championship odds
-
----
-
-### What Do the Betting Numbers Mean?
-
-| Term | What It Means | Example |
-|------|--------------|---------|
-| **Spread** | How many points the favorite is expected to win by. Negative = favored. | Duke -5.5 means Duke is favored by 5.5 points |
-| **Moneyline (ML)** | Odds to win straight up. Negative = favorite, positive = underdog. | -200 means bet $200 to win $100. +150 means bet $100 to win $150 |
-| **Over/Under (Total)** | The predicted combined score of both teams. | O/U 145.5 means the game is expected to have about 145 total points |
-| **Edge Rating** | Our confidence in a bet, from 0-100. Higher = stronger pick. | 70+ is a strong pick, below 25 is a skip |
-
----
-
-### Disclaimer
-
-*For entertainment purposes only. Past performance does not guarantee future results.
-This is a student project for the Kaggle March Machine Learning Mania competition —
-not professional financial advice. Please gamble responsibly.*
-    """)
+    st.markdown("---")
+    st.markdown(
+        "<div style='text-align:center; color:#555; font-size:12px; padding:20px;'>"
+        "For entertainment purposes only. Past performance does not guarantee future results. "
+        "Not professional financial advice. Please gamble responsibly.</div>",
+        unsafe_allow_html=True,
+    )
 
 
 # ──────────────────────────── Main ────────────────────────────
@@ -2735,8 +2972,16 @@ m_slots, w_slots = load_slots()
 conferences = load_conferences()
 
 # Sidebar
-st.sidebar.title("\U0001f3c0 March ML Mania")
-st.sidebar.caption("2026 NCAA Tournament Predictions & Betting")
+st.sidebar.markdown(
+    "<div style='text-align:center; margin-bottom:8px;'>"
+    "<span style='font-size:28px; font-weight:900; letter-spacing:-1px;'>"
+    "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
+    "</div>"
+    "<div style='text-align:center; color:#666; font-size:10px; letter-spacing:2px; font-weight:600;'>"
+    "ANALYTICS & INTELLIGENCE</div>",
+    unsafe_allow_html=True,
+)
+st.sidebar.markdown("---")
 
 gender = st.sidebar.radio("Tournament", ["Men's", "Women's"], horizontal=True)
 prefix = "M" if gender == "Men's" else "W"
@@ -2752,7 +2997,11 @@ page = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption("For entertainment purposes only. Not financial advice.")
+st.sidebar.markdown(
+    "<div style='text-align:center; color:#444; font-size:10px; letter-spacing:1px;'>"
+    "VILPOM &copy; 2026<br>For entertainment only. Not financial advice.</div>",
+    unsafe_allow_html=True,
+)
 
 if "Betting Picks" in page:
     page_picks(prefix, teams, gender_seeds, preds)
