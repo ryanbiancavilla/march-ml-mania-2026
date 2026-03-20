@@ -1853,24 +1853,20 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                 actual_matchups[(w_tid, l_tid)] = f"{w_score}-{l_score}"
                 actual_winners_map[frozenset({w_tid, l_tid})] = w_tid
 
-    # Simulate bracket using actual results where available
-    sim_results, slot_winners = simulate_bracket(
-        seeds_df, slots_df, preds, deterministic=True, actual_winners=actual_winners_map
-    )
+    # Run model-only simulation first to detect misses (no actual results)
+    model_results, _ = simulate_bracket(seeds_df, slots_df, preds, deterministic=True)
 
-    # Find bracket misses: games where model predicted the wrong winner
+    # Find bracket misses: compare model predictions vs actual results
     bracket_misses = []
     bracket_hits = 0
-    for slot, r in sim_results.items():
+    for slot, r in model_results.items():
         t1, t2, winner = r.get("t1"), r.get("t2"), r.get("winner")
         if t1 is None or t2 is None:
             continue
         loser = t2 if winner == t1 else t1
-        # Check if this exact matchup has a result (check both orderings)
         if (winner, loser) in actual_matchups:
             bracket_hits += 1
         elif (loser, winner) in actual_matchups:
-            # Model predicted wrong winner
             bracket_misses.append({
                 "slot": slot,
                 "predicted": tname(teams, winner),
@@ -1882,6 +1878,11 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                 "score": actual_matchups[(loser, winner)],
                 "prob": r.get("prob", 0.5),
             })
+
+    # Now simulate with actual results for display (correct teams advance)
+    sim_results, slot_winners = simulate_bracket(
+        seeds_df, slots_df, preds, deterministic=True, actual_winners=actual_winners_map
+    )
 
     total_graded = bracket_hits + len(bracket_misses)
 
