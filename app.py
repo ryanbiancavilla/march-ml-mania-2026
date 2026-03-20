@@ -1648,8 +1648,24 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     massey_ranks = load_massey_ranks() if prefix == "M" else {}
     has_massey = bool(massey_ranks)
 
+    # Build set of eliminated teams from ESPN final results
+    espn_data = _load_cached_espn()
+    odds_map_elim, name_to_tid_elim = _build_odds_name_map(teams, prefix)
+    eliminated = set()
+    if espn_data and espn_data.get("games"):
+        for g in espn_data["games"]:
+            if g.get("status") != "STATUS_FINAL":
+                continue
+            hs, aws = int(g.get("home_score", 0)), int(g.get("away_score", 0))
+            loser_name = g["away_team"] if hs > aws else g["home_team"]
+            loser_tid = _resolve_odds_team(loser_name, odds_map_elim, name_to_tid_elim)
+            if loser_tid:
+                eliminated.add(loser_tid)
+
     rows = []
     for tid, p_list in probs.items():
+        if tid in eliminated:
+            continue
         row_data = {
             "Team": tname(teams, tid),
             "Seed": team_seeds.get(tid, 99),
