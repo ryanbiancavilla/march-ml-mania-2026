@@ -1672,7 +1672,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         )
 
     # Team Props
-    st.markdown("**Team Props**")
     tp1, tp2 = st.columns(2)
 
     for col, tid, team_name, props in [
@@ -1684,15 +1683,21 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                 prop_rows = ""
                 for prop_name, val in props.items():
                     prop_rows += (
-                        f'<div style="display:flex; justify-content:space-between; '
-                        f'padding:5px 0; border-bottom:1px solid #333;">'
-                        f'<span style="color:#aaa;">{prop_name}</span>'
-                        f'<span style="font-weight:600; color:#e2e8f0;">{val}</span></div>'
+                        f'<tr>'
+                        f'<td style="padding:6px 10px; border-bottom:1px solid #2a2a2a; font-size:12px; color:#aaa;">{prop_name}</td>'
+                        f'<td style="padding:6px 10px; border-bottom:1px solid #2a2a2a; font-size:12px; font-weight:700; color:#e2e8f0; text-align:right; font-variant-numeric:tabular-nums;">{val}</td>'
+                        f'</tr>'
                     )
                 st.markdown(
-                    f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px;">'
-                    f'<div style="font-weight:700; margin-bottom:8px; color:{_team_color(tid)};">{_team_logo_img(tid, espn_map, size=16)}{team_name}</div>'
-                    f'{prop_rows}</div>',
+                    f'<div style="border:1px solid #333; border-radius:8px; overflow:hidden; background:#18191f;">'
+                    f'<div style="padding:8px 10px; background:#131418; border-bottom:1px solid #333; display:flex; align-items:center; gap:5px;">'
+                    f'<div style="width:3px; height:14px; border-radius:1px; background:{_team_color(tid)}; flex-shrink:0;"></div>'
+                    f'{_team_logo_img(tid, espn_map, size=16)}'
+                    f'<span style="font-size:12px; font-weight:700; color:#FAFAFA;">{team_name}</span>'
+                    f'<span style="font-size:9px; color:#666; font-weight:700; letter-spacing:1px; margin-left:auto;">PROPS</span>'
+                    f'</div>'
+                    f'<table style="width:100%; border-collapse:collapse;">'
+                    f'{prop_rows}</table></div>',
                     unsafe_allow_html=True,
                 )
 
@@ -1786,9 +1791,9 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             f'<div style="border-radius:10px; border:1px solid #333; overflow:hidden; max-width:560px; margin:auto;">'
             f'<table class="vp-table" style="margin:0;">'
             f'<thead><tr>'
-            f'<th style="text-align:right; width:40%;">{_team_logo_img(t1, espn_map, size=18)}{tname(teams, t1)}</th>'
+            f'<th style="text-align:right; width:40%; font-size:13px !important; text-transform:none !important; color:#FAFAFA !important; letter-spacing:0 !important;">{_team_logo_img(t1, espn_map, size=18)}{tname(teams, t1)}</th>'
             f'<th style="text-align:center; width:20%; color:#009CDE;">STAT</th>'
-            f'<th style="text-align:left; width:40%;">{_team_logo_img(t2, espn_map, size=18)}{tname(teams, t2)}</th>'
+            f'<th style="text-align:left; width:40%; font-size:13px !important; text-transform:none !important; color:#FAFAFA !important; letter-spacing:0 !important;">{_team_logo_img(t2, espn_map, size=18)}{tname(teams, t2)}</th>'
             f'</tr></thead><tbody>'
             f'{rows_html}</tbody></table></div>',
             unsafe_allow_html=True,
