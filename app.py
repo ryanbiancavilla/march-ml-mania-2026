@@ -775,7 +775,8 @@ def compute_season_stats(prefix):
     for _, r in df.iterrows():
         for side, opp_side, win in [("W", "L", 1), ("L", "W", 0)]:
             records.append({
-                "TeamID": int(r[f"{side}TeamID"]), "Win": win,
+                "TeamID": int(r[f"{side}TeamID"]), "OppID": int(r[f"{opp_side}TeamID"]),
+                "Win": win,
                 "DayNum": int(r["DayNum"]),
                 "Score": r[f"{side}Score"], "OppScore": r[f"{opp_side}Score"],
                 "FGM": r[f"{side}FGM"], "FGA": r[f"{side}FGA"],
@@ -833,6 +834,13 @@ def compute_season_stats(prefix):
     l10_agg["L10_Margin"] = (l10_agg["L10_Margin"] - l10_agg["L10_OppScore"]).round(1)
     l10_agg["L10_Losses"] = l10_agg["L10_Games"] - l10_agg["L10_Wins"]
     stats = stats.join(l10_agg[["L10_Wins", "L10_Losses", "L10_Margin"]])
+
+    # Strength of Schedule: average opponent win percentage
+    opp_wp = tg.merge(stats[["WinPct"]].rename(columns={"WinPct": "OppWinPct"}),
+                       left_on="OppID", right_index=True, how="left")
+    sos = opp_wp.groupby("TeamID")["OppWinPct"].mean().round(3)
+    sos.name = "SOS"
+    stats = stats.join(sos)
 
     return stats
 
@@ -1192,6 +1200,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
             "OffEff": round(s.OffEff, 1),
             "DefEff": round(s.DefEff, 1),
             "Margin": round(s.Margin, 1),
+            "SOS": round(s.SOS, 3) if hasattr(s, "SOS") and pd.notna(s.SOS) else 0.500,
             "eFG%": round(s.EffFGPct, 1),
             "3P%": round(s.FG3Pct, 1),
             "FT%": round(s.FTPct, 1),
@@ -1224,6 +1233,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         html += '<th title="Composite rank across 60+ computer ranking systems">MASSEY</th>'
     html += '<th>NET EFF</th><th>OFF EFF</th><th>DEF EFF</th>'
     html += '<th>MARGIN</th>'
+    html += '<th title="Strength of Schedule: avg opponent win%">SOS</th>'
     html += '<th>eFG%</th><th>3P%</th><th>FT%</th>'
     html += '</tr></thead><tbody>'
 
@@ -1264,6 +1274,9 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         html += f'<td class="{off_cls}">{r["OffEff"]:.1f}</td>'
         html += f'<td class="{def_cls}">{r["DefEff"]:.1f}</td>'
         html += f'<td class="{margin_cls}" style="font-weight:600;">{r["Margin"]:+.1f}</td>'
+        sos_val = r["SOS"]
+        sos_color = "#4ade80" if sos_val >= 0.530 else "#f87171" if sos_val < 0.480 else "#888"
+        html += f'<td style="color:{sos_color}; font-weight:600;">{sos_val:.3f}</td>'
         html += f'<td>{r["eFG%"]:.1f}</td>'
         html += f'<td>{r["3P%"]:.1f}</td>'
         html += f'<td>{r["FT%"]:.1f}</td>'
@@ -1475,6 +1488,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             ("Conf Strength", f"{c1_str:.1%}", f"{c2_str:.1%}", None),
             ("Record", f"{int(s1_stats.Wins)}-{int(s1_stats.Games-s1_stats.Wins)}",
              f"{int(s2_stats.Wins)}-{int(s2_stats.Games-s2_stats.Wins)}", None),
+            ("SOS", round(s1_stats.SOS, 3) if hasattr(s1_stats, "SOS") and pd.notna(s1_stats.SOS) else 0.500,
+             round(s2_stats.SOS, 3) if hasattr(s2_stats, "SOS") and pd.notna(s2_stats.SOS) else 0.500, True),
             ("PPG", round(s1_stats.PPG, 1), round(s2_stats.PPG, 1), True),
             ("Opp PPG", round(s1_stats.OppPPG, 1), round(s2_stats.OppPPG, 1), False),
             ("Margin", round(s1_stats.Margin, 1), round(s2_stats.Margin, 1), True),
