@@ -91,334 +91,219 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
     /* ── Foundation ── */
-    .block-container { padding-top: 0.8rem; max-width: 1200px; }
+    .block-container { padding-top: 0.5rem; max-width: 1200px; }
     html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
-    /* ── Premium sidebar ── */
+    /* ── Sidebar ── */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #080a0e 0%, #0d0f14 40%, #10121a 100%);
-        border-right: 1px solid rgba(255, 107, 53, 0.08);
+        background: #0a0c10;
+        border-right: 1px solid #1a1d24;
     }
-    [data-testid="stSidebar"] .stRadio label {
-        font-weight: 500; letter-spacing: 0.3px;
-    }
-    [data-testid="stSidebar"] [data-testid="stRadio"] > div {
-        gap: 2px;
-    }
+    [data-testid="stSidebar"] .stRadio label { font-weight: 500; }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label {
-        padding: 8px 12px !important; border-radius: 8px !important;
-        transition: all 0.2s !important; font-size: 13px !important;
-        border: 1px solid transparent !important;
+        padding: 7px 12px !important; border-radius: 6px !important;
+        font-size: 13px !important; border: 1px solid transparent !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
-        background: rgba(255, 107, 53, 0.06) !important;
-        border-color: rgba(255, 107, 53, 0.15) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
     }
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
     [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
-        background: rgba(255, 107, 53, 0.10) !important;
-        border-color: rgba(255, 107, 53, 0.25) !important;
+        background: rgba(255, 107, 53, 0.08) !important;
+        border-color: rgba(255, 107, 53, 0.2) !important;
     }
 
     /* ── Tabs ── */
-    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1e2028; }
-    .stTabs [data-baseweb="tab"] {
-        padding: 10px 24px; font-weight: 600; letter-spacing: 0.3px;
-        border-radius: 6px 6px 0 0;
-    }
+    .stTabs [data-baseweb="tab-list"] { gap: 2px; border-bottom: 1px solid #1a1d24; }
+    .stTabs [data-baseweb="tab"] { padding: 8px 20px; font-weight: 600; }
 
-    /* ── Premium card base ── */
+    /* ── Card ── */
     .vp-card {
-        background: linear-gradient(135deg, rgba(26, 29, 36, 0.8) 0%, rgba(20, 22, 28, 0.9) 100%);
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
-        padding: 18px 22px; margin: 8px 0;
-        transition: all 0.25s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-    .vp-card:hover {
-        border-color: rgba(255, 107, 53, 0.4);
-        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.08);
-        transform: translateY(-1px);
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        padding: 14px 18px; margin: 6px 0;
     }
 
     /* ── Section headers ── */
     .vp-section {
-        font-size: 11px; font-weight: 800; letter-spacing: 2px;
-        color: #FF6B35; text-transform: uppercase; margin-bottom: 14px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 107, 53, 0.15);
+        font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+        color: #FF6B35; text-transform: uppercase; margin-bottom: 10px;
+        padding-bottom: 6px; border-bottom: 1px solid #1e2028;
     }
 
-    /* ── Page header banner ── */
-    .vp-page-header {
-        padding: 20px 0 16px;
-        margin-bottom: 8px;
-    }
+    /* ── Page header ── */
+    .vp-page-header { padding: 8px 0 10px; margin-bottom: 4px; }
     .vp-page-header h1 {
-        font-size: 26px !important; font-weight: 900 !important;
-        letter-spacing: -0.5px; color: #FAFAFA !important;
-        margin: 0 0 4px !important; line-height: 1.2 !important;
+        font-size: 22px !important; font-weight: 800 !important;
+        color: #FAFAFA !important; margin: 0 0 2px !important; line-height: 1.3 !important;
     }
-    .vp-page-header .subtitle {
-        font-size: 13px; color: #666; letter-spacing: 0.3px; font-weight: 500;
-    }
+    .vp-page-header .subtitle { font-size: 12px; color: #555; font-weight: 500; }
 
-    /* ── Style all Streamlit subheaders ── */
+    /* ── Subheaders ── */
     [data-testid="stMarkdownContainer"] h3 {
-        font-size: 15px !important; font-weight: 700 !important;
-        letter-spacing: 0.3px; color: #e2e8f0 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 10px; margin-top: 12px;
+        font-size: 14px !important; font-weight: 700 !important;
+        color: #e2e8f0 !important;
+        border-bottom: 1px solid #1a1d24; padding-bottom: 8px; margin-top: 8px;
     }
     [data-testid="stMarkdownContainer"] h2 {
-        font-size: 19px !important; font-weight: 800 !important;
-        letter-spacing: -0.3px; color: #FAFAFA !important;
+        font-size: 17px !important; font-weight: 800 !important; color: #FAFAFA !important;
     }
 
     /* ── Captions ── */
-    [data-testid="stCaptionContainer"] p {
-        font-size: 11px !important; letter-spacing: 0.3px; color: #555 !important;
-    }
+    [data-testid="stCaptionContainer"] p { font-size: 11px !important; color: #555 !important; }
 
-    /* ── Inputs & Controls ── */
+    /* ── Inputs ── */
     [data-testid="stSelectbox"] label, [data-testid="stTextInput"] label,
     [data-testid="stCheckbox"] label, [data-testid="stSlider"] label,
     [data-testid="stMultiSelect"] label {
         font-size: 11px !important; font-weight: 700 !important;
-        letter-spacing: 0.8px; text-transform: uppercase; color: #666 !important;
+        letter-spacing: 0.5px; text-transform: uppercase; color: #666 !important;
     }
 
     /* ── Dividers ── */
-    hr { border-color: rgba(255, 255, 255, 0.04) !important; margin: 24px 0 !important; }
+    hr { border-color: #1a1d24 !important; margin: 16px 0 !important; }
 
-    /* ── Radio button styling ── */
-    [data-testid="stRadio"] > div > label {
-        font-size: 13px !important;
-    }
+    /* ── Radio ── */
+    [data-testid="stRadio"] > div > label { font-size: 13px !important; }
 
-    /* ── Button styling ── */
+    /* ── Buttons ── */
     .stButton > button {
-        background: linear-gradient(135deg, #FF6B35 0%, #e55a2b 100%) !important;
-        color: #fff !important; font-weight: 700 !important;
-        border: none !important; border-radius: 8px !important;
-        letter-spacing: 0.5px; padding: 10px 28px !important;
-        transition: all 0.25s ease !important;
-        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2) !important;
+        background: #FF6B35 !important; color: #fff !important; font-weight: 700 !important;
+        border: none !important; border-radius: 6px !important;
+        padding: 8px 24px !important;
     }
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #ff7e4d 0%, #FF6B35 100%) !important;
-        box-shadow: 0 6px 24px rgba(255, 107, 53, 0.35) !important;
-        transform: translateY(-1px) !important;
-    }
-    .stButton > button:active {
-        transform: translateY(0) !important;
-        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2) !important;
-    }
+    .stButton > button:hover { background: #e55a2b !important; }
 
     /* ── Spinner ── */
     .stSpinner > div { border-top-color: #FF6B35 !important; }
 
     /* ── Expander ── */
     [data-testid="stExpander"] {
-        border: 1px solid rgba(255, 255, 255, 0.06) !important; border-radius: 12px !important;
-        background: rgba(26, 29, 36, 0.6);
-        backdrop-filter: blur(8px);
+        border: 1px solid #1e2028 !important; border-radius: 8px !important;
+        background: #14161c;
     }
-    [data-testid="stExpander"] summary {
-        font-weight: 600 !important; font-size: 13px !important;
-    }
+    [data-testid="stExpander"] summary { font-weight: 600 !important; font-size: 13px !important; }
 
-    /* ── Rankings table ── */
-    .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    /* ── Table ── */
+    .vp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
     .vp-table thead th {
-        background: rgba(12, 14, 20, 0.95); color: #777; font-size: 10px; font-weight: 700;
-        letter-spacing: 1px; text-transform: uppercase; padding: 10px 12px;
+        background: #0c0e14; color: #777; font-size: 9px; font-weight: 700;
+        letter-spacing: 0.8px; text-transform: uppercase; padding: 7px 8px;
         border-bottom: 2px solid #FF6B35; position: sticky; top: 0; z-index: 1;
         text-align: left; white-space: nowrap;
     }
-    .vp-table tbody tr { transition: all 0.2s ease; }
-    .vp-table tbody tr:hover { background: rgba(255, 107, 53, 0.05); }
+    .vp-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
     .vp-table tbody td {
-        padding: 8px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 13px; font-variant-numeric: tabular-nums;
+        padding: 5px 8px; border-bottom: 1px solid #1a1d24;
+        font-size: 12px; font-variant-numeric: tabular-nums;
     }
-    .vp-table .rank-cell {
-        font-weight: 800; color: #FF6B35; font-size: 14px; width: 36px; text-align: center;
-    }
+    .vp-table .rank-cell { font-weight: 700; color: #FF6B35; font-size: 12px; width: 28px; text-align: center; }
     .vp-table .team-cell { font-weight: 600; color: #FAFAFA; white-space: nowrap; }
     .vp-table .seed-badge {
-        display: inline-block; background: linear-gradient(135deg, #FF6B35, #e55a2b);
-        color: #fff; font-weight: 800;
-        font-size: 10px; padding: 2px 7px; border-radius: 4px; min-width: 20px; text-align: center;
-        box-shadow: 0 1px 4px rgba(255, 107, 53, 0.3);
+        display: inline-block; background: #FF6B35; color: #fff; font-weight: 700;
+        font-size: 10px; padding: 1px 6px; border-radius: 3px; min-width: 18px; text-align: center;
     }
     .vp-table .stat-good { color: #4ade80; }
     .vp-table .stat-bad { color: #f87171; }
     .vp-table .stat-neutral { color: #888; }
 
     /* ── Tier badges ── */
-    .tier-elite {
-        color: #fff; background: linear-gradient(135deg, #FF6B35, #e55a2b);
-        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
-        letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
-    }
-    .tier-strong {
-        color: #000; background: linear-gradient(135deg, #4ade80, #22c55e);
-        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
-        letter-spacing: 0.5px;
-    }
-    .tier-solid {
-        color: #000; background: linear-gradient(135deg, #60a5fa, #3b82f6);
-        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
-        letter-spacing: 0.5px;
-    }
-    .tier-avg {
-        color: #000; background: linear-gradient(135deg, #888, #666);
-        padding: 3px 10px; border-radius: 20px; font-weight: 800; font-size: 10px;
-        letter-spacing: 0.5px;
-    }
+    .tier-elite { color: #fff; background: #FF6B35; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-strong { color: #000; background: #4ade80; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-solid { color: #000; background: #60a5fa; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
+    .tier-avg { color: #000; background: #666; padding: 2px 8px; border-radius: 3px; font-weight: 700; font-size: 10px; }
 
     /* ── Bracket ── */
-    .bracket { display: flex; gap: 8px; min-height: 540px; overflow-x: auto; padding: 4px 0; }
-    .round {
-        display: flex; flex-direction: column; justify-content: space-around;
-        min-width: 170px;
-    }
+    .bracket { display: flex; gap: 6px; min-height: 540px; overflow-x: auto; padding: 4px 0; }
+    .round { display: flex; flex-direction: column; justify-content: space-around; min-width: 165px; }
     .round-title {
-        text-align: center; font-size: 10px; color: #FF6B35;
-        margin-bottom: 6px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+        text-align: center; font-size: 9px; color: #FF6B35;
+        margin-bottom: 4px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     }
     .matchup {
-        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; overflow: hidden;
-        margin: 3px 0; background: rgba(26, 29, 36, 0.7);
-        backdrop-filter: blur(8px);
-        transition: all 0.2s ease;
+        border: 1px solid #1e2028; border-radius: 4px; overflow: hidden;
+        margin: 2px 0; background: #14161c;
     }
-    .matchup:hover {
-        border-color: rgba(255, 107, 53, 0.3);
-        box-shadow: 0 2px 12px rgba(255, 107, 53, 0.08);
-    }
+    .matchup:hover { border-color: #2a2d36; }
     .team-slot {
-        padding: 4px 10px; font-size: 12px; display: flex;
+        padding: 3px 8px; font-size: 11px; display: flex;
         justify-content: space-between; align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #999;
+        border-bottom: 1px solid #1a1d24; color: #888;
     }
     .team-slot:last-child { border-bottom: none; }
-    .team-slot.winner {
-        background: rgba(255, 107, 53, 0.10); color: #FF6B35;
-        font-weight: 700;
-    }
-    .seed-tag { color: #555; margin-right: 4px; font-size: 11px; font-weight: 600; }
+    .team-slot.winner { background: rgba(255, 107, 53, 0.08); color: #FF6B35; font-weight: 600; }
+    .seed-tag { color: #555; margin-right: 4px; font-size: 10px; font-weight: 600; }
     .prob-tag { color: #555; font-size: 10px; font-variant-numeric: tabular-nums; }
-    .big-prob {
-        font-size: 52px; font-weight: 900; text-align: center;
-        line-height: 1; margin: 8px 0; letter-spacing: -3px;
-    }
-    .stat-bar { height: 6px; border-radius: 3px; margin: 2px 0; }
-    .ff-bracket { display: flex; gap: 16px; min-height: 180px; align-items: center; }
-    .ff-round {
-        display: flex; flex-direction: column; justify-content: space-around;
-        min-width: 190px; min-height: 160px;
-    }
+    .big-prob { font-size: 36px; font-weight: 800; text-align: center; line-height: 1; margin: 4px 0; letter-spacing: -1px; }
+    .stat-bar { height: 4px; border-radius: 2px; margin: 2px 0; }
+    .ff-bracket { display: flex; gap: 12px; min-height: 160px; align-items: center; }
+    .ff-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; min-height: 150px; }
     .champ-banner {
-        text-align: center; font-size: 28px; font-weight: 900;
-        padding: 24px; border: 2px solid #FF6B35; border-radius: 14px;
-        background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.03) 100%);
-        color: #FF6B35; margin: 12px 0; letter-spacing: -0.5px;
-        box-shadow: 0 4px 24px rgba(255, 107, 53, 0.1);
+        text-align: center; font-size: 22px; font-weight: 800;
+        padding: 16px; border: 1px solid #FF6B35; border-radius: 8px;
+        background: rgba(255, 107, 53, 0.06); color: #FF6B35; margin: 8px 0;
     }
 
     /* ── Metric cards ── */
     .vp-metric {
-        background: linear-gradient(135deg, rgba(26, 29, 36, 0.8) 0%, rgba(20, 22, 28, 0.9) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px;
-        padding: 18px; text-align: center;
-        transition: all 0.25s ease;
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        padding: 12px; text-align: center;
     }
-    .vp-metric:hover {
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    }
-    .vp-metric .label { color: #666; font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
-    .vp-metric .value { font-size: 30px; font-weight: 900; margin: 6px 0; letter-spacing: -1px; }
-    .vp-metric .sub { color: #888; font-size: 12px; }
+    .vp-metric .label { color: #666; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .vp-metric .value { font-size: 24px; font-weight: 800; margin: 4px 0; letter-spacing: -0.5px; }
+    .vp-metric .sub { color: #666; font-size: 11px; }
 
     /* ── Dataframe ── */
-    .stDataFrame { border-radius: 12px; overflow: hidden; }
-    [data-testid="stDataFrame"] > div { border-radius: 12px; }
+    .stDataFrame { border-radius: 8px; overflow: hidden; }
 
-    /* ── Betting card upgrades ── */
+    /* ── Bet cards ── */
     .vp-bet-card {
-        background: linear-gradient(135deg, rgba(26, 29, 36, 0.7) 0%, rgba(16, 18, 24, 0.85) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px;
-        padding: 20px 24px; margin: 12px 0;
-        transition: all 0.25s ease;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-    }
-    .vp-bet-card:hover {
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        background: #14161c; border: 1px solid #1e2028; border-radius: 8px;
+        padding: 14px 18px; margin: 8px 0;
     }
     .vp-bet-type {
-        background: rgba(14, 17, 23, 0.8); border-radius: 10px; padding: 14px 18px;
-        flex: 1; min-width: 180px;
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        transition: all 0.2s ease;
-    }
-    .vp-bet-type:hover {
-        border-color: rgba(255, 255, 255, 0.06);
-        background: rgba(14, 17, 23, 0.95);
+        background: #0e1117; border-radius: 6px; padding: 10px 14px;
+        flex: 1; min-width: 160px; border: 1px solid #1a1d24;
     }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 107, 53, 0.4); }
+    ::-webkit-scrollbar-thumb { background: #2a2d36; border-radius: 4px; }
 
     /* ── Progress bar ── */
-    .stProgress > div > div { background: rgba(255, 255, 255, 0.06) !important; border-radius: 10px !important; }
-    .stProgress > div > div > div { background: linear-gradient(90deg, #FF6B35, #ff8f5e) !important; border-radius: 10px !important; }
+    .stProgress > div > div { background: #1a1d24 !important; border-radius: 4px !important; }
+    .stProgress > div > div > div { background: #FF6B35 !important; border-radius: 4px !important; }
 
-    /* ── Mobile responsive ── */
+    /* ── Mobile ── */
     @media (max-width: 768px) {
         .block-container { padding: 0.5rem 0.8rem !important; }
-        .vp-page-header h1 { font-size: 20px !important; }
-        .big-prob { font-size: 36px !important; }
+        .vp-page-header h1 { font-size: 18px !important; }
+        .big-prob { font-size: 28px !important; }
         .bracket { gap: 4px; }
         .round { min-width: 140px; }
-        .team-slot { font-size: 11px; padding: 3px 6px; }
-        .vp-bet-card { padding: 14px 16px; }
-        .vp-bet-type { min-width: 140px; padding: 10px 12px; }
-        .vp-metric .value { font-size: 24px; }
+        .team-slot { font-size: 10px; padding: 3px 6px; }
+        .vp-bet-card { padding: 10px 12px; }
+        .vp-bet-type { min-width: 120px; padding: 8px 10px; }
+        .vp-metric .value { font-size: 20px; }
         .ff-bracket { flex-direction: column; align-items: stretch; }
         .ff-round { min-width: auto; }
-        .vp-table thead th { font-size: 9px; padding: 8px 6px; }
-        .vp-table tbody td { font-size: 12px; padding: 6px; }
+        .vp-table thead th { font-size: 8px; padding: 6px 4px; }
+        .vp-table tbody td { font-size: 11px; padding: 4px; }
     }
 
-    /* ── Animations ── */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .vp-card, .vp-metric, .vp-bet-card { animation: fadeIn 0.3s ease-out; }
-
-    /* ── Status badges ── */
+    /* ── Badges ── */
     .vp-badge {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 3px 10px; border-radius: 20px; font-size: 10px;
-        font-weight: 800; letter-spacing: 0.5px;
+        padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700;
     }
-    .vp-badge-live { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
-    .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
+    .vp-badge-live { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
     .vp-badge-win { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
     .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
 
-    /* ── Glass divider ── */
-    .vp-divider {
-        height: 1px; margin: 24px 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.15), transparent);
-    }
+    /* ── Divider ── */
+    .vp-divider { height: 1px; margin: 16px 0; background: #1e2028; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -506,6 +391,25 @@ def load_conferences():
     tc = pd.concat([tc_m, tc_w])
     tc = tc[tc.Season == SEASON]
     return dict(zip(tc.TeamID, tc.ConfAbbrev))
+
+
+_CONF_DISPLAY = {
+    "acc": "ACC", "big_ten": "B10", "big_twelve": "B12", "sec": "SEC",
+    "big_east": "BE", "pac_twelve": "P12", "aac": "AAC", "mwc": "MWC",
+    "wcc": "WCC", "mvc": "MVC", "a_ten": "A10", "colonial": "CAA",
+    "cusa": "CUSA", "horizon": "Horz", "ivy": "Ivy", "maac": "MAAC",
+    "mac": "MAC", "meac": "MEAC", "ovc": "OVC", "patriot": "Pat",
+    "southern": "SoCon", "sun_belt": "SBelt", "swac": "SWAC",
+    "wac": "WAC", "big_sky": "BSky", "big_south": "BSth",
+    "big_west": "BWst", "america_east": "AE", "atlantic_sun": "ASun",
+    "northeast": "NE", "southland": "Slnd", "summit": "Sum",
+    "ind": "Ind", "mountain_west": "MWC", "west_coast": "WCC",
+}
+
+
+def conf_display(abbrev):
+    """Convert raw conference abbreviation to display name."""
+    return _CONF_DISPLAY.get(abbrev, abbrev.upper() if abbrev else "")
 
 
 # ──────────────────────────── Massey Composite Rankings ────────────────────────────
@@ -1172,15 +1076,16 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
     has_massey = prefix == "M" and bool(massey_ranks)
     st.markdown(
         f'<div class="vp-page-header">'
-        f'<h1>Power Rankings</h1>'
-        f'<div class="subtitle">{gender_label} NCAA Tournament &middot; Elo + Efficiency + Massey Composite</div>'
+        f'<h1>{gender_label} Power Rankings</h1>'
         f'</div>',
         unsafe_allow_html=True,
     )
 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
-    team_conf_str, conf_vals = load_conf_strength(prefix)
+    team_conf_str, conf_vals_raw = load_conf_strength(prefix)
+    # Re-key conf_vals by display name
+    conf_vals = {conf_display(k): v for k, v in conf_vals_raw.items()}
 
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
 
@@ -1191,7 +1096,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         rows.append({
             "tid": tid,
             "Team": tname(teams, tid),
-            "Conf": conferences.get(tid, ""),
+            "Conf": conf_display(conferences.get(tid, "")),
             "Seed": team_seeds.get(tid, ""),
             "Record": f"{int(s.Wins)}-{int(s.Games - s.Wins)}",
             "Elo": int(elo.get(tid, 1500)),
@@ -1293,7 +1198,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Head-to-Head Matchup</h1>'
-        '<div class="subtitle">Compare any two teams &middot; Stats, Props, History & Projections</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -1470,8 +1374,8 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         # Conference strength
         h2h_conferences = load_conferences()
         h2h_conf_str, h2h_conf_vals = load_conf_strength(prefix)
-        c1_conf = h2h_conferences.get(t1, "")
-        c2_conf = h2h_conferences.get(t2, "")
+        c1_conf = conf_display(h2h_conferences.get(t1, ""))
+        c2_conf = conf_display(h2h_conferences.get(t2, ""))
         c1_str = h2h_conf_str.get(t1, 0.5)
         c2_str = h2h_conf_str.get(t2, 0.5)
 
@@ -1702,7 +1606,6 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Championship Odds</h1>'
-        '<div class="subtitle">Monte Carlo Simulations &middot; Futures & Round-by-Round Advancement</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -1741,8 +1644,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     df.index.name = "#"
 
     # ── Championship Futures / Betting Odds ──
-    st.subheader("Championship Futures")
-    st.caption("Odds generated from 10,000 simulated tournaments.")
+    st.markdown('<div class="vp-section">CHAMPIONSHIP FUTURES</div>', unsafe_allow_html=True)
 
     # Build team name -> tid lookup for enrichment
     name_to_tid = {}
@@ -1841,42 +1743,6 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
 
     st.markdown("")
 
-    # Final Four & Championship futures
-    st.subheader("Final Four Futures")
-    ff_rows = []
-    for _, row in df.iterrows():
-        ffp = row["_champ_pct"]  # _champ_pct is index 6, we need FF which is index 4
-        # Get the original probs for this team
-        tid_matches = [tid for tid, p_list in probs.items() if tname(teams, tid) == row["Team"]]
-        if tid_matches:
-            tid = tid_matches[0]
-            ff_prob = probs[tid][4]  # FF probability
-            if ff_prob > 0:
-                ff_ml = prob_to_moneyline(ff_prob)
-            else:
-                ff_ml = "+99999"
-            ff_rows.append({
-                "Team": row["Team"],
-                "Seed": row["Seed"],
-                "Final Four %": f"{ff_prob*100:.1f}%",
-                "FF Odds": ff_ml,
-                "_ff": ff_prob,
-            })
-
-    ff_df = pd.DataFrame(ff_rows).sort_values("_ff", ascending=False).reset_index(drop=True)
-    ff_df.index = ff_df.index + 1
-    ff_df.index.name = "#"
-    _styled_df(ff_df.drop(columns=["_ff"]).head(30))
-
-    # Top contenders bar chart
-    st.markdown("---")
-    top = df.head(16).copy()
-    top["Champ %"] = top["_champ_pct"] * 100
-
-    st.subheader("Top Championship Contenders")
-    chart_data = top.set_index("Team")["Champ %"]
-    st.bar_chart(chart_data, height=350)
-
     # Full table
     st.subheader("Full Round-by-Round Advancement Odds")
     _styled_df(df.drop(columns=["_champ_pct"]), max_height=600)
@@ -1888,7 +1754,6 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Predicted Bracket</h1>'
-        '<div class="subtitle">ML Ensemble Predictions &middot; Live Results Tracking</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2309,7 +2174,6 @@ def page_backtest(prefix, teams):
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Model Backtest</h1>'
-        '<div class="subtitle">Historical Performance &middot; Out-of-Sample Tournament Predictions Since 2010</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2890,7 +2754,6 @@ def page_picks(prefix, teams, seeds_df, preds):
     st.markdown(
         '<div class="vp-page-header">'
         '<h1>Betting Picks</h1>'
-        '<div class="subtitle">Live Scores &middot; Vegas Odds &middot; Model Edge Detection</div>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2952,11 +2815,13 @@ def page_picks(prefix, teams, seeds_df, preds):
 
         if final_games:
             st.markdown('<div class="vp-section" style="margin-top:16px;">FINAL SCORES</div>', unsafe_allow_html=True)
+            # Dense 2-column grid for final scores
+            grid_html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">'
             for g in final_games:
                 away_score = int(g["away_score"])
                 home_score = int(g["home_score"])
-                a_bold = 'font-weight:900; color:#FAFAFA;' if away_score > home_score else 'color:#666;'
-                h_bold = 'font-weight:900; color:#FAFAFA;' if home_score > away_score else 'color:#666;'
+                a_bold = 'font-weight:700; color:#FAFAFA;' if away_score > home_score else 'color:#555;'
+                h_bold = 'font-weight:700; color:#FAFAFA;' if home_score > away_score else 'color:#555;'
 
                 # Try to resolve ESPN teams to model IDs for pick display
                 home_tid = _resolve_odds_team(g["home_team"], odds_map_lookup, name_to_tid_lookup)
@@ -2965,48 +2830,37 @@ def page_picks(prefix, teams, seeds_df, preds):
                 if home_tid and away_tid and home_tid in stats.index and away_tid in stats.index:
                     t1g, t2g = min(home_tid, away_tid), max(home_tid, away_tid)
                     pg = get_pred(preds, t1g, t2g)
-                    lines_g = compute_betting_lines(stats, preds, t1g, t2g)
                     fav_g = t1g if pg >= 0.5 else t2g
                     fav_prob_g = pg if fav_g == t1g else 1 - pg
                     fav_name_g = tname(teams, fav_g)
-                    m_spread_g = lines_g["spread"]
-                    m_total_g = lines_g["total"]
 
-                    # Determine actual margin (t1 perspective)
-                    t1_score = home_score if home_tid == t1g else away_score
-                    t2_score = away_score if home_tid == t1g else home_score
-                    actual_total = t1_score + t2_score
-
-                    # ML result
                     winner_tid = home_tid if home_score > away_score else away_tid
                     ml_correct = (fav_g == winner_tid)
                     ml_icon = "✓" if ml_correct else "✗"
                     ml_color = "#4ade80" if ml_correct else "#f87171"
 
                     pick_html = (
-                        f'<div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap;">'
-                        f'<span style="font-size:11px; font-weight:600; color:{ml_color};">'
-                        f'{ml_icon} ML: {fav_name_g} ({fav_prob_g*100:.0f}%)</span>'
-                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
-                        f'Spread: {m_spread_g:+.1f}</span>'
-                        f'<span style="font-size:11px; font-weight:600; color:#aaa;">'
-                        f'Total: {m_total_g:.0f} (Actual: {actual_total})</span>'
-                        f'</div>'
+                        f'<div style="margin-top:3px; font-size:10px; font-weight:600; color:{ml_color};">'
+                        f'{ml_icon} {fav_name_g} ({fav_prob_g*100:.0f}%)</div>'
                     )
 
-                st.markdown(
-                    f'<div class="vp-card" style="border-left:3px solid rgba(74, 222, 128, 0.4);">'
+                grid_html += (
+                    f'<div style="background:#14161c; border:1px solid #1e2028; border-radius:6px; '
+                    f'padding:8px 12px; border-left:3px solid rgba(74, 222, 128, 0.3);">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
-                    f'<div style="font-weight:500;">'
+                    f'<div style="font-size:12px;">'
                     f'<span style="{a_bold}">{g["away_team"]}</span> '
-                    f'<span style="font-size:20px; {a_bold}">{g["away_score"]}</span>'
-                    f'<span style="color:#333; margin:0 10px; font-size:12px;">@</span>'
+                    f'<span style="font-size:15px; {a_bold}">{g["away_score"]}</span>'
+                    f'<span style="color:#333; margin:0 6px; font-size:10px;">@</span>'
                     f'<span style="{h_bold}">{g["home_team"]}</span> '
-                    f'<span style="font-size:20px; {h_bold}">{g["home_score"]}</span></div>'
-                    f'<span class="vp-badge vp-badge-final">FINAL</span>'
+                    f'<span style="font-size:15px; {h_bold}">{g["home_score"]}</span></div>'
+                    f'<span class="vp-badge vp-badge-final">F</span>'
                     f'</div>'
                     f'{pick_html}'
-                    f'</div>', unsafe_allow_html=True)
+                    f'</div>'
+                )
+            grid_html += '</div>'
+            st.markdown(grid_html, unsafe_allow_html=True)
 
     # ── Build ESPN broadcast + score lookup keyed by resolved team ID pairs ──
     espn_by_ids = {}  # keyed by frozenset({tid1, tid2}) for reliable matching
@@ -3517,46 +3371,37 @@ def page_picks(prefix, teams, seeds_df, preds):
             unsafe_allow_html=True,
         )
 
-        # Three bet type columns
-        for btype, data in [("MONEYLINE", card["ml"]), ("SPREAD", card["spread"]), ("O/U", card["total"])]:
+        # Three bet type columns — build as single HTML to preserve flex layout
+        bet_types_html = ""
+        for btype, data in [("ML", card["ml"]), ("SPREAD", card["spread"]), ("O/U", card["total"])]:
             sc = data["score"]
             col = data["color"]
             lbl = data["label"]
             edge_display = data["edge"]
 
-            # Result badge for graded games
             result = data.get("result", "")
             if result == "WIN":
-                result_html = ('<div style="margin-top:6px;"><span style="background:#4ade80; color:#000; '
-                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
-                               'letter-spacing:1px;">✓ WIN</span></div>')
+                result_html = '<div style="margin-top:4px;"><span style="background:#4ade80; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">W</span></div>'
             elif result == "LOSS":
-                result_html = ('<div style="margin-top:6px;"><span style="background:#f87171; color:#000; '
-                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
-                               'letter-spacing:1px;">✗ LOSS</span></div>')
+                result_html = '<div style="margin-top:4px;"><span style="background:#f87171; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">L</span></div>'
             elif result == "PUSH":
-                result_html = ('<div style="margin-top:6px;"><span style="background:#fbbf24; color:#000; '
-                               'font-weight:800; padding:3px 10px; border-radius:4px; font-size:11px; '
-                               'letter-spacing:1px;">— PUSH</span></div>')
+                result_html = '<div style="margin-top:4px;"><span style="background:#fbbf24; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">P</span></div>'
             else:
                 result_html = ""
 
-            st.markdown(
+            bet_types_html += (
                 f'<div class="vp-bet-type">'
-                f'<div style="font-size:10px; color:#FF6B35; font-weight:700; letter-spacing:1px; margin-bottom:6px;">{btype}</div>'
-                f'<div style="font-size:16px; font-weight:700; color:{col}; margin-bottom:8px;">{data["pick"]}</div>'
-                f'<div style="font-size:12px; color:#aaa; margin-bottom:3px;">Model: <span style="color:#e2e8f0; font-weight:600;">{data["model"]}</span></div>'
-                f'<div style="font-size:12px; color:#aaa; margin-bottom:3px;">Vegas: <span style="color:#e2e8f0; font-weight:600;">{data["vegas"]}</span></div>'
-                f'<div style="font-size:12px; color:#aaa; margin-bottom:8px;">Edge: <span style="color:#e2e8f0; font-weight:600;">{edge_display}</span> &nbsp; EV: <span style="color:#e2e8f0; font-weight:600;">{data["ev"]}</span></div>'
-                f'<div>'
-                f'<span style="background:{col}; color:#000; font-weight:700; padding:3px 10px; '
-                f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">{lbl} ({sc})</span></div>'
+                f'<div style="font-size:9px; color:#FF6B35; font-weight:700; letter-spacing:0.8px; margin-bottom:4px;">{btype}</div>'
+                f'<div style="font-size:14px; font-weight:700; color:{col}; margin-bottom:6px;">{data["pick"]}</div>'
+                f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Model: <span style="color:#ccc; font-weight:600;">{data["model"]}</span></div>'
+                f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Vegas: <span style="color:#ccc; font-weight:600;">{data["vegas"]}</span></div>'
+                f'<div style="font-size:11px; color:#888; margin-bottom:6px;">Edge: <span style="color:#ccc; font-weight:600;">{edge_display}</span> &middot; EV: <span style="color:#ccc; font-weight:600;">{data["ev"]}</span></div>'
+                f'<span style="background:{col}; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">{lbl} ({sc})</span>'
                 f'{result_html}'
-                f'</div>',
-                unsafe_allow_html=True,
+                f'</div>'
             )
 
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        st.markdown(bet_types_html + '</div></div>', unsafe_allow_html=True)
 
     # ── Legend ──
     st.markdown("---")
@@ -3585,14 +3430,14 @@ def page_picks(prefix, teams, seeds_df, preds):
 
 def page_about():
     st.markdown(
-        "<div style='text-align:center; margin:60px 0 10px;'>"
-        "<span style='font-size:56px; font-weight:900; letter-spacing:-3px;'>"
+        "<div style='text-align:center; margin:16px 0 6px;'>"
+        "<span style='font-size:36px; font-weight:900; letter-spacing:-2px;'>"
         "<span style='color:#FF6B35;'>VIL</span><span style='color:#FAFAFA;'>POM</span></span>"
         "</div>"
-        "<div style='width:50px; height:2px; background:linear-gradient(90deg, #FF6B35, #ff8f5e); "
-        "margin:8px auto 16px; border-radius:2px;'></div>"
-        "<div style='text-align:center; color:#666; font-size:11px; letter-spacing:4px; font-weight:700; margin-bottom:40px;'>"
-        "NCAA TOURNAMENT ANALYTICS & BETTING INTELLIGENCE</div>",
+        "<div style='width:40px; height:2px; background:#FF6B35; "
+        "margin:6px auto 10px;'></div>"
+        "<div style='text-align:center; color:#555; font-size:10px; letter-spacing:3px; font-weight:700; margin-bottom:16px;'>"
+        "NCAA TOURNAMENT ANALYTICS</div>",
         unsafe_allow_html=True,
     )
 
@@ -3787,8 +3632,8 @@ gender_slots = m_slots if prefix == "M" else w_slots
 
 page = st.sidebar.radio(
     "Navigate",
-    ["\U0001f4b0 Betting Picks", "\U0001f93c Head-to-Head", "\U0001f4ca Rankings",
-     "\U0001f3c6 Bracket", "\U0001f4b8 Championship Odds", "\U0001f9ea Backtest", "\u2139\ufe0f About"],
+    ["Betting Picks", "Head-to-Head", "Rankings",
+     "Bracket", "Championship Odds", "Backtest", "About"],
 )
 
 st.sidebar.markdown("---")
