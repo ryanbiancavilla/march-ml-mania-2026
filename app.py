@@ -1025,22 +1025,37 @@ def monte_carlo_odds(_seeds_df, _slots_df, _preds, n_sims=10000, eliminated=None
 # ──────────────────────────── Bracket HTML ────────────────────────────
 
 def _build_espn_id_map(teams, prefix="M"):
-    """Build mapping from our team IDs to ESPN team IDs using cached ESPN data."""
+    """Map our team IDs to ESPN team IDs for logo display."""
+    # Hardcoded mapping for 2026 tournament teams (Kaggle ID -> ESPN ID)
+    KAGGLE_TO_ESPN = {
+        1104: "333", 1103: "2006", 1112: "12", 1116: "8", 1140: "252",
+        1155: "228", 1163: "41", 1181: "150", 1196: "57", 1202: "231",
+        1208: "61", 1211: "2250", 1218: "62", 1219: "2272", 1220: "2275",
+        1222: "248", 1224: "47", 1225: "70", 1228: "356", 1234: "2294",
+        1235: "66", 1242: "2305", 1244: "338", 1246: "96", 1250: "2329",
+        1254: "112358", 1257: "97", 1270: "2377", 1274: "2390", 1275: "193",
+        1276: "130", 1277: "127", 1281: "142", 1295: "2449", 1301: "152",
+        1304: "158", 1314: "153", 1320: "2460", 1326: "194", 1335: "219",
+        1341: "2504", 1345: "2509", 1365: "2541", 1373: "2561", 1374: "2567",
+        1378: "58", 1385: "2599", 1387: "139", 1388: "2608", 1395: "2628",
+        1397: "2633", 1398: "2634", 1400: "251", 1401: "245", 1403: "2641",
+        1407: "2653", 1416: "2116", 1417: "26", 1420: "2378", 1429: "328",
+        1433: "2670", 1435: "238", 1437: "222", 1438: "258", 1458: "275",
+        1460: "2750", 1465: "2856", 1474: "2511",
+    }
+    # Also try to augment from ESPN cached data for any teams not in the hardcoded map
     espn_data = _load_cached_espn()
-    if not espn_data:
-        return {}
-    odds_map, name_to_tid = _build_odds_name_map(teams, prefix)
-    tid_to_espn = {}
-    for g in espn_data.get("games", []):
-        for side in [("home_team", "home_id"), ("away_team", "away_id")]:
-            name_key, id_key = side
-            espn_name = g.get(name_key, "")
-            espn_id = g.get(id_key, "")
-            if espn_name and espn_id:
-                tid = _resolve_odds_team(espn_name, odds_map, name_to_tid)
-                if tid and tid not in tid_to_espn:
-                    tid_to_espn[tid] = espn_id
-    return tid_to_espn
+    if espn_data:
+        odds_map, name_to_tid = _build_odds_name_map(teams, prefix)
+        for g in espn_data.get("games", []):
+            for name_key, id_key in [("home_team", "home_id"), ("away_team", "away_id")]:
+                espn_name = g.get(name_key, "")
+                espn_id = g.get(id_key, "")
+                if espn_name and espn_id:
+                    tid = _resolve_odds_team(espn_name, odds_map, name_to_tid)
+                    if tid and tid not in KAGGLE_TO_ESPN:
+                        KAGGLE_TO_ESPN[tid] = espn_id
+    return KAGGLE_TO_ESPN
 
 
 def _team_logo_img(tid, espn_map, size=18):
