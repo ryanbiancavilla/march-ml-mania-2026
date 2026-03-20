@@ -3263,6 +3263,53 @@ def page_picks(prefix, teams, seeds_df, preds):
         unsafe_allow_html=True,
     )
 
+    with st.expander("How to read the board"):
+        st.markdown(
+            '<div style="font-size:13px; color:#ccc; line-height:1.7;">'
+            '<div style="margin-bottom:12px;">'
+            'Each card shows a matchup with our model\'s analysis vs Vegas odds. Here\'s what everything means:</div>'
+            '<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">'
+            # Left column
+            '<div>'
+            '<div style="font-size:10px; color:#41B6E6; font-weight:700; letter-spacing:0.8px; margin-bottom:6px;">CARD LAYOUT</div>'
+            '<div style="color:#aaa; font-size:12px; margin-bottom:4px;">'
+            '<span style="color:#888; font-weight:700;">3</span> '
+            '<span style="color:#ccc;">Team Name</span> '
+            '<span style="color:#aaa;">61%</span> '
+            '<span style="background:#2a2d35; color:#ccc; padding:1px 5px; border-radius:3px; font-size:10px;">+3.0 -122</span>'
+            '</div>'
+            '<div style="color:#666; font-size:11px; margin-bottom:8px;">seed &middot; team &middot; win prob &middot; spread + ML odds</div>'
+            '<div style="color:#aaa; font-size:12px; margin-bottom:4px;">'
+            '<span style="width:3px; height:12px; display:inline-block; background:#4ade80; border-radius:1px; vertical-align:middle; margin-right:3px;"></span>'
+            ' Color bar = team color (bright = winner, gray = loser)</div>'
+            '<div style="color:#aaa; font-size:12px; margin-bottom:4px;">'
+            'Bottom row shows picks: <span style="font-weight:700;">ML</span> (moneyline) &middot; '
+            '<span style="font-weight:700;">ATS</span> (spread) &middot; '
+            '<span style="font-weight:700;">O/U</span> (total)</div>'
+            '</div>'
+            # Right column
+            '<div>'
+            '<div style="font-size:10px; color:#41B6E6; font-weight:700; letter-spacing:0.8px; margin-bottom:6px;">EDGE RATINGS</div>'
+            '<div style="margin-bottom:3px;"><span style="color:#4ade80; font-weight:700;">EDGE 70+</span>'
+            '<span style="color:#888;"> &mdash; Strong play, high confidence</span></div>'
+            '<div style="margin-bottom:3px;"><span style="color:#41B6E6; font-weight:700;">EDGE 45-69</span>'
+            '<span style="color:#888;"> &mdash; Standard bet</span></div>'
+            '<div style="margin-bottom:3px;"><span style="color:#60a5fa; font-weight:700;">EDGE 25-44</span>'
+            '<span style="color:#888;"> &mdash; Slight lean</span></div>'
+            '<div style="margin-bottom:3px;"><span style="color:#444; font-weight:700;">EDGE &lt;25</span>'
+            '<span style="color:#888;"> &mdash; No edge, pass</span></div>'
+            '<div style="margin-top:8px; font-size:10px; color:#41B6E6; font-weight:700; letter-spacing:0.8px; margin-bottom:6px;">RESULTS</div>'
+            '<div style="color:#aaa; font-size:12px;">'
+            '<span style="color:#4ade80; font-weight:800;">W</span> win &middot; '
+            '<span style="color:#f87171; font-weight:800;">L</span> loss &middot; '
+            '<span style="color:#41B6E6; font-weight:800;">P</span> push &middot; '
+            'Record shown in status bar for finals</div>'
+            '</div>'
+            '</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
     # ── Load data ──
     espn_data = _load_cached_espn()
     odds_data = _load_cached_odds()
@@ -3913,27 +3960,6 @@ def page_picks(prefix, teams, seeds_df, preds):
     grid_html += '</div>'
     st.markdown(grid_html, unsafe_allow_html=True)
 
-    # ── Legend ──
-    st.markdown("---")
-    with st.expander("How to read this page"):
-        st.markdown("""
-**Every game gets three picks:** Moneyline (who wins), Spread (margin of victory), and O/U (total points).
-
-**Edge** — How much our model disagrees with Vegas. Bigger = stronger play.
-
-**EV ($100)** — Expected profit on a $100 bet. Positive = profitable long-term.
-
-**Kelly %** — Recommended bet size as % of bankroll. Use half or quarter Kelly for safety.
-
-**Rating** (0-100) — Overall strength combining EV, Kelly, and backtest accuracy.
-
-| Signal | Rating | Action |
-|--------|--------|--------|
-| **STRONG** | 70+ | High-confidence play |
-| **MODERATE** | 45-69 | Standard bet |
-| **SLIGHT** | 25-44 | Small position |
-| **SKIP/EVEN** | <25 | Pass or no edge |
-""")
 
 
 # ──────────────────────────── Page: About ────────────────────────────
