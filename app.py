@@ -3611,7 +3611,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 broadcast = g.get("broadcast", "")
                 status_html = (
                     f'<div style="display:flex; justify-content:space-between; align-items:center; padding:2px 10px; border-bottom:1px solid #2a2a2a; background:#1a1c22;">'
-                    f'<span class="vp-badge vp-badge-live" style="font-size:9px;">{g["status_detail"]}</span>'
+                    f'<span class="vp-badge vp-badge-live" style="font-size:9px;">{g.get("status_detail", "")}</span>'
                     f'<span style="font-size:9px; font-weight:700; color:#555;">{broadcast}</span>'
                     f'</div>'
                 )
@@ -3892,6 +3892,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                 "model": f"{fav_prob*100:.1f}%", "vegas": "—",
                 "edge": "—", "ev": "—", "kelly": "—", "score": 0,
                 "label": "NO LINE", "color": "#666", "bt": f"{bt_ml_pct:.0f}%",
+                "v_odds": None,
             }
 
         # ── Spread Pick ──
