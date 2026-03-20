@@ -33,9 +33,9 @@ def check_password():
 
     st.markdown(
         "<div style='text-align:center; margin-top:100px;'>"
-        "<div style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:72px; font-weight:900; "
-        "letter-spacing:-0.02em; margin-bottom:6px; text-transform:uppercase; font-style:italic; "
-        "transform: skewX(-12deg); display:inline-block; line-height:0.9;'>"
+        "<div style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:80px; font-weight:900; "
+        "letter-spacing:-0.04em; margin-bottom:6px; text-transform:uppercase; "
+        "transform: skewX(-15deg); display:inline-block; line-height:0.85;'>"
         "<span style='color:#FAFAFA;'>VILPOM</span></div>"
         "<div style='width:50px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
         "margin:12px auto;'></div>"
@@ -3495,9 +3495,9 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-family: Saira Extra Condensed, Impact, sans-serif; font-size:26px; margin-bottom:12px; '
-            'font-weight:900; text-transform:uppercase; letter-spacing:-0.02em; font-style:italic; '
-            'transform: skewX(-12deg); display:inline-block; line-height:0.9;">'
+            '<div style="font-family: Saira Extra Condensed, Impact, sans-serif; font-size:28px; margin-bottom:12px; '
+            'font-weight:900; text-transform:uppercase; letter-spacing:-0.04em; '
+            'transform: skewX(-15deg); display:inline-block; line-height:0.85;">'
             '<span style="color:#FAFAFA;">VILPOM</span></div>'
             '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
             'No Games With Odds Right Now</div>'
@@ -4016,9 +4016,9 @@ def page_picks(prefix, teams, seeds_df, preds):
 def page_about():
     st.markdown(
         "<div style='text-align:center; margin:16px 0 6px;'>"
-        "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:40px; font-weight:900; "
-        "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; font-style:italic; "
-        "transform: skewX(-12deg); line-height:0.9;'>"
+        "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:44px; font-weight:900; "
+        "letter-spacing:-0.04em; text-transform:uppercase; display:inline-block; "
+        "transform: skewX(-15deg); line-height:0.85;'>"
         "<span style='color:#FAFAFA;'>VILPOM</span></span>"
         "</div>"
         "<div style='width:40px; height:2px; background:#41B6E6; "
@@ -4174,8 +4174,8 @@ def page_about():
         '<div style="color:#444; font-size:18px;">&#8594;</div>'
         '<div style="text-align:center; min-width:140px;">'
         '<div style="font-family: Saira Extra Condensed, Impact, sans-serif; font-weight:900; '
-        'font-size:17px; text-transform:uppercase; letter-spacing:-0.02em; font-style:italic; '
-        'transform: skewX(-12deg); display:inline-block; line-height:0.9;">'
+        'font-size:18px; text-transform:uppercase; letter-spacing:-0.04em; '
+        'transform: skewX(-15deg); display:inline-block; line-height:0.85;">'
         '<span style="color:#FAFAFA;">VILPOM</span></div>'
         '<div style="color:#888; font-size:11px;">Model vs Vegas edge detection</div></div>'
         '</div></div>',
@@ -4202,9 +4202,9 @@ conferences = load_conferences()
 # Sidebar
 st.sidebar.markdown(
     "<div style='text-align:center; padding:8px 0 4px;'>"
-    "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:36px; font-weight:900; "
-    "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; font-style:italic; "
-    "transform: skewX(-12deg); line-height:0.9;'>"
+    "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-size:40px; font-weight:900; "
+    "letter-spacing:-0.04em; text-transform:uppercase; display:inline-block; "
+    "transform: skewX(-15deg); line-height:0.85;'>"
     "<span style='color:#FAFAFA;'>VILPOM</span></span>"
     "</div>"
     "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
@@ -4233,8 +4233,8 @@ st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
     "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
     "<span style='font-family: Saira Extra Condensed, Impact, sans-serif; font-weight:900; "
-    "letter-spacing:-0.02em; display:inline-block; font-style:italic; "
-    "transform: skewX(-12deg);'>VILPOM</span> "
+    "letter-spacing:-0.04em; display:inline-block; "
+    "transform: skewX(-15deg);'>VILPOM</span> "
     "&copy; 2026 &middot; v2.0</div>"
     "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
     "For entertainment only</div>"
