@@ -2332,99 +2332,100 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     slot_states = _build_slot_game_states(sim_results, preds, actual_matchups, actual_winners_map)
     espn_map = _build_espn_id_map(teams, prefix)
 
-    # ── Top bar: Record + Champion side by side ──
+    # ── Top summary bar ──
     champ_result = sim_results.get("R6CH", {})
     champ = champ_result.get("winner")
 
     if total_graded > 0 or champ:
-        col_rec, col_champ = st.columns([1, 1])
+        # Build a single compact summary row
+        summary_parts = []
+
         if total_graded > 0:
-            with col_rec:
-                rec_color = "#4ade80" if bracket_hits > len(bracket_misses) else "#f87171"
-                pct = bracket_hits / total_graded * 100
-                miss_note = ""
-                if bracket_misses:
-                    miss_items = ""
-                    for m in bracket_misses:
-                        miss_items += (
-                            f'<span style="display:inline-flex; align-items:center; gap:2px; margin:2px 6px 2px 0;">'
-                            f'<span style="width:2px; height:12px; border-radius:1px; background:{_team_color(m["actual_tid"])}; display:inline-block;"></span>'
-                            f'{_team_logo_img(m["actual_tid"], espn_map, size=12)}'
-                            f'{m["actual"]}</span>'
-                        )
-                    miss_note = (
-                        f'<div style="font-size:11px; color:#888; margin-top:8px;">'
-                        f'<span style="color:#f87171;">Misses:</span> {miss_items}</div>'
+            rec_color = "#4ade80" if bracket_hits > len(bracket_misses) else "#f87171"
+            pct = bracket_hits / total_graded * 100
+            summary_parts.append(
+                f'<div style="display:flex; align-items:center; gap:16px;">'
+                f'<div>'
+                f'<div style="font-size:9px; color:#555; letter-spacing:1.5px; font-weight:700;">RECORD</div>'
+                f'<div style="font-size:28px; font-weight:900; color:{rec_color}; letter-spacing:-1px; line-height:1.1;">'
+                f'{bracket_hits}-{len(bracket_misses)}</div>'
+                f'<div style="font-size:10px; color:#666;">{pct:.0f}%</div>'
+                f'</div>'
+            )
+            if bracket_misses:
+                miss_items = ""
+                for m in bracket_misses:
+                    miss_items += (
+                        f'<span style="display:inline-flex; align-items:center; gap:2px; margin:1px 6px 1px 0; font-size:11px; color:#888;">'
+                        f'{_team_logo_img(m["actual_tid"], espn_map, size=11)}'
+                        f'{m["actual"]}</span>'
                     )
-                st.markdown(
-                    f'<div class="vp-card" style="border-top:3px solid {rec_color}; text-align:center; padding:20px;">'
-                    f'<div style="font-size:9px; color:#666; letter-spacing:2px; font-weight:800; margin-bottom:6px;">'
-                    f'BRACKET RECORD</div>'
-                    f'<div style="font-size:36px; font-weight:900; color:{rec_color}; letter-spacing:-2px; line-height:1;">'
-                    f'{bracket_hits}-{len(bracket_misses)}</div>'
-                    f'<div style="font-size:12px; color:#888; margin-top:4px;">{pct:.0f}% accuracy</div>'
-                    f'{miss_note}'
-                    f'</div>',
-                    unsafe_allow_html=True,
+                summary_parts.append(
+                    f'<div style="border-left:1px solid #333; padding-left:16px;">'
+                    f'<div style="font-size:9px; color:#555; letter-spacing:1.5px; font-weight:700;">MISSES</div>'
+                    f'<div style="margin-top:2px; line-height:1.6;">{miss_items}</div>'
+                    f'</div>'
                 )
+            summary_parts.append('</div>')
+
         if champ:
-            with col_champ:
-                s = team_seed_map.get(champ, "")
-                seed_txt = f" ({s})" if s else ""
-                champ_elim = champ in actual_losers
-                if champ_elim:
-                    border_color = "#f87171"
-                    elim_txt = '<div style="color:#f87171; font-size:11px; font-weight:700; margin-top:4px; letter-spacing:1px;">ELIMINATED</div>'
-                else:
-                    border_color = "#009CDE"
-                    elim_txt = ""
-                st.markdown(
-                    f'<div class="vp-card" style="border-top:3px solid {border_color}; padding:20px;">'
-                    f'<div style="font-size:9px; color:#666; letter-spacing:2px; font-weight:800; margin-bottom:10px; text-align:center;">'
-                    f'PREDICTED CHAMPION</div>'
-                    f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; max-width:300px; margin:0 auto;">'
-                    f'<div style="display:flex; align-items:center; padding:10px 14px;">'
-                    f'<div style="width:4px; height:32px; border-radius:1px; background:{_team_color(champ)}; margin-right:8px;"></div>'
-                    f'<span style="color:#888; font-weight:700; font-size:13px; margin-right:6px;">{s}</span>'
-                    f'{_team_logo_img(champ, espn_map, size=24)}'
-                    f'<span style="font-size:20px; font-weight:900; color:{border_color}; flex:1;">{tname(teams, champ)}</span>'
-                    f'</div></div>'
-                    f'{elim_txt}'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
+            s = team_seed_map.get(champ, "")
+            champ_elim = champ in actual_losers
+            champ_color = "#f87171" if champ_elim else "#FAFAFA"
+            elim_tag = ' <span style="color:#f87171; font-size:9px; font-weight:700; letter-spacing:0.5px;">ELIM</span>' if champ_elim else ''
+            summary_parts.append(
+                f'<div style="margin-left:auto; display:flex; align-items:center; gap:10px;">'
+                f'<div style="font-size:9px; color:#555; letter-spacing:1.5px; font-weight:700;">CHAMPION</div>'
+                f'<div style="display:flex; align-items:center; gap:6px; background:#18191f; border:1px solid #333; border-radius:4px; padding:6px 12px;">'
+                f'<div style="width:3px; height:24px; border-radius:1px; background:{_team_color(champ)};"></div>'
+                f'<span style="color:#888; font-weight:700; font-size:11px;">{s}</span>'
+                f'{_team_logo_img(champ, espn_map, size=20)}'
+                f'<span style="font-size:16px; font-weight:800; color:{champ_color};">{tname(teams, champ)}</span>'
+                f'{elim_tag}'
+                f'</div>'
+                f'</div>'
+            )
 
-    # Final Four
-    st.markdown("")
-    st.subheader("Final Four")
-    st.markdown(final_four_html(sim_results, teams, team_seed_map, slot_states=slot_states, espn_map=espn_map), unsafe_allow_html=True)
+        st.markdown(
+            f'<div style="display:flex; align-items:center; gap:20px; padding:14px 18px; background:#18191f; border:1px solid #2a2a2a; border-radius:8px; margin-bottom:16px;">'
+            f'{"".join(summary_parts)}'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
-    st.markdown("---")
-
-    # ── Legend ──
+    # ── Legend (compact, inline) ──
     if total_graded > 0:
         st.markdown(
-            '<div style="display:flex; gap:16px; align-items:center; margin-bottom:8px; flex-wrap:wrap;">'
-            '<span style="font-size:10px; color:#666; letter-spacing:1px; font-weight:700;">LEGEND</span>'
-            '<span style="font-size:11px; color:#888;">'
-            '<span style="display:inline-block; width:10px; height:10px; background:#2d3a2d; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
-            'Correct pick</span>'
-            '<span style="font-size:11px; color:#888;">'
-            '<span style="display:inline-block; width:10px; height:10px; background:#f87171; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
-            'Missed pick</span>'
-            '<span style="font-size:11px; color:#888;">'
-            '<span style="display:inline-block; width:10px; height:10px; background:#2a2a2a; border:1px solid #333; border-radius:2px; margin-right:4px; vertical-align:middle;"></span>'
-            'Prediction (not yet played)</span>'
+            '<div style="display:flex; gap:14px; align-items:center; margin-bottom:12px;">'
+            '<span style="font-size:11px; color:#666;">'
+            '<span style="display:inline-block; width:8px; height:8px; background:#2d3a2d; border-radius:2px; margin-right:3px; vertical-align:middle;"></span>'
+            'Correct</span>'
+            '<span style="font-size:11px; color:#666;">'
+            '<span style="display:inline-block; width:8px; height:8px; background:#f87171; border-radius:2px; margin-right:3px; vertical-align:middle;"></span>'
+            'Missed</span>'
+            '<span style="font-size:11px; color:#666;">'
+            '<span style="display:inline-block; width:8px; height:8px; background:#2a2a2a; border:1px solid #333; border-radius:2px; margin-right:3px; vertical-align:middle;"></span>'
+            'Pending</span>'
             '</div>',
             unsafe_allow_html=True,
         )
 
+    # Final Four
+    st.markdown(
+        '<div style="font-size:11px; color:#555; letter-spacing:1.5px; font-weight:700; margin-bottom:4px;">FINAL FOUR & CHAMPIONSHIP</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(final_four_html(sim_results, teams, team_seed_map, slot_states=slot_states, espn_map=espn_map), unsafe_allow_html=True)
+
     # Regional brackets
+    st.markdown('<div style="border-top:1px solid #2a2a2a; margin:20px 0 12px;"></div>', unsafe_allow_html=True)
     for region in ["W", "X", "Y", "Z"]:
-        st.subheader(region_labels[region])
+        st.markdown(
+            f'<div style="font-size:11px; color:#555; letter-spacing:1.5px; font-weight:700; margin:16px 0 4px;">{region_labels[region].upper()}</div>',
+            unsafe_allow_html=True,
+        )
         html = region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=slot_states, espn_map=espn_map)
         st.markdown(html, unsafe_allow_html=True)
-        st.markdown("")
 
 
 
