@@ -3865,6 +3865,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                     "edge": f"{dog_edge*100:+.1f}%", "ev": f"${dog_ev:+.1f}",
                     "kelly": f"{dog_kelly*100:.1f}%", "score": dog_score,
                     "label": dog_label, "color": dog_color, "bt": "—",
+                    "v_odds": v_ml_dog,
                 }
             else:
                 card["ml"] = {
@@ -3873,6 +3874,7 @@ def page_picks(prefix, teams, seeds_df, preds):
                     "edge": f"{ml_edge*100:+.1f}%", "ev": f"${ml_ev:+.1f}",
                     "kelly": f"{ml_kelly*100:.1f}%", "score": ml_score,
                     "label": ml_label, "color": ml_color, "bt": f"{bt_ml_pct:.0f}%",
+                    "v_odds": v_ml_fav,
                 }
         else:
             # No Vegas — show model projection
@@ -4011,29 +4013,57 @@ def page_picks(prefix, teams, seeds_df, preds):
         ml_l = sum(1 for c in graded if c["ml"].get("result") == "LOSS")
         ats_w = sum(1 for c in graded if c["spread"].get("result") == "WIN")
         ats_l = sum(1 for c in graded if c["spread"].get("result") == "LOSS")
+        ats_p = sum(1 for c in graded if c["spread"].get("result") == "PUSH")
         ou_w = sum(1 for c in graded if c["total"].get("result") == "WIN")
         ou_l = sum(1 for c in graded if c["total"].get("result") == "LOSS")
+        ou_p = sum(1 for c in graded if c["total"].get("result") == "PUSH")
+
+        # ML units: win pays based on vegas odds, loss costs 1u (flat 1u bets)
+        ml_units = 0.0
+        for c in graded:
+            res = c["ml"].get("result")
+            odds = c["ml"].get("v_odds")
+            if res and odds is not None:
+                if res == "WIN":
+                    ml_units += (100 / abs(odds)) if odds < 0 else (odds / 100)
+                elif res == "LOSS":
+                    ml_units -= 1.0
+        # ATS units: standard -110 juice (win +0.91u, loss -1u)
+        ats_units = ats_w * (100 / 110) - ats_l * 1.0
+        # O/U units: standard -110 juice
+        ou_units = ou_w * (100 / 110) - ou_l * 1.0
+        total_units = ml_units + ats_units + ou_units
+
         ml_c = "#4ade80" if ml_w > ml_l else "#f87171" if ml_l > ml_w else "#888"
         ats_c = "#4ade80" if ats_w > ats_l else "#f87171" if ats_l > ats_w else "#888"
         ou_c = "#4ade80" if ou_w > ou_l else "#f87171" if ou_l > ou_w else "#888"
+        tu_c = "#4ade80" if total_units > 0 else "#f87171" if total_units < 0 else "#888"
+        ml_u_str = f'{"+" if ml_units >= 0 else ""}{ml_units:.1f}u'
+        ats_u_str = f'{"+" if ats_units >= 0 else ""}{ats_units:.1f}u'
+        ou_u_str = f'{"+" if ou_units >= 0 else ""}{ou_units:.1f}u'
+        tu_str = f'{"+" if total_units >= 0 else ""}{total_units:.1f}u'
         st.markdown(
             f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; padding:10px 16px; '
             f'display:flex; justify-content:space-around; align-items:center; margin-bottom:12px;">'
             f'<div style="text-align:center;">'
             f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">MONEYLINE</div>'
-            f'<div style="font-size:20px; font-weight:900; color:{ml_c};">{ml_w}-{ml_l}</div></div>'
-            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ml_c};">{ml_w}-{ml_l}</div>'
+            f'<div style="font-size:11px; font-weight:700; color:{ml_c};">{ml_u_str}</div></div>'
+            f'<div style="width:1px; height:40px; background:#333;"></div>'
             f'<div style="text-align:center;">'
             f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">ATS</div>'
-            f'<div style="font-size:20px; font-weight:900; color:{ats_c};">{ats_w}-{ats_l}</div></div>'
-            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ats_c};">{ats_w}-{ats_l}</div>'
+            f'<div style="font-size:11px; font-weight:700; color:{ats_c};">{ats_u_str}</div></div>'
+            f'<div style="width:1px; height:40px; background:#333;"></div>'
             f'<div style="text-align:center;">'
             f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">O/U</div>'
-            f'<div style="font-size:20px; font-weight:900; color:{ou_c};">{ou_w}-{ou_l}</div></div>'
-            f'<div style="width:1px; height:30px; background:#333;"></div>'
+            f'<div style="font-size:20px; font-weight:900; color:{ou_c};">{ou_w}-{ou_l}</div>'
+            f'<div style="font-size:11px; font-weight:700; color:{ou_c};">{ou_u_str}</div></div>'
+            f'<div style="width:1px; height:40px; background:#333;"></div>'
             f'<div style="text-align:center;">'
-            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">GAMES</div>'
-            f'<div style="font-size:20px; font-weight:900; color:#FAFAFA;">{len(graded)}</div></div>'
+            f'<div style="font-size:9px; color:#666; font-weight:700; letter-spacing:0.8px;">TOTAL</div>'
+            f'<div style="font-size:20px; font-weight:900; color:{tu_c};">{tu_str}</div>'
+            f'<div style="font-size:11px; font-weight:700; color:#888;">{len(graded)} games</div></div>'
             f'</div>',
             unsafe_allow_html=True,
         )
