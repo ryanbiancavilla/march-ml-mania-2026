@@ -3597,6 +3597,17 @@ def page_picks(prefix, teams, seeds_df, preds):
             "t2_final": t2_final_score,
             "is_upset": is_upset,
             "upset_text": upset_text,
+            # Per-team inline data for condensed display
+            "t1_prob": f"{p*100:.0f}%",
+            "t2_prob": f"{(1-p)*100:.0f}%",
+            "t1_spread": f"{pick['model_spread']:+.1f}",
+            "t2_spread": f"{-pick['model_spread']:+.1f}",
+            "t1_ml_odds": pick["vegas_ml_t1"] if pick["vegas_ml_t1"] is not None else pick["model_ml_t1"],
+            "t2_ml_odds": pick["vegas_ml_t2"] if pick["vegas_ml_t2"] is not None else pick["model_ml_t2"],
+            "has_vegas": has_vegas_ml or has_vegas_spread,
+            "v_spread": pick["vegas_spread"],
+            "m_total": m_total,
+            "v_total": pick.get("vegas_total"),
         }
 
         # ── Moneyline Pick ──
@@ -3794,29 +3805,28 @@ def page_picks(prefix, teams, seeds_df, preds):
                 f'<div class="value" style="color:{ou_c};">{ou_w}-{ou_l}</div>'
                 f'</div>', unsafe_allow_html=True)
 
-    # ── Render Game Cards ──
+    # ── Render Game Cards (condensed sportsbook-style grid) ──
+    grid_html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">'
     for card in game_cards:
         best = card["best_rating"]
         border_color = "#4ade80" if best >= 70 else "#41B6E6" if best >= 45 else "#60a5fa" if best >= 25 else "#444"
-
-        # Build game info line (time + broadcast + final score)
-        info_parts = []
         is_final = card.get("game_final", False)
-        if is_final:
-            info_parts.append(f'<span style="color:#4ade80; font-weight:700;">FINAL: {card["t1_final"]}-{card["t2_final"]}</span>')
-        if card.get("game_time_display"):
-            info_parts.append(f'<span style="color:#41B6E6; font-weight:600;">{card["game_time_display"]}</span>')
-        if card.get("broadcast_display"):
-            info_parts.append(f'<span style="color:#60a5fa; font-weight:600;">{card["broadcast_display"]}</span>')
-        info_line = ""
-        if info_parts:
-            info_line = (
-                f'<div style="font-size:12px; margin-top:2px; display:flex; gap:12px; align-items:center;">'
-                + " &middot; ".join(info_parts)
-                + '</div>'
-            )
 
-        # For final games, show record instead of edge
+        ct1 = card.get("t1")
+        ct2 = card.get("t2")
+        ct1_color = _team_color(ct1) if ct1 else '#666'
+        ct2_color = _team_color(ct2) if ct2 else '#666'
+
+        # Status bar (time, broadcast)
+        status_parts = []
+        if is_final:
+            status_parts.append(f'<span style="color:#4ade80; font-weight:700;">FINAL</span>')
+        if card.get("game_time_display"):
+            status_parts.append(f'<span style="color:#888;">{card["game_time_display"]}</span>')
+        if card.get("broadcast_display"):
+            status_parts.append(f'<span style="color:#555;">{card["broadcast_display"]}</span>')
+
+        # Edge/record badge in status bar
         if is_final:
             results = [card["ml"].get("result"), card["spread"].get("result"), card["total"].get("result")]
             wins = sum(1 for r in results if r == "WIN")
@@ -3824,80 +3834,145 @@ def page_picks(prefix, teams, seeds_df, preds):
             pushes = sum(1 for r in results if r == "PUSH")
             record_str = f"{wins}W-{losses}L" + (f"-{pushes}P" if pushes else "")
             record_color = "#4ade80" if wins > losses else "#f87171" if losses > wins else "#41B6E6"
-            badge_html = (f'<span style="background:{record_color}; color:#000; font-weight:700; padding:3px 10px; '
-                          f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">{record_str}</span>')
+            edge_html = f'<span style="color:{record_color}; font-weight:700;">{record_str}</span>'
         else:
-            badge_html = (f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
-                          f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">EDGE: {best}</span>')
+            edge_html = f'<span style="color:{border_color}; font-weight:700;">EDGE {best}</span>'
+
+        status_bar = (
+            f'<div style="display:flex; justify-content:space-between; align-items:center; padding:3px 10px; '
+            f'border-bottom:1px solid #2a2a2a; background:#1a1c22; font-size:9px; font-weight:700;">'
+            f'<div style="display:flex; gap:6px; align-items:center;">'
+            + " &middot; ".join(status_parts) if status_parts else ''
+        )
+        status_bar += f'</div>{edge_html}</div>'
 
         upset_badge = ""
         if card.get("is_upset"):
             upset_badge = (
-                f'<span style="background:#ff4444; color:#fff; font-weight:800; padding:2px 8px; '
-                f'border-radius:4px; font-size:10px; letter-spacing:0.5px; margin-left:8px; '
-                f'vertical-align:middle;">UPSET PICK &middot; {card["upset_text"]}</span>'
+                f'<span style="background:#ff4444; color:#fff; font-weight:800; padding:1px 5px; '
+                f'border-radius:3px; font-size:7px; letter-spacing:0.3px; margin-left:3px;">UPSET</span>'
             )
 
-        # Team color bars for card header
-        ct1 = card.get("t1")
-        ct2 = card.get("t2")
-        ct1_color = _team_color(ct1) if ct1 else '#666'
-        ct2_color = _team_color(ct2) if ct2 else '#666'
+        # Format ML odds for inline pills
+        t1_ml_str = card["t1_ml_odds"]
+        t2_ml_str = card["t2_ml_odds"]
+        if isinstance(t1_ml_str, (int, float)):
+            t1_ml_str = f"{'+' if t1_ml_str > 0 else ''}{int(t1_ml_str)}"
+        if isinstance(t2_ml_str, (int, float)):
+            t2_ml_str = f"{'+' if t2_ml_str > 0 else ''}{int(t2_ml_str)}"
 
-        st.markdown(
-            f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
-            f'<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">'
-            f'<div>'
-            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; display:inline-block; min-width:260px;">'
-            f'<div style="display:flex; align-items:center; padding:5px 10px; border-bottom:1px solid #2a2a2a;">'
-            f'<div style="width:3px; height:20px; border-radius:1px; background:{ct1_color}; margin-right:6px; flex-shrink:0;"></div>'
-            f'{card["s1t"]}{_team_logo_img(ct1, espn_map, size=18)}'
-            f'<span style="font-weight:700; font-size:14px;">{card["n1"]}</span></div>'
-            f'<div style="display:flex; align-items:center; padding:5px 10px;">'
-            f'<div style="width:3px; height:20px; border-radius:1px; background:{ct2_color}; margin-right:6px; flex-shrink:0;"></div>'
-            f'{card["s2t"]}{_team_logo_img(ct2, espn_map, size=18)}'
-            f'<span style="font-weight:700; font-size:14px;">{card["n2"]}</span></div>'
-            f'</div>'
-            f'{upset_badge}'
-            f'{info_line}'
-            f'</div>'
-            f'{badge_html}'
-            f'</div>'
-            f'<div style="display:flex; gap:12px; flex-wrap:wrap;">',
-            unsafe_allow_html=True,
+        # Spread pills (using vegas spread if available, else model)
+        v_sp = card.get("v_spread")
+        if v_sp is not None:
+            t1_sp_str = f"{v_sp:+.1f}"
+            t2_sp_str = f"{-v_sp:+.1f}"
+        else:
+            t1_sp_str = card["t1_spread"]
+            t2_sp_str = card["t2_spread"]
+
+        # Determine which team row highlights (final: winner bold, pre: both normal)
+        if is_final:
+            t1_won = card["t1_final"] > card["t2_final"]
+            t2_won = card["t2_final"] > card["t1_final"]
+            t1_bar = ct1_color if t1_won else '#333'
+            t2_bar = ct2_color if t2_won else '#333'
+            t1_name_style = 'color:#FAFAFA; font-weight:700;' if t1_won else 'color:#555;'
+            t2_name_style = 'color:#FAFAFA; font-weight:700;' if t2_won else 'color:#555;'
+            t1_score_html = f'<span style="font-size:15px; font-weight:900; color:{"#FAFAFA" if t1_won else "#555"}; font-variant-numeric:tabular-nums; min-width:24px; text-align:right;">{card["t1_final"]}</span>'
+            t2_score_html = f'<span style="font-size:15px; font-weight:900; color:{"#FAFAFA" if t2_won else "#555"}; font-variant-numeric:tabular-nums; min-width:24px; text-align:right;">{card["t2_final"]}</span>'
+        else:
+            t1_bar = ct1_color
+            t2_bar = ct2_color
+            t1_name_style = 'color:#FAFAFA; font-weight:600;'
+            t2_name_style = 'color:#FAFAFA; font-weight:600;'
+            t1_score_html = ''
+            t2_score_html = ''
+
+        # Pill style helper
+        pill = (
+            'display:inline-block; padding:2px 6px; border-radius:3px; font-size:10px; '
+            'font-weight:700; font-variant-numeric:tabular-nums; margin-left:4px; '
         )
 
-        # Three bet type columns — build as single HTML to preserve flex layout
-        bet_types_html = ""
-        for btype, data in [("ML", card["ml"]), ("SPREAD", card["spread"]), ("O/U", card["total"])]:
-            sc = data["score"]
-            col = data["color"]
-            lbl = data["label"]
-            edge_display = data["edge"]
+        # ML result badges
+        ml_r1 = ml_r2 = ats_r1 = ats_r2 = ''
+        if is_final:
+            ml_res = card["ml"].get("result", "")
+            ats_res = card["spread"].get("result", "")
+            # Determine which team the ML pick was on
+            ml_pick_text = card["ml"]["pick"]
+            ml_on_t1 = card["n1"] in ml_pick_text
+            if ml_res == "WIN":
+                badge = '<span style="color:#4ade80; font-weight:900; font-size:9px; margin-left:2px;">W</span>'
+            elif ml_res == "LOSS":
+                badge = '<span style="color:#f87171; font-weight:900; font-size:9px; margin-left:2px;">L</span>'
+            else:
+                badge = ''
+            if ml_on_t1:
+                ml_r1 = badge
+            else:
+                ml_r2 = badge
 
+        grid_html += (
+            f'<div style="background:#18191f; border:1px solid {border_color}; border-radius:4px; overflow:hidden;">'
+            f'{status_bar}'
+            # Team 1 row: [bar] [seed] [logo] [name] [prob] [spread pill] [ML pill] [score]
+            f'<div style="display:flex; align-items:center; padding:5px 8px; border-bottom:1px solid #2a2a2a; gap:2px;">'
+            f'<div style="width:3px; height:22px; border-radius:1px; background:{t1_bar}; margin-right:4px; flex-shrink:0;"></div>'
+            f'{card["s1t"]}{_team_logo_img(ct1, espn_map, size=16)}'
+            f'<span style="{t1_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n1"]}</span>'
+            f'<span style="color:#aaa; font-size:11px; font-weight:600; min-width:28px; text-align:right;">{card["t1_prob"]}</span>'
+            f'<span style="{pill}background:#2a2d35; color:#ccc;">{t1_sp_str} {t1_ml_str}{ml_r1}</span>'
+            f'{t1_score_html}'
+            f'</div>'
+            # Team 2 row
+            f'<div style="display:flex; align-items:center; padding:5px 8px; gap:2px;">'
+            f'<div style="width:3px; height:22px; border-radius:1px; background:{t2_bar}; margin-right:4px; flex-shrink:0;"></div>'
+            f'{card["s2t"]}{_team_logo_img(ct2, espn_map, size=16)}'
+            f'<span style="{t2_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n2"]}{upset_badge}</span>'
+            f'<span style="color:#aaa; font-size:11px; font-weight:600; min-width:28px; text-align:right;">{card["t2_prob"]}</span>'
+            f'<span style="{pill}background:#2a2d35; color:#ccc;">{t2_sp_str} {t2_ml_str}{ml_r2}</span>'
+            f'{t2_score_html}'
+            f'</div>'
+        )
+
+        # Pick recommendation footer
+        ml_data = card["ml"]
+        sp_data = card["spread"]
+        ou_data = card["total"]
+        pick_parts = []
+        for btype, data in [("ML", ml_data), ("ATS", sp_data), ("O/U", ou_data)]:
             result = data.get("result", "")
             if result == "WIN":
-                result_html = '<div style="margin-top:4px;"><span style="background:#4ade80; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">W</span></div>'
+                r_dot = '<span style="color:#4ade80;">W</span> '
             elif result == "LOSS":
-                result_html = '<div style="margin-top:4px;"><span style="background:#f87171; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">L</span></div>'
+                r_dot = '<span style="color:#f87171;">L</span> '
             elif result == "PUSH":
-                result_html = '<div style="margin-top:4px;"><span style="background:#41B6E6; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">P</span></div>'
+                r_dot = '<span style="color:#41B6E6;">P</span> '
             else:
-                result_html = ""
-
-            bet_types_html += (
-                f'<div class="vp-bet-type">'
-                f'<div style="font-size:9px; color:#41B6E6; font-weight:700; letter-spacing:0.8px; margin-bottom:4px;">{btype}</div>'
-                f'<div style="font-size:14px; font-weight:700; color:{col}; margin-bottom:6px;">{data["pick"]}</div>'
-                f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Model: <span style="color:#ccc; font-weight:600;">{data["model"]}</span></div>'
-                f'<div style="font-size:11px; color:#888; margin-bottom:2px;">Vegas: <span style="color:#ccc; font-weight:600;">{data["vegas"]}</span></div>'
-                f'<div style="font-size:11px; color:#888; margin-bottom:6px;">Edge: <span style="color:#ccc; font-weight:600;">{edge_display}</span> &middot; EV: <span style="color:#ccc; font-weight:600;">{data["ev"]}</span></div>'
-                f'<span style="background:{col}; color:#000; font-weight:700; padding:2px 8px; border-radius:3px; font-size:10px;">{lbl} ({sc})</span>'
-                f'{result_html}'
-                f'</div>'
+                r_dot = ''
+            col = data["color"]
+            pick_parts.append(
+                f'<span style="color:{col}; font-weight:700;">{btype}:</span> '
+                f'<span style="color:#ccc;">{data["pick"]}</span> {r_dot}'
             )
 
-        st.markdown(bet_types_html + '</div></div>', unsafe_allow_html=True)
+        # O/U line
+        ou_str = ''
+        if card.get("v_total") is not None:
+            ou_str = f'O/U {card["v_total"]:.1f}'
+        elif card.get("m_total"):
+            ou_str = f'Proj {card["m_total"]:.1f}'
+
+        grid_html += (
+            f'<div style="padding:4px 10px; border-top:1px solid #2a2a2a; background:#131418; '
+            f'font-size:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">'
+            + " &middot; ".join(pick_parts)
+            + f'</div>'
+            f'</div>'
+        )
+    grid_html += '</div>'
+    st.markdown(grid_html, unsafe_allow_html=True)
 
     # ── Legend ──
     st.markdown("---")
