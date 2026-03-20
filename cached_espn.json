@@ -1,16 +1,40 @@
 {
   "games": [
     {
-      "game_id": "401856490",
-      "name": "VCU Rams at North Carolina Tar Heels",
+      "game_id": "401856486",
+      "name": "Howard Bison at Michigan Wolverines",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
+      "home_team": "Michigan Wolverines",
+      "home_score": 101,
+      "home_id": "130",
+      "away_team": "Howard Bison",
+      "away_score": 80,
+      "away_id": "47"
+    },
+    {
+      "game_id": "401856484",
+      "name": "Texas Longhorns at BYU Cougars",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "6:48 - 1st",
-      "home_team": "North Carolina Tar Heels",
-      "home_score": 26,
-      "home_id": "153",
-      "away_team": "VCU Rams",
-      "away_score": 18,
-      "away_id": "2670"
+      "status_detail": "0:58 - 2nd",
+      "home_team": "BYU Cougars",
+      "home_score": 71,
+      "home_id": "252",
+      "away_team": "Texas Longhorns",
+      "away_score": 75,
+      "away_id": "251"
+    },
+    {
+      "game_id": "401856492",
+      "name": "Texas A&M Aggies at Saint Mary's Gaels",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
+      "home_team": "Saint Mary's Gaels",
+      "home_score": 50,
+      "home_id": "2608",
+      "away_team": "Texas A&M Aggies",
+      "away_score": 63,
+      "away_id": "245"
     },
     {
       "game_id": "401856478",
@@ -97,6 +121,18 @@
       "away_id": "58"
     },
     {
+      "game_id": "401856490",
+      "name": "VCU Rams at North Carolina Tar Heels",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final/OT",
+      "home_team": "North Carolina Tar Heels",
+      "home_score": 78,
+      "home_id": "153",
+      "away_team": "VCU Rams",
+      "away_score": 82,
+      "away_id": "2670"
+    },
+    {
       "game_id": "401856479",
       "name": "TCU Horned Frogs at Ohio State Buckeyes",
       "status": "STATUS_FINAL",
@@ -109,64 +145,16 @@
       "away_id": "2628"
     },
     {
-      "game_id": "401856486",
-      "name": "Howard Bison at Michigan Wolverines",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 7:30 PM EDT",
-      "home_team": "Michigan Wolverines",
-      "home_score": 0,
-      "home_id": "130",
-      "away_team": "Howard Bison",
-      "away_score": 0,
-      "away_id": "47"
-    },
-    {
-      "game_id": "401856484",
-      "name": "Texas Longhorns at BYU Cougars",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 7:35 PM EDT",
-      "home_team": "BYU Cougars",
-      "home_score": 0,
-      "home_id": "252",
-      "away_team": "Texas Longhorns",
-      "away_score": 0,
-      "away_id": "251"
-    },
-    {
-      "game_id": "401856492",
-      "name": "Texas A&M Aggies at Saint Mary's Gaels",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 7:35 PM EDT",
-      "home_team": "Saint Mary's Gaels",
-      "home_score": 0,
-      "home_id": "2608",
-      "away_team": "Texas A&M Aggies",
-      "away_score": 0,
-      "away_id": "245"
-    },
-    {
       "game_id": "401856491",
       "name": "Pennsylvania Quakers at Illinois Fighting Illini",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 9:25 PM EDT",
+      "status_detail": "3/19 - 9:55 PM EDT",
       "home_team": "Illinois Fighting Illini",
       "home_score": 0,
       "home_id": "356",
       "away_team": "Pennsylvania Quakers",
       "away_score": 0,
       "away_id": "219"
-    },
-    {
-      "game_id": "401856487",
-      "name": "Saint Louis Billikens at Georgia Bulldogs",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/19 - 9:55 PM EDT",
-      "home_team": "Georgia Bulldogs",
-      "home_score": 0,
-      "home_id": "61",
-      "away_team": "Saint Louis Billikens",
-      "away_score": 0,
-      "away_id": "139"
     },
     {
       "game_id": "401856485",
@@ -191,7 +179,19 @@
       "away_team": "Idaho Vandals",
       "away_score": 0,
       "away_id": "70"
+    },
+    {
+      "game_id": "401856487",
+      "name": "Saint Louis Billikens at Georgia Bulldogs",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/19 - 10:10 PM EDT",
+      "home_team": "Georgia Bulldogs",
+      "home_score": 0,
+      "home_id": "61",
+      "away_team": "Saint Louis Billikens",
+      "away_score": 0,
+      "away_id": "139"
     }
   ],
-  "fetched_at": "2026-03-19T23:24:55.052006+00:00"
+  "fetched_at": "2026-03-20T01:42:24.521836+00:00"
 }
