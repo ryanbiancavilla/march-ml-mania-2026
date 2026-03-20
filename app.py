@@ -33,7 +33,7 @@ def check_password():
 
     st.markdown(
         "<div style='text-align:center; margin-top:100px;'>"
-        "<div style='font-family: Impact, Haettenschweiler, sans-serif !important; font-size:80px; "
+        "<div style='font-family: Impact, Haettenschweiler, sans-serif; font-size:80px; "
         "letter-spacing:-0.02em; margin-bottom:6px; text-transform:uppercase; "
         "transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;'>"
         "VILPOM</div>"
@@ -129,7 +129,7 @@ st.markdown("""
 
     /* ── Foundation ── */
     .block-container { padding-top: 0.5rem; max-width: 1200px; }
-    *, *::before, *::after { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
     /* ── Sidebar (NCAA Navy) ── */
     [data-testid="stSidebar"] {
@@ -3503,7 +3503,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     if not picks:
         st.markdown(
             '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
-            '<div style="font-family: Impact, Haettenschweiler, sans-serif !important; font-size:28px; margin-bottom:12px; '
+            '<div style="font-family: Impact, Haettenschweiler, sans-serif; font-size:28px; margin-bottom:12px; '
             'text-transform:uppercase; letter-spacing:-0.02em; '
             'transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;">'
             '<span style="color:#FAFAFA;">VILPOM</span></div>'
@@ -4024,7 +4024,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 def page_about():
     st.markdown(
         "<div style='text-align:center; margin:16px 0 6px;'>"
-        "<span style='font-family: Impact, Haettenschweiler, sans-serif !important; font-size:42px; "
+        "<span style='font-family: Impact, Haettenschweiler, sans-serif; font-size:42px; "
         "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; "
         "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
         "<span style='color:#FAFAFA;'>VILPOM</span></span>"
@@ -4181,7 +4181,7 @@ def page_about():
         '<div style="color:#888; font-size:11px;">Vegas lines from major books</div></div>'
         '<div style="color:#444; font-size:18px;">&#8594;</div>'
         '<div style="text-align:center; min-width:140px;">'
-        '<div style="font-family: Impact, Haettenschweiler, sans-serif !important; '
+        '<div style="font-family: Impact, Haettenschweiler, sans-serif; '
         'font-size:17px; text-transform:uppercase; letter-spacing:-0.02em; '
         'transform: skewX(-12deg); display:inline-block; line-height:0.9; color:#FAFAFA;">'
         '<span style="color:#FAFAFA;">VILPOM</span></div>'
@@ -4210,7 +4210,7 @@ conferences = load_conferences()
 # Sidebar
 st.sidebar.markdown(
     "<div style='text-align:center; padding:8px 0 4px;'>"
-    "<span style='font-family: Impact, Haettenschweiler, sans-serif !important; font-size:38px; "
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; font-size:38px; "
     "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; "
     "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
     "<span style='color:#FAFAFA;'>VILPOM</span></span>"
@@ -4240,7 +4240,7 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(
     "<div style='text-align:center; padding:4px 0;'>"
     "<div style='color:rgba(255,255,255,0.4); font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
-    "<span style='font-family: Impact, Haettenschweiler, sans-serif !important; "
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; "
     "letter-spacing:-0.02em; display:inline-block; "
     "transform: skewX(-12deg); color:rgba(255,255,255,0.6);'>VILPOM</span> "
     "&copy; 2026 &middot; v2.0</div>"
