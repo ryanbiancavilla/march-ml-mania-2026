@@ -2157,66 +2157,52 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     futures_df.index = futures_df.index + 1
     futures_df.index.name = "#"
 
-    # Top 20 futures board styled like a sportsbook
-    top_futures = futures_df.head(20)
-    massey_hdr = '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:48px; text-align:right;">MASSEY</span>' if has_massey else ''
-    board_html = '<div style="max-width:900px; margin:auto; border-radius:10px; border:1px solid #333; overflow:hidden;">'
-    # Header row
-    board_html += (
-        '<div style="display:flex; justify-content:space-between; align-items:center; '
-        'padding:10px 16px; background:#18191f; border-bottom:2px solid #009CDE;">'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px;">TEAM</span>'
-        '<div style="display:flex; gap:16px;">'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:36px; text-align:right;">ELO</span>'
-        f'{massey_hdr}'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:40px; text-align:right;">E8</span>'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:40px; text-align:right;">FF</span>'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:50px; text-align:right;">CHAMP</span>'
-        '<span style="color:#888; font-size:10px; font-weight:700; letter-spacing:1px; min-width:80px; text-align:right;">ODDS</span>'
-        '</div></div>'
-    )
-    for idx, (_, fr) in enumerate(top_futures.iterrows()):
+    # Championship futures table (vp-table format)
+    fut_html = '<div style="max-height:650px; overflow-y:auto; border-radius:10px; border:1px solid #333;">'
+    fut_html += '<table class="vp-table"><thead><tr>'
+    fut_html += '<th style="width:36px;">#</th><th>TEAM</th><th>ELO</th>'
+    if has_massey:
+        fut_html += '<th>MASSEY</th>'
+    fut_html += '<th>E8</th><th>FF</th><th>CHAMP %</th><th>ODDS</th><th>$100 PAYOUT</th>'
+    fut_html += '</tr></thead><tbody>'
+    for idx, (_, fr) in enumerate(futures_df.iterrows()):
         rank = idx + 1
-        seed_txt = f'<span class="seed-badge" style="margin-right:8px;">{int(fr["Seed"])}</span>'
-        odds_color = "#009CDE" if fr["_cp"] >= 0.10 else "#4ade80" if fr["_cp"] >= 0.03 else "#e2e8f0"
-        bg = 'rgba(65,182,230,0.04)' if rank <= 4 else '#18191f'
+        tid = fr.get("_tid")
+        tc = _team_color(tid) if tid else "#666"
+        logo = _team_logo_img(tid, espn_map, size=16) if tid else ""
+        seed_val = int(fr["Seed"]) if fr["Seed"] != 99 else ""
+        seed_prefix = f'<span style="color:#888; font-size:10px; font-weight:700; min-width:18px; text-align:right; margin-right:4px; font-variant-numeric:tabular-nums; display:inline-block;">{seed_val}</span>' if seed_val else ''
         elo_val = fr.get("_elo", 1500)
-        elo_color = "#4ade80" if elo_val >= 1650 else "#e2e8f0" if elo_val >= 1550 else "#888"
+        elo_color = "#4ade80" if elo_val >= 1650 else "#FAFAFA" if elo_val >= 1550 else "#888"
         e8_pct = fr.get("_e8", 0) * 100
         ff_pct = fr.get("_ff", 0) * 100
-        massey_cell = ""
+        cp = fr["_cp"]
+        champ_color = "#009CDE" if cp >= 0.10 else "#4ade80" if cp >= 0.03 else ""
+        champ_style = f' style="color:{champ_color}; font-weight:700;"' if champ_color else ' style="font-weight:600;"'
+        odds_color = "#009CDE" if cp >= 0.10 else "#4ade80" if cp >= 0.03 else "#FAFAFA"
+        # Massey
+        massey_td = ""
         if has_massey:
             m_val = fr.get("_massey")
             if m_val is not None:
-                m_color = "#4ade80" if m_val <= 25 else "#e2e8f0" if m_val <= 75 else "#f87171"
-                massey_cell = f'<span style="color:{m_color}; font-size:13px; font-variant-numeric:tabular-nums; min-width:48px; text-align:right;">{m_val:.0f}</span>'
+                m_cls = "stat-good" if m_val <= 25 else "stat-neutral" if m_val <= 100 else "stat-bad"
+                massey_td = f'<td class="{m_cls}" style="font-weight:600;">{m_val:.0f}</td>'
             else:
-                massey_cell = '<span style="color:#444; font-size:13px; min-width:48px; text-align:right;">—</span>'
-        board_html += (
-            f'<div style="display:flex; justify-content:space-between; align-items:center; '
-            f'padding:10px 16px; border-bottom:1px solid #2a2a2a; background:{bg}; '
-            f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(65,182,230,0.08)\'" '
-            f'onmouseout="this.style.background=\'{bg}\'">'
-            f'<div style="display:flex; align-items:center; gap:8px;">'
-            f'<span style="color:{_team_color(fr.get("_tid"))}; font-weight:800; font-size:13px; min-width:20px;">{rank}</span>'
-            f'{seed_txt}'
-            f'{_team_logo_img(fr.get("_tid"), espn_map, size=18)}'
-            f'<span style="font-weight:600;">{fr["Team"]}</span></div>'
-            f'<div style="display:flex; gap:16px; align-items:center;">'
-            f'<span style="color:{elo_color}; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; min-width:36px; text-align:right;">{elo_val}</span>'
-            f'{massey_cell}'
-            f'<span style="color:#aaa; font-size:13px; font-variant-numeric:tabular-nums; min-width:40px; text-align:right;">{e8_pct:.0f}%</span>'
-            f'<span style="color:#aaa; font-size:13px; font-variant-numeric:tabular-nums; min-width:40px; text-align:right;">{ff_pct:.0f}%</span>'
-            f'<span style="color:#aaa; font-size:13px; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{fr["Champ %"]}</span>'
-            f'<span style="font-weight:700; font-size:16px; color:{odds_color}; min-width:80px; text-align:right; '
-            f'font-variant-numeric:tabular-nums;">'
-            f'{fr["Futures Odds"]}</span>'
-            f'</div></div>'
-        )
-    board_html += '</div>'
-    st.markdown(board_html, unsafe_allow_html=True)
-
-    st.markdown("")
+                massey_td = '<td style="color:#555;">—</td>'
+        fut_html += f'<tr>'
+        fut_html += f'<td class="rank-cell">{rank}</td>'
+        fut_html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{seed_prefix}{logo}{fr["Team"]}</td>'
+        fut_html += f'<td style="color:{elo_color}; font-weight:700;">{elo_val}</td>'
+        fut_html += massey_td
+        fut_html += f'<td>{e8_pct:.0f}%</td>'
+        fut_html += f'<td>{ff_pct:.0f}%</td>'
+        fut_html += f'<td{champ_style}>{fr["Champ %"]}</td>'
+        fut_html += f'<td style="color:{odds_color}; font-weight:700;">{fr["Futures Odds"]}</td>'
+        fut_html += f'<td>{fr["Implied $100 Payout"]}</td>'
+        fut_html += '</tr>'
+    fut_html += '</tbody></table></div>'
+    st.markdown(fut_html, unsafe_allow_html=True)
+    st.caption(f"Showing {len(futures_df)} teams")
 
     # Full table
     st.markdown(
