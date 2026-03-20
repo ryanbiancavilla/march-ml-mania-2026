@@ -3127,6 +3127,21 @@ def page_picks(prefix, teams, seeds_df, preds):
         fav_name = n1 if fav == t1 else n2
         dog_name = n2 if fav == t1 else n1
         fav_prob = p if fav == t1 else 1 - p
+
+        # Upset detection: model picks the higher seed number (underdog by seed)
+        is_upset = False
+        upset_text = ""
+        fav_seed = team_seeds.get(fav, "")
+        dog_seed_num = team_seeds.get(t2 if fav == t1 else t1, "")
+        if fav_seed and dog_seed_num:
+            try:
+                fs = int(fav_seed)
+                ds = int(dog_seed_num)
+                if fs > ds:  # Model picks the higher seed (underdog)
+                    is_upset = True
+                    upset_text = f"#{fs} over #{ds}"
+            except (ValueError, TypeError):
+                pass
         dog_prob = 1 - fav_prob
         bt_ml_pct = get_bt_pct(fav_prob, "ml")
         bt_ats_pct = get_bt_pct(fav_prob, "ats")
@@ -3185,6 +3200,8 @@ def page_picks(prefix, teams, seeds_df, preds):
             "final_score": f"{t1_final_score}-{t2_final_score}" if game_final else "",
             "t1_final": t1_final_score,
             "t2_final": t2_final_score,
+            "is_upset": is_upset,
+            "upset_text": upset_text,
         }
 
         # ── Moneyline Pick ──
@@ -3418,11 +3435,19 @@ def page_picks(prefix, teams, seeds_df, preds):
             badge_html = (f'<span style="background:{border_color}; color:#000; font-weight:700; padding:3px 10px; '
                           f'border-radius:4px; font-size:11px; letter-spacing:0.5px;">EDGE: {best}</span>')
 
+        upset_badge = ""
+        if card.get("is_upset"):
+            upset_badge = (
+                f'<span style="background:#ff4444; color:#fff; font-weight:800; padding:2px 8px; '
+                f'border-radius:4px; font-size:10px; letter-spacing:0.5px; margin-left:8px; '
+                f'vertical-align:middle;">UPSET PICK &middot; {card["upset_text"]}</span>'
+            )
+
         st.markdown(
             f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
             f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
             f'<div>'
-            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}</div>'
+            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}{upset_badge}</div>'
             f'{info_line}'
             f'</div>'
             f'{badge_html}'
