@@ -757,6 +757,7 @@ def compute_season_stats(prefix):
         for side, opp_side, win in [("W", "L", 1), ("L", "W", 0)]:
             records.append({
                 "TeamID": int(r[f"{side}TeamID"]), "Win": win,
+                "DayNum": int(r["DayNum"]),
                 "Score": r[f"{side}Score"], "OppScore": r[f"{opp_side}Score"],
                 "FGM": r[f"{side}FGM"], "FGA": r[f"{side}FGA"],
                 "FGM3": r[f"{side}FGM3"], "FGA3": r[f"{side}FGA3"],
@@ -800,6 +801,19 @@ def compute_season_stats(prefix):
     stats["DefEff"] = (stats["OppPPG"] / stats["OppPoss"] * 100).round(1)
     stats["NetEff"] = (stats["OffEff"] - stats["DefEff"]).round(1)
     stats["Tempo"] = ((stats["Poss"] + stats["OppPoss"]) / 2).round(1)
+
+    # Last 10 games momentum
+    tg_sorted = tg.sort_values("DayNum")
+    last10 = tg_sorted.groupby("TeamID").tail(10)
+    l10_agg = last10.groupby("TeamID").agg(
+        L10_Wins=("Win", "sum"),
+        L10_Games=("Win", "count"),
+        L10_Margin=("Score", "mean"),
+        L10_OppScore=("OppScore", "mean"),
+    )
+    l10_agg["L10_Margin"] = (l10_agg["L10_Margin"] - l10_agg["L10_OppScore"]).round(1)
+    l10_agg["L10_Losses"] = l10_agg["L10_Games"] - l10_agg["L10_Wins"]
+    stats = stats.join(l10_agg[["L10_Wins", "L10_Losses", "L10_Margin"]])
 
     return stats
 
@@ -1445,6 +1459,9 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             ("SPG", round(s1_stats.SPG, 1), round(s2_stats.SPG, 1), True),
             ("BPG", round(s1_stats.BPG, 1), round(s2_stats.BPG, 1), True),
             ("Tempo", s1_stats.Tempo, s2_stats.Tempo, None),
+            ("Last 10", f"{int(s1_stats.L10_Wins)}-{int(s1_stats.L10_Losses)}",
+             f"{int(s2_stats.L10_Wins)}-{int(s2_stats.L10_Losses)}", None),
+            ("L10 Margin", round(s1_stats.L10_Margin, 1), round(s2_stats.L10_Margin, 1), True),
         ]
 
         rows_html = ""
