@@ -510,16 +510,17 @@ def load_conferences():
 
 
 _CONF_DISPLAY = {
-    "acc": "ACC", "big_ten": "B10", "big_twelve": "B12", "sec": "SEC",
-    "big_east": "BE", "pac_twelve": "P12", "aac": "AAC", "mwc": "MWC",
-    "wcc": "WCC", "mvc": "MVC", "a_ten": "A10", "colonial": "CAA",
-    "cusa": "CUSA", "horizon": "Horz", "ivy": "Ivy", "maac": "MAAC",
-    "mac": "MAC", "meac": "MEAC", "ovc": "OVC", "patriot": "Pat",
-    "southern": "SoCon", "sun_belt": "SBelt", "swac": "SWAC",
-    "wac": "WAC", "big_sky": "BSky", "big_south": "BSth",
-    "big_west": "BWst", "america_east": "AE", "atlantic_sun": "ASun",
-    "northeast": "NE", "southland": "Slnd", "summit": "Sum",
-    "ind": "Ind", "mountain_west": "MWC", "west_coast": "WCC",
+    "acc": "ACC", "big_ten": "Big Ten", "big_twelve": "Big 12", "sec": "SEC",
+    "big_east": "Big East", "pac_twelve": "Pac-12", "aac": "AAC", "mwc": "MWC",
+    "wcc": "WCC", "mvc": "MVC", "a_ten": "A-10", "caa": "CAA", "colonial": "CAA",
+    "cusa": "C-USA", "horizon": "Horizon", "ivy": "Ivy", "maac": "MAAC",
+    "mac": "MAC", "meac": "MEAC", "ovc": "OVC", "patriot": "Patriot",
+    "southern": "SoCon", "sun_belt": "Sun Belt", "swac": "SWAC",
+    "wac": "WAC", "big_sky": "Big Sky", "big_south": "Big South",
+    "big_west": "Big West", "aec": "Am. East", "america_east": "Am. East",
+    "a_sun": "ASUN", "atlantic_sun": "ASUN",
+    "nec": "NEC", "northeast": "NEC", "southland": "Southland", "summit": "Summit",
+    "ind": "Ind.", "mountain_west": "MWC", "west_coast": "WCC",
 }
 
 
@@ -1405,13 +1406,15 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
             if loser_tid:
                 eliminated_r.add(loser_tid)
 
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        show_tourney_only = st.checkbox("Tournament teams only", value=False)
-        show_alive_only = st.checkbox("Still alive only", value=False)
+    fc1, fc2, fc3, fc4 = st.columns(4)
+    with fc1:
+        search = st.text_input("Search team", "", placeholder="Team name...")
+    with fc2:
         conf_filter = st.selectbox("Conference", ["All"] + sorted(set(r["Conf"] for r in rows if r["Conf"])))
-    with col2:
-        search = st.text_input("Search team", "")
+    with fc3:
+        show_tourney_only = st.checkbox("Tournament teams only", value=False)
+    with fc4:
+        show_alive_only = st.checkbox("Still alive only", value=False)
 
     if show_tourney_only:
         rows = [r for r in rows if r["Seed"] != ""]
@@ -1449,12 +1452,15 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
         def_cls = _eff_color(avg_def - r["DefEff"])  # lower DefEff = better
         margin_cls = "stat-good" if r["Margin"] > 0 else "stat-bad" if r["Margin"] < 0 else "stat-neutral"
 
-        html += f'<tr>'
+        is_elim = r["tid"] in eliminated_r and r["Seed"] != ""
+        row_style = ' style="opacity:0.45;"' if is_elim else ''
+        html += f'<tr{row_style}>'
         html += f'<td class="rank-cell">{i}</td>'
         logo = _team_logo_img(r["tid"], espn_map, size=16)
         tc = _team_color(r["tid"])
         seed_prefix = f'<span style="color:#888; font-size:10px; font-weight:700; min-width:18px; text-align:right; margin-right:4px; font-variant-numeric:tabular-nums; display:inline-block;">{r["Seed"]}</span>' if r["Seed"] else ''
-        html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{seed_prefix}{logo}{r["Team"]}</td>'
+        elim_tag = ' <span style="color:#f87171; font-size:9px; font-weight:700;">ELIM</span>' if is_elim else ''
+        html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{seed_prefix}{logo}{r["Team"]}{elim_tag}</td>'
         conf_str = conf_vals.get(r["Conf"], 0.5)
         conf_color = "#4ade80" if conf_str >= 0.55 else "#f87171" if conf_str < 0.48 else "#888"
         html += f'<td style="color:{conf_color}; font-weight:600;" title="Conf Avg Win%: {conf_str:.1%}">{r["Conf"]}</td>'
