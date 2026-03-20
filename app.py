@@ -1533,49 +1533,75 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     dog_name = n2 if fav == t1 else n1
     spread_display = lines["spread"]
 
-    # Main lines in columns
+    # Betting lines — bracket-style stacked cards
+    ml1_color = "#4ade80" if p >= 0.5 else "#f87171"
+    ml2_color = "#4ade80" if p < 0.5 else "#f87171"
+    if spread_display <= 0:
+        s1_spread = f"{spread_display:+.1f}"
+        s2_spread = f"{-spread_display:+.1f}"
+    else:
+        s1_spread = f"+{spread_display:.1f}"
+        s2_spread = f"{-spread_display:.1f}"
+
     lc1, lc2, lc3 = st.columns(3)
     with lc1:
-        st.markdown("**Moneyline**")
-        ml1_color = "#4ade80" if p >= 0.5 else "#f87171"
-        ml2_color = "#4ade80" if p < 0.5 else "#f87171"
         st.markdown(
-            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
-            f'<span>{n1}</span><span style="font-weight:700; color:{ml1_color};">{lines["t1_ml"]}</span></div>'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
-            f'<span>{n2}</span><span style="font-weight:700; color:{ml2_color};">{lines["t2_ml"]}</span></div>'
-            f'</div>',
+            f'<div style="max-width:400px; margin:4px auto;">'
+            f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">MONEYLINE</div>'
+            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+            f'<div style="display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #2a2a2a;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t1)}; margin-right:8px;"></div>'
+            f'{s1_tag}{_team_logo_img(t1, espn_map, size=20)}'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">{n1}</span>'
+            f'<span style="font-size:18px; font-weight:800; color:{ml1_color}; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{lines["t1_ml"]}</span>'
+            f'</div>'
+            f'<div style="display:flex; align-items:center; padding:8px 12px;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t2)}; margin-right:8px;"></div>'
+            f'{s2_tag}{_team_logo_img(t2, espn_map, size=20)}'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">{n2}</span>'
+            f'<span style="font-size:18px; font-weight:800; color:{ml2_color}; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{lines["t2_ml"]}</span>'
+            f'</div>'
+            f'</div></div>',
             unsafe_allow_html=True,
         )
 
     with lc2:
-        st.markdown("**Spread**")
-        if spread_display <= 0:
-            s1_spread = f"{spread_display:+.1f}"
-            s2_spread = f"{-spread_display:+.1f}"
-        else:
-            s1_spread = f"+{spread_display:.1f}"
-            s2_spread = f"{-spread_display:.1f}"
         st.markdown(
-            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
-            f'<span>{n1}</span><span style="font-weight:700; color:#60a5fa;">{s1_spread}</span></div>'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
-            f'<span>{n2}</span><span style="font-weight:700; color:#60a5fa;">{s2_spread}</span></div>'
-            f'</div>',
+            f'<div style="max-width:400px; margin:4px auto;">'
+            f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">SPREAD</div>'
+            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+            f'<div style="display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #2a2a2a;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t1)}; margin-right:8px;"></div>'
+            f'{s1_tag}{_team_logo_img(t1, espn_map, size=20)}'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">{n1}</span>'
+            f'<span style="font-size:18px; font-weight:800; color:#41B6E6; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{s1_spread}</span>'
+            f'</div>'
+            f'<div style="display:flex; align-items:center; padding:8px 12px;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:{_team_color(t2)}; margin-right:8px;"></div>'
+            f'{s2_tag}{_team_logo_img(t2, espn_map, size=20)}'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">{n2}</span>'
+            f'<span style="font-size:18px; font-weight:800; color:#41B6E6; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{s2_spread}</span>'
+            f'</div>'
+            f'</div></div>',
             unsafe_allow_html=True,
         )
 
     with lc3:
-        st.markdown("**Game Total (O/U)**")
         st.markdown(
-            f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px; margin:4px 0;">'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #333;">'
-            f'<span>Over</span><span style="font-weight:700; color:#41B6E6;">{lines["total"]:.1f}</span></div>'
-            f'<div style="display:flex; justify-content:space-between; padding:6px 0;">'
-            f'<span>Under</span><span style="font-weight:700; color:#41B6E6;">{lines["total"]:.1f}</span></div>'
-            f'</div>',
+            f'<div style="max-width:400px; margin:4px auto;">'
+            f'<div style="font-size:9px; color:#666; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">GAME TOTAL (O/U)</div>'
+            f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden;">'
+            f'<div style="display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #2a2a2a;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:#41B6E6; margin-right:8px;"></div>'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">Over</span>'
+            f'<span style="font-size:18px; font-weight:800; color:#41B6E6; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{lines["total"]:.1f}</span>'
+            f'</div>'
+            f'<div style="display:flex; align-items:center; padding:8px 12px;">'
+            f'<div style="width:4px; height:28px; border-radius:1px; background:#41B6E6; margin-right:8px;"></div>'
+            f'<span style="font-size:14px; flex:1; color:#FAFAFA;">Under</span>'
+            f'<span style="font-size:18px; font-weight:800; color:#41B6E6; font-variant-numeric:tabular-nums; min-width:50px; text-align:right;">{lines["total"]:.1f}</span>'
+            f'</div>'
+            f'</div></div>',
             unsafe_allow_html=True,
         )
 
@@ -1630,7 +1656,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                     )
                 st.markdown(
                     f'<div style="background:#2a2a2a; border:1px solid #333; border-radius:8px; padding:12px;">'
-                    f'<div style="font-weight:700; margin-bottom:8px; color:#60a5fa;">{_team_logo_img(tid, espn_map, size=16)}{team_name}</div>'
+                    f'<div style="font-weight:700; margin-bottom:8px; color:{_team_color(tid)};">{_team_logo_img(tid, espn_map, size=16)}{team_name}</div>'
                     f'{prop_rows}</div>',
                     unsafe_allow_html=True,
                 )
