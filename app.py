@@ -21,7 +21,7 @@ st.set_page_config(
     page_title="VILPOM",
     page_icon="\U0001f4c8",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 
@@ -128,92 +128,27 @@ st.markdown("""
     }
 
     /* ── Foundation ── */
-    .block-container { padding-top: 0rem; max-width: 1200px; }
+    .block-container { padding-top: 0.5rem; max-width: 1200px; }
     html, body, [class*="st-"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
 
-    /* ── Hide sidebar ── */
-    [data-testid="stSidebar"],
-    [data-testid="collapsedControl"] {
-        display: none !important;
+    /* ── Sidebar ── */
+    [data-testid="stSidebar"] {
+        background: #0a0c10;
+        border-right: 1px solid #2a2a2a;
     }
-
-    /* ── Top Navbar ── */
-    .vp-navbar {
-        background: #0C2340;
-        padding: 0 24px;
-        display: flex;
-        align-items: center;
-        gap: 0;
-        border-bottom: 3px solid #41B6E6;
-        margin: -1rem -1rem 1rem -1rem;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        flex-wrap: wrap;
+    [data-testid="stSidebar"] .stRadio label { font-weight: 500; }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div { gap: 1px; }
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label {
+        padding: 7px 12px !important; border-radius: 6px !important;
+        font-size: 13px !important; border: 1px solid transparent !important;
     }
-    .vp-navbar-logo {
-        font-family: Impact, Haettenschweiler, sans-serif;
-        font-size: 28px;
-        letter-spacing: -0.02em;
-        text-transform: uppercase;
-        transform: skewX(-12deg);
-        color: #FAFAFA;
-        padding: 10px 20px 10px 8px;
-        line-height: 1;
-        flex-shrink: 0;
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label:hover {
+        background: rgba(255, 255, 255, 0.03) !important;
     }
-    .vp-navbar-links {
-        display: flex;
-        align-items: stretch;
-        gap: 0;
-        flex: 1;
-        height: 100%;
-    }
-    .vp-navbar-links a {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        padding: 14px 16px;
-        transition: all 0.15s ease;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -3px;
-        white-space: nowrap;
-    }
-    .vp-navbar-links a:hover {
-        color: #FAFAFA;
-        background: rgba(255, 255, 255, 0.05);
-    }
-    .vp-navbar-links a.active {
-        color: #FAFAFA;
-        border-bottom-color: #41B6E6;
-    }
-    .vp-navbar-toggle {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-    .vp-navbar-toggle a {
-        color: rgba(255, 255, 255, 0.5);
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 8px 12px;
-        border-radius: 4px;
-        transition: all 0.15s ease;
-    }
-    .vp-navbar-toggle a.active {
-        color: #FAFAFA;
-        background: rgba(65, 182, 230, 0.2);
-    }
-    .vp-navbar-toggle a:hover {
-        color: #FAFAFA;
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[data-checked="true"],
+    [data-testid="stSidebar"] [data-testid="stRadio"] > div > label[aria-checked="true"] {
+        background: rgba(65, 182, 230, 0.08) !important;
+        border-color: rgba(65, 182, 230, 0.2) !important;
     }
 
     /* ── Tabs ── */
@@ -4264,40 +4199,46 @@ seeds = load_seeds()
 m_slots, w_slots = load_slots()
 conferences = load_conferences()
 
-# ── Navigation state via query params ──
-_qp = st.query_params
-_pages = ["Betting Picks", "Head-to-Head", "Rankings",
-          "Bracket", "Championship Odds", "Backtest", "About"]
-_page_keys = {p.lower().replace(" ", "-").replace("'", ""): p for p in _pages}
+# Sidebar
+st.sidebar.markdown(
+    "<div style='text-align:center; padding:8px 0 4px;'>"
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; font-size:38px; "
+    "letter-spacing:-0.02em; text-transform:uppercase; display:inline-block; "
+    "transform: skewX(-12deg); line-height:0.9; color:#FAFAFA;'>"
+    "<span style='color:#FAFAFA;'>VILPOM</span></span>"
+    "</div>"
+    "<div style='text-align:center; color:#555; font-size:9px; letter-spacing:3px; font-weight:700; margin-bottom:4px;'>"
+    "ANALYTICS & INTELLIGENCE</div>"
+    "<div style='width:40px; height:2px; background:linear-gradient(90deg, #41B6E6, #6dcbf2); "
+    "margin:0 auto 4px; border-radius:2px;'></div>",
+    unsafe_allow_html=True,
+)
+st.sidebar.markdown("---")
 
-_cur_page_key = _qp.get("page", "betting-picks")
-page = _page_keys.get(_cur_page_key, "Betting Picks")
-_cur_gender = _qp.get("t", "m")
-gender = "Women's" if _cur_gender == "w" else "Men's"
+gender = st.sidebar.radio("Tournament", ["Men's", "Women's"], horizontal=True)
 prefix = "M" if gender == "Men's" else "W"
+
 
 gender_seeds = seeds[seeds.TeamID < 3000] if prefix == "M" else seeds[seeds.TeamID >= 3000]
 gender_slots = m_slots if prefix == "M" else w_slots
 
-# ── Top Navbar ──
-_nav_links = ""
-for p in _pages:
-    _key = p.lower().replace(" ", "-").replace("'", "")
-    _cls = ' class="active"' if p == page else ""
-    _nav_links += f'<a href="?page={_key}&t={_cur_gender}"{_cls}>{p}</a>'
+page = st.sidebar.radio(
+    "Navigate",
+    ["Betting Picks", "Head-to-Head", "Rankings",
+     "Bracket", "Championship Odds", "Backtest", "About"],
+)
 
-_m_cls = ' class="active"' if prefix == "M" else ""
-_w_cls = ' class="active"' if prefix == "W" else ""
-
-st.markdown(
-    '<div class="vp-navbar">'
-    '<div class="vp-navbar-logo">VILPOM</div>'
-    f'<div class="vp-navbar-links">{_nav_links}</div>'
-    '<div class="vp-navbar-toggle">'
-    f'<a href="?page={_cur_page_key}&t=m"{_m_cls}>MEN</a>'
-    f'<a href="?page={_cur_page_key}&t=w"{_w_cls}>WOMEN</a>'
-    '</div>'
-    '</div>',
+st.sidebar.markdown("---")
+st.sidebar.markdown(
+    "<div style='text-align:center; padding:4px 0;'>"
+    "<div style='color:#333; font-size:9px; letter-spacing:1.5px; font-weight:600;'>"
+    "<span style='font-family: Impact, Haettenschweiler, sans-serif; "
+    "letter-spacing:-0.02em; display:inline-block; "
+    "transform: skewX(-12deg); color:#FAFAFA;'>VILPOM</span> "
+    "&copy; 2026 &middot; v2.0</div>"
+    "<div style='color:#333; font-size:8px; margin-top:4px; letter-spacing:0.5px;'>"
+    "For entertainment only</div>"
+    "</div>",
     unsafe_allow_html=True,
 )
 
