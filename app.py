@@ -3478,77 +3478,156 @@ def page_about():
         unsafe_allow_html=True,
     )
 
+    # ── Model Performance ──
     st.markdown("---")
+    st.markdown('<div class="vp-section">MODEL PERFORMANCE</div>', unsafe_allow_html=True)
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
+    p1, p2, p3, p4 = st.columns(4)
+    with p1:
         st.markdown(
-            '<div class="vp-metric">'
-            '<div class="label">MODELS</div>'
+            '<div class="vp-metric" style="border-top:3px solid #4ade80;">'
+            '<div class="label">MEN\'S BRIER</div>'
+            '<div class="value" style="color:#4ade80;">0.134</div>'
+            '<div class="sub">vs 0.250 baseline</div></div>',
+            unsafe_allow_html=True,
+        )
+    with p2:
+        st.markdown(
+            '<div class="vp-metric" style="border-top:3px solid #60a5fa;">'
+            '<div class="label">WOMEN\'S BRIER</div>'
+            '<div class="value" style="color:#60a5fa;">0.097</div>'
+            '<div class="sub">vs 0.250 baseline</div></div>',
+            unsafe_allow_html=True,
+        )
+    with p3:
+        st.markdown(
+            '<div class="vp-metric" style="border-top:3px solid #FF6B35;">'
+            '<div class="label">ENSEMBLE</div>'
             '<div class="value" style="color:#FF6B35;">3</div>'
-            '<div class="sub">XGBoost + CatBoost + LightGBM</div></div>',
+            '<div class="sub">XGBoost + LightGBM + CatBoost</div></div>',
             unsafe_allow_html=True,
         )
-    with c2:
+    with p4:
         st.markdown(
-            '<div class="vp-metric">'
-            '<div class="label">TRAINING DATA</div>'
-            '<div class="value" style="color:#4ade80;">20+ YRS</div>'
-            '<div class="sub">Tournament games since 2003</div></div>',
-            unsafe_allow_html=True,
-        )
-    with c3:
-        st.markdown(
-            '<div class="vp-metric">'
+            '<div class="vp-metric" style="border-top:3px solid #fbbf24;">'
             '<div class="label">SIMULATIONS</div>'
-            '<div class="value" style="color:#60a5fa;">10K</div>'
+            '<div class="value" style="color:#fbbf24;">10K</div>'
             '<div class="sub">Monte Carlo per bracket</div></div>',
             unsafe_allow_html=True,
         )
 
+    st.caption("Brier score measures prediction accuracy — lower is better. "
+               "A coin-flip model scores 0.250. Our model cuts that error roughly in half.")
+
+    # ── Feature Architecture ──
     st.markdown("---")
+    st.markdown('<div class="vp-section">FEATURE ARCHITECTURE</div>', unsafe_allow_html=True)
+    st.markdown("Each matchup is evaluated on **50+ features** across 6 categories:")
 
-    st.markdown('<div class="vp-section">THE ENGINE</div>', unsafe_allow_html=True)
-    st.markdown("""
-Vilpom's ensemble model processes **50+ features per team** including efficiency ratings,
-strength of schedule, coaching track records, Elo trajectories, and shooting profiles.
-Three gradient-boosted models independently evaluate every matchup, then consensus
-probabilities drive spreads, totals, and moneylines.
-""")
+    fa1, fa2, fa3 = st.columns(3)
+    with fa1:
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Elo Ratings</div>'
+            '<div style="color:#aaa; font-size:12px;">Custom Elo system with margin-of-victory scaling, '
+            'home-court adjustment, and season decay. Tracks every game back to 1985.</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#4ade80; margin-bottom:6px;">Efficiency Metrics</div>'
+            '<div style="color:#aaa; font-size:12px;">Time-weighted offensive/defensive efficiency, tempo, '
+            'eFG%, rebounding and turnover margins. Recent games weighted more heavily.</div></div>',
+            unsafe_allow_html=True,
+        )
+    with fa2:
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#60a5fa; margin-bottom:6px;">Massey Ordinals</div>'
+            '<div style="color:#aaa; font-size:12px;">Composite rankings from 60+ computer systems '
+            '(KenPom, Sagarin, BPI, etc.). Mean, median, min, max, and spread.</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#fbbf24; margin-bottom:6px;">KNN Opponents</div>'
+            '<div style="color:#aaa; font-size:12px;">Finds the 5 most statistically similar teams to each '
+            'opponent, then analyzes head-to-head results against those proxies.</div></div>',
+            unsafe_allow_html=True,
+        )
+    with fa3:
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#c084fc; margin-bottom:6px;">Coaching Data</div>'
+            '<div style="color:#aaa; font-size:12px;">Coach tenure, all-time NCAA tournament win rate, '
+            'and games coached. Experience matters in March.</div></div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="vp-card">'
+            '<div style="font-weight:700; color:#f87171; margin-bottom:6px;">Conference Strength</div>'
+            '<div style="color:#aaa; font-size:12px;">Average and median conference win percentage as a proxy '
+            'for strength of schedule. Adjusts for weak vs. strong leagues.</div></div>',
+            unsafe_allow_html=True,
+        )
 
-    st.markdown('<div class="vp-section">WHAT YOU GET</div>', unsafe_allow_html=True)
+    # ── How It Works ──
+    st.markdown("---")
+    st.markdown('<div class="vp-section">HOW IT WORKS</div>', unsafe_allow_html=True)
 
-    f1, f2 = st.columns(2)
-    with f1:
+    hw1, hw2, hw3 = st.columns(3)
+    with hw1:
         st.markdown(
-            '<div class="vp-card">'
-            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Power Rankings</div>'
-            '<div style="color:#aaa; font-size:13px;">Elo ratings, net efficiency, and tier classifications '
-            'updated through the full regular season.</div></div>',
+            '<div class="vp-card" style="text-align:center;">'
+            '<div style="font-size:28px; margin-bottom:8px;">1</div>'
+            '<div style="font-weight:700; color:#FF6B35; margin-bottom:6px;">Train</div>'
+            '<div style="color:#aaa; font-size:12px;">Three models independently learn from 20+ years of '
+            'tournament results using Optuna-tuned hyperparameters and temporal cross-validation.</div></div>',
             unsafe_allow_html=True,
         )
+    with hw2:
         st.markdown(
-            '<div class="vp-card">'
-            '<div style="font-weight:700; color:#4ade80; margin-bottom:6px;">Live Betting Picks</div>'
-            '<div style="color:#aaa; font-size:13px;">Model vs. Vegas comparisons with edge ratings, EV, '
-            'and Kelly sizing on every available market.</div></div>',
+            '<div class="vp-card" style="text-align:center;">'
+            '<div style="font-size:28px; margin-bottom:8px;">2</div>'
+            '<div style="font-weight:700; color:#4ade80; margin-bottom:6px;">Predict</div>'
+            '<div style="color:#aaa; font-size:12px;">Each model outputs a win probability for every possible '
+            'matchup. Predictions are calibrated with Platt scaling, then averaged.</div></div>',
             unsafe_allow_html=True,
         )
-    with f2:
+    with hw3:
         st.markdown(
-            '<div class="vp-card">'
-            '<div style="font-weight:700; color:#60a5fa; margin-bottom:6px;">Head-to-Head Analysis</div>'
-            '<div style="color:#aaa; font-size:13px;">Stat comparisons, projected lines, similar opponent '
-            'analysis, and coaching matchup data.</div></div>',
+            '<div class="vp-card" style="text-align:center;">'
+            '<div style="font-size:28px; margin-bottom:8px;">3</div>'
+            '<div style="font-weight:700; color:#60a5fa; margin-bottom:6px;">Simulate</div>'
+            '<div style="color:#aaa; font-size:12px;">10,000 Monte Carlo bracket simulations generate '
+            'championship odds, round-by-round advancement, and futures pricing.</div></div>',
             unsafe_allow_html=True,
         )
-        st.markdown(
-            '<div class="vp-card">'
-            '<div style="font-weight:700; color:#fbbf24; margin-bottom:6px;">Bracket & Futures</div>'
-            '<div style="color:#aaa; font-size:13px;">Full bracket predictions, championship futures odds, '
-            'and round-by-round advancement probabilities.</div></div>',
-            unsafe_allow_html=True,
-        )
+
+    # ── Live Data Pipeline ──
+    st.markdown("---")
+    st.markdown('<div class="vp-section">LIVE DATA PIPELINE</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="vp-card">'
+        '<div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center; justify-content:center;">'
+        '<div style="text-align:center; min-width:140px;">'
+        '<div style="color:#fbbf24; font-weight:700; font-size:13px;">ESPN API</div>'
+        '<div style="color:#888; font-size:11px;">Live scores & game status</div></div>'
+        '<div style="color:#444; font-size:18px;">&#8594;</div>'
+        '<div style="text-align:center; min-width:140px;">'
+        '<div style="color:#4ade80; font-weight:700; font-size:13px;">GitHub Actions</div>'
+        '<div style="color:#888; font-size:11px;">Auto-fetch every 30 min</div></div>'
+        '<div style="color:#444; font-size:18px;">&#8594;</div>'
+        '<div style="text-align:center; min-width:140px;">'
+        '<div style="color:#60a5fa; font-weight:700; font-size:13px;">The Odds API</div>'
+        '<div style="color:#888; font-size:11px;">Vegas lines from major books</div></div>'
+        '<div style="color:#444; font-size:18px;">&#8594;</div>'
+        '<div style="text-align:center; min-width:140px;">'
+        '<div style="color:#FF6B35; font-weight:700; font-size:13px;">Vilpom</div>'
+        '<div style="color:#888; font-size:11px;">Model vs Vegas edge detection</div></div>'
+        '</div></div>',
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
     st.markdown(
