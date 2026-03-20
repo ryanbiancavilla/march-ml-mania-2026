@@ -3342,8 +3342,15 @@ def page_picks(prefix, teams, seeds_df, preds):
     odds_map_lookup, name_to_tid_lookup = _build_odds_name_map(teams, prefix)
 
     # ── Live Scores ──
+    # Filter ESPN games to only those where both teams resolve to valid IDs
+    # for the current gender prefix (men's 1xxx or women's 3xxx)
+    def _espn_game_matches_gender(g):
+        htid = _resolve_odds_team(g.get("home_team", ""), odds_map_lookup, name_to_tid_lookup)
+        atid = _resolve_odds_team(g.get("away_team", ""), odds_map_lookup, name_to_tid_lookup)
+        return htid is not None and atid is not None
+
     if espn_data and espn_data.get("games"):
-        espn_games = espn_data["games"]
+        espn_games = [g for g in espn_data["games"] if _espn_game_matches_gender(g)]
         live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
