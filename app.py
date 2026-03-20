@@ -386,7 +386,7 @@ st.markdown("""
         display: inline-flex; align-items: center; gap: 4px;
         padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700;
     }
-    .vp-badge-live { background: rgba(251, 191, 36, 0.15); color: #41B6E6; }
+    .vp-badge-live { background: rgba(65, 182, 230, 0.15); color: #41B6E6; }
     .vp-badge-final { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
     .vp-badge-win { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
     .vp-badge-loss { background: rgba(248, 113, 113, 0.15); color: #f87171; }
@@ -1967,7 +1967,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
         rank = idx + 1
         seed_txt = f'<span class="seed-badge" style="margin-right:8px;">{int(fr["Seed"])}</span>'
         odds_color = "#41B6E6" if fr["_cp"] >= 0.10 else "#4ade80" if fr["_cp"] >= 0.03 else "#e2e8f0"
-        bg = 'rgba(255,107,53,0.04)' if rank <= 4 else '#18191f'
+        bg = 'rgba(65,182,230,0.04)' if rank <= 4 else '#18191f'
         elo_val = fr.get("_elo", 1500)
         elo_color = "#4ade80" if elo_val >= 1650 else "#e2e8f0" if elo_val >= 1550 else "#888"
         e8_pct = fr.get("_e8", 0) * 100
@@ -1983,7 +1983,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
         board_html += (
             f'<div style="display:flex; justify-content:space-between; align-items:center; '
             f'padding:10px 16px; border-bottom:1px solid #2a2a2a; background:{bg}; '
-            f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(255,107,53,0.08)\'" '
+            f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(65,182,230,0.08)\'" '
             f'onmouseout="this.style.background=\'{bg}\'">'
             f'<div style="display:flex; align-items:center; gap:8px;">'
             f'<span style="color:{_team_color(fr.get("_tid"))}; font-weight:800; font-size:13px; min-width:20px;">{rank}</span>'
