@@ -311,9 +311,10 @@ st.markdown("""
     .ff-bracket { display: flex; gap: 12px; min-height: 160px; align-items: center; }
     .ff-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; min-height: 150px; }
     .champ-banner {
-        text-align: center; font-size: 22px; font-weight: 800;
-        padding: 16px; border: 1px solid #009CDE; border-radius: 8px;
-        background: rgba(0, 40, 85, 0.15); color: #009CDE; margin: 8px 0;
+        text-align: center; font-size: 14px; font-weight: 700;
+        padding: 10px 14px; border-left: 3px solid; border-radius: 4px;
+        background: #18191f; border-color: var(--team-color, #333); color: #FAFAFA; margin: 8px 0;
+        display: flex; align-items: center; gap: 6px; justify-content: center;
     }
 
     /* ── Metric cards ── */
@@ -1316,11 +1317,16 @@ def final_four_html(sim_results, teams, team_seed_map, slot_states=None, espn_ma
     champ = sim_results.get(ch_slot, {}).get("winner")
     if champ:
         s = team_seed_map.get(champ, "")
-        seed_txt = f" ({s})" if s else ""
-        logo = _team_logo_img(champ, espn_map, size=28)
-        html += f'<div class="ff-round"><div class="champ-banner">'
-        html += f'{logo}{tname(teams, champ)}{seed_txt}'
-        html += "</div></div>"
+        seed_html = f'<span style="color:#888; font-size:11px; font-weight:700; margin-right:2px;">{s}</span>' if s else ""
+        logo = _team_logo_img(champ, espn_map, size=20)
+        tc = _team_color(champ)
+        html += (
+            f'<div class="ff-round">'
+            f'<div style="font-size:9px; color:#555; letter-spacing:1.5px; font-weight:700; text-align:center; margin-bottom:4px;">CHAMPION</div>'
+            f'<div class="champ-banner" style="border-color:{tc};">'
+            f'{seed_html}{logo}<span>{tname(teams, champ)}</span>'
+            f'</div></div>'
+        )
 
     html += "</div>"
     return html
