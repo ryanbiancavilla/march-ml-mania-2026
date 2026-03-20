@@ -162,58 +162,29 @@ st.markdown("""
         line-height: 1;
         flex-shrink: 0;
     }
-    .vp-navbar-links {
-        display: flex;
-        align-items: stretch;
-        gap: 0;
-        flex: 1;
-        height: 100%;
+    /* ── Nav button row styling ── */
+    .stButton > button {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
+        padding: 6px 8px !important;
+        border-radius: 4px !important;
+        white-space: nowrap !important;
     }
-    .vp-navbar-links a {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        padding: 14px 16px;
-        transition: all 0.15s ease;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -3px;
-        white-space: nowrap;
+    .stButton > button[kind="secondary"] {
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
-    .vp-navbar-links a:hover {
-        color: #FAFAFA;
-        background: rgba(255, 255, 255, 0.05);
+    .stButton > button[kind="secondary"]:hover {
+        color: #FAFAFA !important;
+        background: rgba(255, 255, 255, 0.05) !important;
     }
-    .vp-navbar-links a.active {
-        color: #FAFAFA;
-        border-bottom-color: #41B6E6;
-    }
-    .vp-navbar-toggle {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-    .vp-navbar-toggle a {
-        color: rgba(255, 255, 255, 0.5);
-        text-decoration: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 8px 12px;
-        border-radius: 4px;
-        transition: all 0.15s ease;
-    }
-    .vp-navbar-toggle a.active {
-        color: #FAFAFA;
-        background: rgba(65, 182, 230, 0.2);
-    }
-    .vp-navbar-toggle a:hover {
-        color: #FAFAFA;
+    .stButton > button[kind="primary"] {
+        background: rgba(65, 182, 230, 0.15) !important;
+        color: #41B6E6 !important;
+        border: 1px solid rgba(65, 182, 230, 0.3) !important;
     }
 
     /* ── Tabs ── */
@@ -4264,42 +4235,51 @@ seeds = load_seeds()
 m_slots, w_slots = load_slots()
 conferences = load_conferences()
 
-# ── Navigation state via query params ──
-_qp = st.query_params
-_pages = ["Betting Picks", "Head-to-Head", "Rankings",
-          "Bracket", "Championship Odds", "Backtest", "About"]
-_page_keys = {p.lower().replace(" ", "-").replace("'", ""): p for p in _pages}
+# ── Navigation state ──
+if "nav_page" not in st.session_state:
+    st.session_state.nav_page = "Betting Picks"
+if "nav_gender" not in st.session_state:
+    st.session_state.nav_gender = "Men's"
 
-_cur_page_key = _qp.get("page", "betting-picks")
-page = _page_keys.get(_cur_page_key, "Betting Picks")
-_cur_gender = _qp.get("t", "m")
-gender = "Women's" if _cur_gender == "w" else "Men's"
+gender = st.session_state.nav_gender
 prefix = "M" if gender == "Men's" else "W"
 
 gender_seeds = seeds[seeds.TeamID < 3000] if prefix == "M" else seeds[seeds.TeamID >= 3000]
 gender_slots = m_slots if prefix == "M" else w_slots
 
 # ── Top Navbar ──
-_nav_links = ""
-for p in _pages:
-    _key = p.lower().replace(" ", "-").replace("'", "")
-    _cls = ' class="active"' if p == page else ""
-    _nav_links += f'<a href="?page={_key}&t={_cur_gender}"{_cls}>{p}</a>'
-
-_m_cls = ' class="active"' if prefix == "M" else ""
-_w_cls = ' class="active"' if prefix == "W" else ""
+_pages = ["Betting Picks", "Head-to-Head", "Rankings",
+          "Bracket", "Championship Odds", "Backtest", "About"]
 
 st.markdown(
     '<div class="vp-navbar">'
     '<div class="vp-navbar-logo">VILPOM</div>'
-    f'<div class="vp-navbar-links">{_nav_links}</div>'
-    '<div class="vp-navbar-toggle">'
-    f'<a href="?page={_cur_page_key}&t=m"{_m_cls}>MEN</a>'
-    f'<a href="?page={_cur_page_key}&t=w"{_w_cls}>WOMEN</a>'
-    '</div>'
     '</div>',
     unsafe_allow_html=True,
 )
+
+# Navigation row
+_nav_cols = st.columns([1] * len(_pages) + [0.5, 0.5])
+for i, p in enumerate(_pages):
+    with _nav_cols[i]:
+        _btn_type = "primary" if st.session_state.nav_page == p else "secondary"
+        if st.button(p, key=f"nav_{p}", use_container_width=True, type=_btn_type):
+            st.session_state.nav_page = p
+            st.rerun()
+
+with _nav_cols[len(_pages)]:
+    _btn_type = "primary" if prefix == "M" else "secondary"
+    if st.button("MEN", key="nav_men", use_container_width=True, type=_btn_type):
+        st.session_state.nav_gender = "Men's"
+        st.rerun()
+
+with _nav_cols[len(_pages) + 1]:
+    _btn_type = "primary" if prefix == "W" else "secondary"
+    if st.button("WOMEN", key="nav_women", use_container_width=True, type=_btn_type):
+        st.session_state.nav_gender = "Women's"
+        st.rerun()
+
+page = st.session_state.nav_page
 
 if "Betting Picks" in page:
     page_picks(prefix, teams, gender_seeds, preds)
