@@ -3445,7 +3445,9 @@ def page_picks(prefix, teams, seeds_df, preds):
     has_live_odds = odds_data and odds_data.get("games")
     odds_matched = []
     if has_live_odds:
-        odds_matched = _match_odds_teams(teams, stats, odds_data, prefix)
+        all_matched = _match_odds_teams(teams, stats, odds_data, prefix)
+        # Filter to only tournament teams (those with seeds)
+        odds_matched = [g for g in all_matched if g["t1"] in team_seeds and g["t2"] in team_seeds]
 
     picks = []
 
