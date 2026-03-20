@@ -1596,7 +1596,6 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     s2_txt = f' <span style="color:#009CDE; font-size:13px; font-weight:700;">({s2_seed})</span>' if s2_seed else ''
     color1 = "#4ade80" if p >= 0.5 else "#f87171"
     color2 = "#4ade80" if (1 - p) >= 0.5 else "#f87171"
-    fav_glow = f"0 0 30px rgba({','.join(str(int(color1[i:i+2], 16)) for i in (1,3,5))}, 0.15)"
 
     t1_prob_winning = p >= 0.5
     t2_prob_winning = (1 - p) >= 0.5
@@ -3106,112 +3105,7 @@ def page_backtest(prefix, teams):
             with cc2:
                 _styled_df(cal_df)
 
-    # ── Live Results Tracker ──
-    live_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "live_results.json")
-    if os.path.exists(live_path):
-        import json
-        with open(live_path) as f:
-            live = json.load(f)
-
-        if live.get("games"):
-            st.markdown("---")
-            st.subheader("2026 Tournament Results Tracker")
-            st.markdown(
-                f'<div style="background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.3); '
-                f'border-radius:8px; padding:10px 16px; font-size:13px; color:#4ade80; font-weight:600;">'
-                f'Tracking {len(live["games"])} completed games</div>',
-                unsafe_allow_html=True,
-            )
-            live_rows = []
-            ml_w, ml_l, ats_w, ats_l, ou_o, ou_u = 0, 0, 0, 0, 0, 0
-            stats = compute_season_stats(prefix)
-            for g in live["games"]:
-                gt1, gt2 = min(g["team1"], g["team2"]), max(g["team1"], g["team2"])
-                winner = g["winner"]
-                w_score, l_score = g["w_score"], g["l_score"]
-                actual_total = w_score + l_score
-
-                lines = compute_betting_lines(stats, preds, gt1, gt2,
-                                              t1_seed=team_seeds.get(gt1), t2_seed=team_seeds.get(gt2))
-                p_cal = lines["t1_prob_cal"]
-                fav = gt1 if p_cal >= 0.5 else gt2
-                fav_prob = p_cal if fav == gt1 else 1 - p_cal
-                spread = lines["spread"]
-                proj_total = lines["total"]
-
-                ml_hit = (fav == winner)
-                actual_margin = w_score - l_score
-                actual_t1_m = actual_margin if winner == gt1 else -actual_margin
-                ats_hit = (actual_t1_m + spread > 0) if fav == gt1 else (-actual_t1_m - spread > 0)
-                is_over = actual_total > proj_total
-
-                ml_w += ml_hit; ml_l += not ml_hit
-                ats_w += ats_hit; ats_l += not ats_hit
-                ou_o += is_over; ou_u += not is_over
-
-                loser = gt2 if winner == gt1 else gt1
-                live_rows.append({
-                    "_winner": winner, "_loser": loser,
-                    "_w_score": w_score, "_l_score": l_score,
-                    "_fav": fav, "_fav_prob": fav_prob,
-                    "_spread": spread, "_proj_total": proj_total,
-                    "_actual_total": actual_total,
-                    "_ml_hit": ml_hit, "_ats_hit": ats_hit, "_is_over": is_over,
-                })
-
-            lc1, lc2, lc3 = st.columns(3)
-            with lc1:
-                c = "#4ade80" if ml_w > ml_l else "#f87171"
-                st.markdown(
-                    f'<div class="vp-metric" style="border-top:3px solid {c};">'
-                    f'<div class="label">MONEYLINE</div>'
-                    f'<div class="value" style="color:{c};">{ml_w}-{ml_l}</div></div>',
-                    unsafe_allow_html=True)
-            with lc2:
-                c = "#4ade80" if ats_w > ats_l else "#f87171"
-                st.markdown(
-                    f'<div class="vp-metric" style="border-top:3px solid {c};">'
-                    f'<div class="label">SPREAD (ATS)</div>'
-                    f'<div class="value" style="color:{c};">{ats_w}-{ats_l}</div></div>',
-                    unsafe_allow_html=True)
-            with lc3:
-                st.markdown(
-                    f'<div class="vp-metric" style="border-top:3px solid #009CDE;">'
-                    f'<div class="label">TOTALS (O/U)</div>'
-                    f'<div class="value" style="color:#009CDE;">{ou_o}O-{ou_u}U</div></div>',
-                    unsafe_allow_html=True)
-
-            for lr in live_rows:
-                w_tid, l_tid = lr["_winner"], lr["_loser"]
-                w_c = _team_color(w_tid)
-                ml_badge = f'<span style="background:#4ade80; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">HIT</span>' if lr["_ml_hit"] else '<span style="background:#f87171; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">MISS</span>'
-                ats_badge = f'<span style="background:#4ade80; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">HIT</span>' if lr["_ats_hit"] else '<span style="background:#f87171; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">MISS</span>'
-                ou_label = "OVER" if lr["_is_over"] else "UNDER"
-                ou_badge = f'<span style="background:#009CDE; color:#000; font-weight:700; padding:2px 6px; border-radius:3px; font-size:10px;">{ou_label}</span>'
-                st.markdown(
-                    f'<div style="display:flex; align-items:center; gap:10px; margin:4px 0;">'
-                    f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; min-width:260px;">'
-                    f'<div style="display:flex; align-items:center; padding:4px 8px; border-bottom:1px solid #2a2a2a;">'
-                    f'<div style="width:3px; height:18px; border-radius:1px; background:{w_c}; margin-right:6px; flex-shrink:0;"></div>'
-                    f'{_team_logo_img(w_tid, espn_map, size=14)}'
-                    f'<span style="font-size:13px; font-weight:700; color:#FAFAFA; flex:1;">{tname(teams, w_tid)}</span>'
-                    f'<span style="font-size:14px; font-weight:800; color:#FAFAFA; min-width:24px; text-align:right;">{lr["_w_score"]}</span>'
-                    f'</div>'
-                    f'<div style="display:flex; align-items:center; padding:4px 8px;">'
-                    f'<div style="width:3px; height:18px; border-radius:1px; background:#333; margin-right:6px; flex-shrink:0;"></div>'
-                    f'{_team_logo_img(l_tid, espn_map, size=14)}'
-                    f'<span style="font-size:13px; color:#888; flex:1;">{tname(teams, l_tid)}</span>'
-                    f'<span style="font-size:14px; color:#555; min-width:24px; text-align:right;">{lr["_l_score"]}</span>'
-                    f'</div>'
-                    f'</div>'
-                    f'<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">'
-                    f'<span style="font-size:10px; color:#888;">ML</span>{ml_badge}'
-                    f'<span style="font-size:10px; color:#888;">ATS</span>{ats_badge}'
-                    f'<span style="font-size:10px; color:#888;">O/U</span>{ou_badge}'
-                    f'</div>'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
+    # (Live results tracker removed — replaced by picks page grading)
 
 
 # ──────────────────────────── Page: Betting Picks ────────────────────────────
@@ -3235,10 +3129,14 @@ def _ev(model_prob, american_odds):
 
 def _kelly(model_prob, american_odds):
     """Kelly criterion fraction for optimal bet sizing."""
+    if american_odds == 0:
+        return 0.0
     if american_odds < 0:
         b = 100 / abs(american_odds)
     else:
         b = american_odds / 100
+    if b == 0:
+        return 0.0
     q = 1 - model_prob
     f = (model_prob * b - q) / b
     return max(f, 0)
