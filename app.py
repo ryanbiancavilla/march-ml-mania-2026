@@ -3588,7 +3588,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 
     if espn_data and espn_data.get("games"):
         espn_games = [g for g in espn_data["games"] if _espn_game_matches_gender(g)]
-        live_games = [g for g in espn_games if g["status"] == "STATUS_IN_PROGRESS"]
+        live_games = [g for g in espn_games if g["status"] in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME")]
         final_games = [g for g in espn_games if g["status"] == "STATUS_FINAL"]
 
         def _seed_tag(tid):
@@ -3680,13 +3680,25 @@ def page_picks(prefix, teams, seeds_df, preds):
     # ── Model Picks vs Vegas ──
     st.markdown('<div class="vp-section" style="margin-top:16px;">MODEL PICKS</div>', unsafe_allow_html=True)
 
+    # Build set of live game pairs to exclude from model picks (avoid showing twice)
+    live_pairs = set()
+    if espn_data and espn_data.get("games"):
+        for g in espn_data["games"]:
+            if g.get("status") in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME"):
+                htid = _resolve_odds_team(g.get("home_team", ""), odds_map_lookup, name_to_tid_lookup)
+                atid = _resolve_odds_team(g.get("away_team", ""), odds_map_lookup, name_to_tid_lookup)
+                if htid and atid:
+                    live_pairs.add(frozenset({htid, atid}))
+
     # Auto-use live Vegas odds when available
     has_live_odds = odds_data and odds_data.get("games")
     odds_matched = []
     if has_live_odds:
         all_matched = _match_odds_teams(teams, stats, odds_data, prefix)
-        # Filter to only tournament teams (those with seeds)
-        odds_matched = [g for g in all_matched if g["t1"] in team_seeds and g["t2"] in team_seeds]
+        # Filter to tournament teams, exclude games already shown in live section
+        odds_matched = [g for g in all_matched
+                        if g["t1"] in team_seeds and g["t2"] in team_seeds
+                        and frozenset({g["t1"], g["t2"]}) not in live_pairs]
 
     picks = []
 
