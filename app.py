@@ -258,24 +258,33 @@ st.markdown("""
     .matchup.game-miss { border-color: #f87171; border-width: 1px; }
     .matchup.game-hit { border-color: #2d3a2d; }
     .team-slot {
-        padding: 3px 8px; font-size: 11px; display: flex;
-        justify-content: space-between; align-items: center;
+        padding: 4px 8px; font-size: 11px; display: flex;
+        align-items: center; gap: 0;
         border-bottom: 1px solid #1a1d24; color: #888;
     }
     .team-slot:last-child { border-bottom: none; }
-    .team-slot.winner { background: rgba(255, 107, 53, 0.08); color: #FF6B35; font-weight: 600; }
-    .team-slot.actual-winner { background: rgba(74, 222, 128, 0.08); color: #4ade80; font-weight: 600; }
-    .team-slot.actual-loser { color: #555; }
-    .team-slot.upset-loser { color: #555; text-decoration: line-through; text-decoration-color: #f8717166; }
+    .team-slot.winner { background: rgba(255, 107, 53, 0.06); }
+    .team-slot.winner .bk-name { color: #FF6B35; font-weight: 700; }
+    .team-slot.winner .bk-seed { color: #FF6B35; }
+    .team-slot.actual-winner { background: rgba(74, 222, 128, 0.06); }
+    .team-slot.actual-winner .bk-name { color: #4ade80; font-weight: 700; }
+    .team-slot.actual-winner .bk-seed { color: #4ade80; }
+    .team-slot.actual-loser .bk-name { color: #555; }
+    .team-slot.upset-loser .bk-name { color: #555; text-decoration: line-through; text-decoration-color: #f8717166; }
+    .bk-seed {
+        color: #666; font-size: 9px; font-weight: 700; min-width: 16px;
+        text-align: right; margin-right: 5px; font-variant-numeric: tabular-nums;
+    }
+    .bk-name { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bk-score { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; color: #555; }
+    .bk-score.win { color: #4ade80; }
     .matchup-badge {
         position: absolute; top: -1px; right: -1px; font-size: 8px; font-weight: 800;
         padding: 1px 5px; border-radius: 0 4px 0 4px; letter-spacing: 0.5px; z-index: 1;
     }
     .matchup-badge.miss { background: #f87171; color: #000; }
     .matchup-badge.hit { background: #2d3a2d; color: #4ade80; }
-    .score-tag { font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 4px; }
-    .seed-tag { color: #555; margin-right: 4px; font-size: 10px; font-weight: 600; }
-    .prob-tag { color: #555; font-size: 10px; font-variant-numeric: tabular-nums; }
+    .prob-tag { color: #555; font-size: 10px; font-variant-numeric: tabular-nums; margin-left: auto; padding-left: 6px; }
     .big-prob { font-size: 36px; font-weight: 800; text-align: center; line-height: 1; margin: 4px 0; letter-spacing: -1px; }
     .stat-bar { height: 4px; border-radius: 2px; margin: 2px 0; }
     .ff-bracket { display: flex; gap: 12px; min-height: 160px; align-items: center; }
@@ -325,6 +334,8 @@ st.markdown("""
         .bracket { gap: 4px; }
         .round { min-width: 140px; }
         .team-slot { font-size: 10px; padding: 3px 6px; }
+        .bk-seed { font-size: 8px; min-width: 14px; }
+        .team-slot img { width: 14px !important; height: 14px !important; }
         .vp-bet-card { padding: 10px 12px; }
         .vp-bet-type { min-width: 120px; padding: 8px 10px; }
         .vp-metric .value { font-size: 20px; }
@@ -1013,16 +1024,49 @@ def monte_carlo_odds(_seeds_df, _slots_df, _preds, n_sims=10000, eliminated=None
 
 # ──────────────────────────── Bracket HTML ────────────────────────────
 
-def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None):
-    """Render a bracket matchup card.
-    game_state: None (prediction), "hit" (correct pick, completed), "miss" (wrong pick, completed),
-                or dict with keys: actual_winner, score for completed games."""
+def _build_espn_id_map(teams, prefix="M"):
+    """Build mapping from our team IDs to ESPN team IDs using cached ESPN data."""
+    espn_data = _load_cached_espn()
+    if not espn_data:
+        return {}
+    odds_map, name_to_tid = _build_odds_name_map(teams, prefix)
+    tid_to_espn = {}
+    for g in espn_data.get("games", []):
+        for side in [("home_team", "home_id"), ("away_team", "away_id")]:
+            name_key, id_key = side
+            espn_name = g.get(name_key, "")
+            espn_id = g.get(id_key, "")
+            if espn_name and espn_id:
+                tid = _resolve_odds_team(espn_name, odds_map, name_to_tid)
+                if tid and tid not in tid_to_espn:
+                    tid_to_espn[tid] = espn_id
+    return tid_to_espn
+
+
+def _team_logo_img(tid, espn_map, size=18):
+    """Return an <img> tag for a team's ESPN logo, or empty string if unavailable."""
+    espn_id = espn_map.get(tid)
+    if not espn_id:
+        return ""
+    return (
+        f'<img src="https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/{espn_id}.png'
+        f'&h={size*2}&w={size*2}" width="{size}" height="{size}" '
+        f'style="vertical-align:middle; margin-right:4px; border-radius:2px;" '
+        f'onerror="this.style.display=\'none\'">'
+    )
+
+
+def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None, espn_map=None):
+    """Render a bracket matchup card with team logos and seeds."""
+    espn_map = espn_map or {}
     s1 = team_seed_map.get(t1, "")
     s2 = team_seed_map.get(t2, "")
-    n1 = tname(teams, t1)[:18] if t1 else "TBD"
-    n2 = tname(teams, t2)[:18] if t2 else "TBD"
-    s1_tag = f'<span class="seed-tag">({s1})</span> ' if s1 else ""
-    s2_tag = f'<span class="seed-tag">({s2})</span> ' if s2 else ""
+    n1 = tname(teams, t1)[:16] if t1 else "TBD"
+    n2 = tname(teams, t2)[:16] if t2 else "TBD"
+    s1_tag = f'<span class="bk-seed">{s1}</span>' if s1 else ""
+    s2_tag = f'<span class="bk-seed">{s2}</span>' if s2 else ""
+    logo1 = _team_logo_img(t1, espn_map) if t1 else ""
+    logo2 = _team_logo_img(t2, espn_map) if t2 else ""
 
     is_miss = isinstance(game_state, dict) and game_state.get("type") == "miss"
     is_hit = isinstance(game_state, dict) and game_state.get("type") == "hit"
@@ -1039,18 +1083,16 @@ def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None)
         badge = '<span class="matchup-badge hit">\u2713</span>'
 
     if is_completed and actual_winner:
-        # Show actual result styling
         if t1 == actual_winner:
             c1 = "actual-winner"
             c2 = "upset-loser" if is_miss else "actual-loser"
         else:
             c2 = "actual-winner"
             c1 = "upset-loser" if is_miss else "actual-loser"
-        # Show score instead of probability
         if score:
             w_score, l_score = score.split("-")
-            sc1 = f'<span class="score-tag" style="color:#4ade80;">{w_score}</span>' if t1 == actual_winner else f'<span class="score-tag" style="color:#555;">{l_score}</span>'
-            sc2 = f'<span class="score-tag" style="color:#4ade80;">{w_score}</span>' if t2 == actual_winner else f'<span class="score-tag" style="color:#555;">{l_score}</span>'
+            sc1 = f'<span class="bk-score win">{w_score}</span>' if t1 == actual_winner else f'<span class="bk-score">{l_score}</span>'
+            sc2 = f'<span class="bk-score win">{w_score}</span>' if t2 == actual_winner else f'<span class="bk-score">{l_score}</span>'
         else:
             sc1 = ""
             sc2 = ""
@@ -1063,8 +1105,8 @@ def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None)
         sc2 = f'<span class="prob-tag">{p2}</span>'
 
     return f"""<div class="matchup {card_cls}">{badge}
-  <div class="team-slot {c1}">{s1_tag}{n1}{sc1}</div>
-  <div class="team-slot {c2}">{s2_tag}{n2}{sc2}</div>
+  <div class="team-slot {c1}">{s1_tag}{logo1}<span class="bk-name">{n1}</span>{sc1}</div>
+  <div class="team-slot {c2}">{s2_tag}{logo2}<span class="bk-name">{n2}</span>{sc2}</div>
 </div>"""
 
 
@@ -1093,8 +1135,9 @@ def _build_slot_game_states(sim_results, preds, actual_matchups, actual_winners_
     return states
 
 
-def region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=None):
+def region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=None, espn_map=None):
     slot_states = slot_states or {}
+    espn_map = espn_map or {}
     r1_order = [1, 8, 5, 4, 6, 3, 7, 2]
     r2_order = [1, 4, 3, 2]
     r3_order = [1, 2]
@@ -1115,15 +1158,16 @@ def region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=N
             html += matchup_html(
                 r.get("t1"), r.get("t2"), r.get("t1_prob", 0.5),
                 r.get("winner"), teams, team_seed_map,
-                game_state=slot_states.get(slot),
+                game_state=slot_states.get(slot), espn_map=espn_map,
             )
         html += "</div>"
     html += "</div>"
     return html
 
 
-def final_four_html(sim_results, teams, team_seed_map, slot_states=None):
+def final_four_html(sim_results, teams, team_seed_map, slot_states=None, espn_map=None):
     slot_states = slot_states or {}
+    espn_map = espn_map or {}
     sf_slots = ["R5WX", "R5YZ"]
     ch_slot = "R6CH"
 
@@ -1137,7 +1181,7 @@ def final_four_html(sim_results, teams, team_seed_map, slot_states=None):
         html += matchup_html(
             r.get("t1"), r.get("t2"), r.get("t1_prob", 0.5),
             r.get("winner"), teams, team_seed_map,
-            game_state=slot_states.get(slot),
+            game_state=slot_states.get(slot), espn_map=espn_map,
         )
     html += "</div>"
 
@@ -1148,7 +1192,7 @@ def final_four_html(sim_results, teams, team_seed_map, slot_states=None):
     html += matchup_html(
         r.get("t1"), r.get("t2"), r.get("t1_prob", 0.5),
         r.get("winner"), teams, team_seed_map,
-        game_state=slot_states.get(ch_slot),
+        game_state=slot_states.get(ch_slot), espn_map=espn_map,
     )
     html += "</div>"
 
@@ -1157,8 +1201,9 @@ def final_four_html(sim_results, teams, team_seed_map, slot_states=None):
     if champ:
         s = team_seed_map.get(champ, "")
         seed_txt = f" ({s})" if s else ""
+        logo = _team_logo_img(champ, espn_map, size=28)
         html += f'<div class="ff-round"><div class="champ-banner">'
-        html += f'\U0001f3c6 {tname(teams, champ)}{seed_txt}'
+        html += f'{logo}{tname(teams, champ)}{seed_txt}'
         html += "</div></div>"
 
     html += "</div>"
@@ -1988,6 +2033,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
 
     # Build slot-level game states for inline bracket rendering
     slot_states = _build_slot_game_states(sim_results, preds, actual_matchups, actual_winners_map)
+    espn_map = _build_espn_id_map(teams, prefix)
 
     # ── Top bar: Record + Champion side by side ──
     champ_result = sim_results.get("R6CH", {})
@@ -2043,7 +2089,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     # Final Four
     st.markdown("")
     st.subheader("Final Four")
-    st.markdown(final_four_html(sim_results, teams, team_seed_map, slot_states=slot_states), unsafe_allow_html=True)
+    st.markdown(final_four_html(sim_results, teams, team_seed_map, slot_states=slot_states, espn_map=espn_map), unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -2068,7 +2114,7 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
     # Regional brackets
     for region in ["W", "X", "Y", "Z"]:
         st.subheader(region_labels[region])
-        html = region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=slot_states)
+        html = region_bracket_html(region, sim_results, teams, team_seed_map, slot_states=slot_states, espn_map=espn_map)
         st.markdown(html, unsafe_allow_html=True)
         st.markdown("")
 
