@@ -3590,6 +3590,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             "t2_final": t2_final_score,
             "is_upset": is_upset,
             "upset_text": upset_text,
+            "fav": fav,
             # Per-team inline data for condensed display
             "t1_prob": f"{p*100:.0f}%",
             "t2_prob": f"{(1-p)*100:.0f}%",
@@ -3842,12 +3843,18 @@ def page_picks(prefix, teams, seeds_df, preds):
         )
         status_bar += f'</div>{edge_html}</div>'
 
-        upset_badge = ""
+        upset_badge_t1 = ""
+        upset_badge_t2 = ""
         if card.get("is_upset"):
-            upset_badge = (
+            badge_html = (
                 f'<span style="background:#ff4444; color:#fff; font-weight:800; padding:1px 5px; '
                 f'border-radius:3px; font-size:7px; letter-spacing:0.3px; margin-left:3px;">UPSET</span>'
             )
+            # Place badge on the model's favorite (the higher-seed underdog being picked)
+            if card.get("fav") == card.get("t1"):
+                upset_badge_t1 = badge_html
+            else:
+                upset_badge_t2 = badge_html
 
         # Format ML odds for inline pills
         t1_ml_str = card["t1_ml_odds"]
@@ -3916,7 +3923,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             f'<div style="display:flex; align-items:center; padding:5px 8px; border-bottom:1px solid #2a2a2a; gap:2px;">'
             f'<div style="width:3px; height:22px; border-radius:1px; background:{t1_bar}; margin-right:4px; flex-shrink:0;"></div>'
             f'{card["s1t"]}{_team_logo_img(ct1, espn_map, size=16)}'
-            f'<span style="{t1_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n1"]}</span>'
+            f'<span style="{t1_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n1"]}{upset_badge_t1}</span>'
             f'<span style="color:#aaa; font-size:11px; font-weight:600; min-width:28px; text-align:right;">{card["t1_prob"]}</span>'
             f'<span style="{pill}background:#2a2d35; color:#ccc;">{t1_sp_str} {t1_ml_str}{ml_r1}</span>'
             f'{t1_score_html}'
@@ -3925,7 +3932,7 @@ def page_picks(prefix, teams, seeds_df, preds):
             f'<div style="display:flex; align-items:center; padding:5px 8px; gap:2px;">'
             f'<div style="width:3px; height:22px; border-radius:1px; background:{t2_bar}; margin-right:4px; flex-shrink:0;"></div>'
             f'{card["s2t"]}{_team_logo_img(ct2, espn_map, size=16)}'
-            f'<span style="{t2_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n2"]}{upset_badge}</span>'
+            f'<span style="{t2_name_style} font-size:12px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{card["n2"]}{upset_badge_t2}</span>'
             f'<span style="color:#aaa; font-size:11px; font-weight:600; min-width:28px; text-align:right;">{card["t2_prob"]}</span>'
             f'<span style="{pill}background:#2a2d35; color:#ccc;">{t2_sp_str} {t2_ml_str}{ml_r2}</span>'
             f'{t2_score_html}'
