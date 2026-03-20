@@ -2263,10 +2263,17 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                 pct = bracket_hits / total_graded * 100
                 miss_note = ""
                 if bracket_misses:
-                    miss_names = ", ".join(m["actual"] for m in bracket_misses)
+                    miss_items = ""
+                    for m in bracket_misses:
+                        miss_items += (
+                            f'<span style="display:inline-flex; align-items:center; gap:2px; margin:2px 6px 2px 0;">'
+                            f'<span style="width:2px; height:12px; border-radius:1px; background:{_team_color(m["actual_tid"])}; display:inline-block;"></span>'
+                            f'{_team_logo_img(m["actual_tid"], espn_map, size=12)}'
+                            f'{m["actual"]}</span>'
+                        )
                     miss_note = (
                         f'<div style="font-size:11px; color:#888; margin-top:8px;">'
-                        f'<span style="color:#f87171;">Misses:</span> {miss_names}</div>'
+                        f'<span style="color:#f87171;">Misses:</span> {miss_items}</div>'
                     )
                 st.markdown(
                     f'<div class="vp-card" style="border-top:3px solid {rec_color}; text-align:center; padding:20px;">'
@@ -2291,12 +2298,16 @@ def page_bracket(prefix, teams, seeds_df, slots_df, preds):
                     border_color = "#41B6E6"
                     elim_txt = ""
                 st.markdown(
-                    f'<div class="vp-card" style="border-top:3px solid {border_color}; text-align:center; padding:20px;">'
-                    f'<div style="font-size:9px; color:#666; letter-spacing:2px; font-weight:800; margin-bottom:6px;">'
+                    f'<div class="vp-card" style="border-top:3px solid {border_color}; padding:20px;">'
+                    f'<div style="font-size:9px; color:#666; letter-spacing:2px; font-weight:800; margin-bottom:10px; text-align:center;">'
                     f'PREDICTED CHAMPION</div>'
-                    f'<div style="font-size:24px; font-weight:900; color:{border_color}; line-height:1;">'
-                    f'{tname(teams, champ)}</div>'
-                    f'<div style="font-size:12px; color:#888; margin-top:4px;">{seed_txt} seed</div>'
+                    f'<div style="background:#18191f; border:1px solid #333; border-radius:4px; overflow:hidden; max-width:300px; margin:0 auto;">'
+                    f'<div style="display:flex; align-items:center; padding:10px 14px;">'
+                    f'<div style="width:4px; height:32px; border-radius:1px; background:{_team_color(champ)}; margin-right:8px;"></div>'
+                    f'<span style="color:#888; font-weight:700; font-size:13px; margin-right:6px;">{s}</span>'
+                    f'{_team_logo_img(champ, espn_map, size=24)}'
+                    f'<span style="font-size:20px; font-weight:900; color:{border_color}; flex:1;">{tname(teams, champ)}</span>'
+                    f'</div></div>'
                     f'{elim_txt}'
                     f'</div>',
                     unsafe_allow_html=True,
@@ -3305,7 +3316,9 @@ def page_picks(prefix, teams, seeds_df, preds):
                     fav_prob_g = pg if fav_g == t1g else 1 - pg
                     fav_name_g = tname(teams, fav_g)
                     pick_icon = (
-                        f'<div style="padding:3px 10px; border-top:1px solid #2a2a2a; font-size:10px; color:#41B6E6; font-weight:600;">'
+                        f'<div style="padding:3px 10px; border-top:1px solid #2a2a2a; font-size:10px; color:#41B6E6; font-weight:600; display:flex; align-items:center; gap:3px;">'
+                        f'<span style="width:2px; height:12px; border-radius:1px; background:{_team_color(fav_g)};"></span>'
+                        f'{_team_logo_img(fav_g, espn_map, size=12)}'
                         f'Pick: {fav_name_g} ({fav_prob_g*100:.0f}%) | Spread: {lines_g["spread"]:+.1f} | Total: {lines_g["total"]:.0f}'
                         f'</div>'
                     )
@@ -3370,7 +3383,9 @@ def page_picks(prefix, teams, seeds_df, preds):
                     ml_color = "#4ade80" if ml_correct else "#f87171"
                     pick_icon = (
                         f'<div style="padding:2px 8px; font-size:10px; font-weight:600; color:{ml_color}; '
-                        f'background:#131418; border-top:1px solid #2a2a2a;">'
+                        f'background:#131418; border-top:1px solid #2a2a2a; display:flex; align-items:center; gap:3px;">'
+                        f'<span style="width:2px; height:12px; border-radius:1px; background:{_team_color(fav_g)};"></span>'
+                        f'{_team_logo_img(fav_g, espn_map, size=12)}'
                         f'{ml_icon} {fav_name_g} ({fav_prob_g*100:.0f}%)</div>'
                     )
 
