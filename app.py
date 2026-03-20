@@ -2994,7 +2994,17 @@ def page_picks(prefix, teams, seeds_df, preds):
 
     # ── Render Picks ──
     if not picks:
-        st.info("No games found. Check back when odds are posted or use 'Tournament Bracket' mode.")
+        st.markdown(
+            '<div class="vp-card" style="text-align:center; padding:40px 20px;">'
+            '<div style="font-size:32px; margin-bottom:12px;">🏀</div>'
+            '<div style="font-size:16px; font-weight:600; color:#FAFAFA; margin-bottom:8px;">'
+            'No Games With Odds Right Now</div>'
+            '<div style="font-size:13px; color:#888; max-width:400px; margin:0 auto;">'
+            'Picks appear here once matchups and Vegas lines are available. '
+            'Check back closer to game time, or explore the Bracket page for full tournament predictions.</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
         return
 
     # ── Build game cards with all three bet types per game ──
