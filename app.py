@@ -3543,12 +3543,14 @@ def page_picks(prefix, teams, seeds_df, preds):
         # Get game time from odds API commence_time
         commence_time = pick.get("commence_time", "")
         game_time_display = ""
+        game_date_display = ""
         broadcast_display = ""
         if commence_time:
             try:
                 ct = datetime.fromisoformat(commence_time.replace("Z", "+00:00"))
                 et = ct - timedelta(hours=4)  # Convert UTC to EDT
                 game_time_display = et.strftime("%I:%M %p ET").lstrip("0")
+                game_date_display = f"{et.strftime('%a')} {et.strftime('%b')} {et.day}"
             except Exception:
                 game_time_display = ""
 
@@ -3576,6 +3578,20 @@ def page_picks(prefix, teams, seeds_df, preds):
                     t1_final_score = espn_match["away_score"]
                     t2_final_score = espn_match["home_score"]
 
+        # Determine tournament round from seed matchup
+        game_round = ""
+        if s1 and s2:
+            try:
+                seed_sum = int(s1) + int(s2)
+                # R1: 1v16,2v15,...,8v9 → sum=17; R2: varied but both seeded
+                # Use seed sum as heuristic: 17 = R64, lower sums = later rounds
+                if seed_sum == 17:
+                    game_round = "R64"
+                elif seed_sum <= 16:
+                    game_round = "R32"
+            except (ValueError, TypeError):
+                pass
+
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",
             "t1": t1, "t2": t2, "n1": n1, "n2": n2, "s1t": s1t, "s2t": s2t,
@@ -3583,6 +3599,8 @@ def page_picks(prefix, teams, seeds_df, preds):
             "best_rating": 0,
             "commence_time": commence_time,
             "game_time_display": game_time_display,
+            "game_date_display": game_date_display,
+            "game_round": game_round,
             "broadcast_display": broadcast_display,
             "game_final": game_final,
             "final_score": f"{t1_final_score}-{t2_final_score}" if game_final else "",
@@ -3814,10 +3832,14 @@ def page_picks(prefix, teams, seeds_df, preds):
         ct1_color = _team_color(ct1) if ct1 else '#666'
         ct2_color = _team_color(ct2) if ct2 else '#666'
 
-        # Status bar (time, broadcast)
+        # Status bar (round, date, time, broadcast)
         status_parts = []
         if is_final:
             status_parts.append(f'<span style="color:#4ade80; font-weight:700;">FINAL</span>')
+        if card.get("game_round"):
+            status_parts.append(f'<span style="color:#41B6E6;">{card["game_round"]}</span>')
+        if card.get("game_date_display"):
+            status_parts.append(f'<span style="color:#888;">{card["game_date_display"]}</span>')
         if card.get("game_time_display"):
             status_parts.append(f'<span style="color:#888;">{card["game_time_display"]}</span>')
         if card.get("broadcast_display"):
