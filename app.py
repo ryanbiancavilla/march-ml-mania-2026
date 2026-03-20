@@ -508,6 +508,34 @@ def load_conferences():
     return dict(zip(tc.TeamID, tc.ConfAbbrev))
 
 
+# ──────────────────────────── Massey Composite Rankings ────────────────────────────
+
+@st.cache_data
+def load_massey_ranks():
+    """Load Massey ordinals and compute composite rank per team for current season.
+    Uses latest available ranking day per system (before tournament, day <= 133)."""
+    path = os.path.join(DATA_DIR, "MMasseyOrdinals.csv")
+    if not os.path.exists(path):
+        return {}
+    massey = pd.read_csv(path)
+    massey = massey[(massey.Season == SEASON) & (massey.RankingDayNum <= 133)]
+    if massey.empty:
+        return {}
+    # Use only the latest ranking day per system
+    last_day = massey.groupby("SystemName")["RankingDayNum"].transform("max")
+    massey = massey[massey.RankingDayNum == last_day]
+    agg = massey.groupby("TeamID").agg(
+        MasseyRank=("OrdinalRank", "mean"),
+        MasseyMedian=("OrdinalRank", "median"),
+        MasseyBest=("OrdinalRank", "min"),
+        MasseyWorst=("OrdinalRank", "max"),
+        MasseyStd=("OrdinalRank", "std"),
+        MasseySystems=("SystemName", "nunique"),
+    )
+    agg["MasseyStd"] = agg["MasseyStd"].fillna(0)
+    return agg.to_dict("index")
+
+
 # ──────────────────────────── Coach Data ────────────────────────────
 
 @st.cache_data
@@ -1098,12 +1126,13 @@ def _eff_color(val, higher_better=True):
         return "stat-good" if val < 0 else "stat-bad" if val > 5 else "stat-neutral"
 
 
-def page_rankings(prefix, teams, seeds_df, conferences):
+def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
     gender_label = "Men's" if prefix == "M" else "Women's"
+    has_massey = prefix == "M" and bool(massey_ranks)
     st.markdown(
         f'<div class="vp-page-header">'
         f'<h1>Power Rankings</h1>'
-        f'<div class="subtitle">{gender_label} NCAA Tournament &middot; Elo + Efficiency Ratings</div>'
+        f'<div class="subtitle">{gender_label} NCAA Tournament &middot; Elo + Efficiency + Massey Composite</div>'
         f'</div>',
         unsafe_allow_html=True,
     )
@@ -1116,6 +1145,7 @@ def page_rankings(prefix, teams, seeds_df, conferences):
     rows = []
     for tid in stats.index:
         s = stats.loc[tid]
+        m = massey_ranks.get(tid, {})
         rows.append({
             "tid": tid,
             "Team": tname(teams, tid),
@@ -1123,6 +1153,7 @@ def page_rankings(prefix, teams, seeds_df, conferences):
             "Seed": team_seeds.get(tid, ""),
             "Record": f"{int(s.Wins)}-{int(s.Games - s.Wins)}",
             "Elo": int(elo.get(tid, 1500)),
+            "Massey": int(round(m.get("MasseyRank", 999))) if m else "",
             "NetEff": round(s.NetEff, 1),
             "OffEff": round(s.OffEff, 1),
             "DefEff": round(s.DefEff, 1),
@@ -1155,6 +1186,8 @@ def page_rankings(prefix, teams, seeds_df, conferences):
     html += '<table class="vp-table"><thead><tr>'
     html += '<th style="width:36px;">#</th><th>TEAM</th><th>CONF</th><th>SEED</th>'
     html += '<th>RECORD</th><th>TIER</th><th>ELO</th>'
+    if has_massey:
+        html += '<th title="Composite rank across 60+ computer ranking systems">MASSEY</th>'
     html += '<th>NET EFF</th><th>OFF EFF</th><th>DEF EFF</th>'
     html += '<th>MARGIN</th>'
     html += '<th>eFG%</th><th>3P%</th><th>FT%</th>'
@@ -1180,6 +1213,17 @@ def page_rankings(prefix, teams, seeds_df, conferences):
         html += f'<td>{r["Record"]}</td>'
         html += f'<td>{tier_html}</td>'
         html += f'<td style="font-weight:700;">{r["Elo"]}</td>'
+        if has_massey:
+            massey_val = r["Massey"]
+            if massey_val != "" and massey_val <= 25:
+                m_cls = "stat-good"
+            elif massey_val != "" and massey_val <= 100:
+                m_cls = "stat-neutral"
+            elif massey_val != "":
+                m_cls = "stat-bad"
+            else:
+                m_cls = "stat-neutral"
+            html += f'<td class="{m_cls}" style="font-weight:600;">{massey_val if massey_val != "" else "—"}</td>'
         html += f'<td class="{net_cls}" style="font-weight:600;">{r["NetEff"]:+.1f}</td>'
         html += f'<td class="{off_cls}">{r["OffEff"]:.1f}</td>'
         html += f'<td class="{def_cls}">{r["DefEff"]:.1f}</td>'
@@ -1369,8 +1413,20 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
         s1_stats = stats.loc[t1]
         s2_stats = stats.loc[t2]
 
+        # Massey composite ranks (men's only)
+        massey_ranks = load_massey_ranks() if prefix == "M" else {}
+        m1 = massey_ranks.get(t1, {})
+        m2 = massey_ranks.get(t2, {})
+
         compare_stats = [
             ("Elo", int(elo.get(t1, 1500)), int(elo.get(t2, 1500)), True),
+        ]
+        if m1 and m2:
+            compare_stats.append(
+                ("Massey Rank", int(round(m1.get("MasseyRank", 999))),
+                 int(round(m2.get("MasseyRank", 999))), False),
+            )
+        compare_stats += [
             ("Record", f"{int(s1_stats.Wins)}-{int(s1_stats.Games-s1_stats.Wins)}",
              f"{int(s2_stats.Wins)}-{int(s2_stats.Games-s2_stats.Wins)}", None),
             ("PPG", round(s1_stats.PPG, 1), round(s2_stats.PPG, 1), True),
@@ -3541,7 +3597,8 @@ elif "Head-to-Head" in page:
     seed_history = build_seed_history(prefix)
     page_h2h(prefix, teams, gender_seeds, preds, coach_info, knn_data, h2h_history, seed_history)
 elif "Rankings" in page:
-    page_rankings(prefix, teams, gender_seeds, conferences)
+    massey_ranks = load_massey_ranks() if prefix == "M" else {}
+    page_rankings(prefix, teams, gender_seeds, conferences, massey_ranks)
 elif "Bracket" in page:
     page_bracket(prefix, teams, gender_seeds, gender_slots, preds)
 elif "Championship Odds" in page:
