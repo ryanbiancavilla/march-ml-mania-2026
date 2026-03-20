@@ -3887,9 +3887,10 @@ def page_picks(prefix, teams, seeds_df, preds):
             ml_score = _edge_rating(max(ml_ev, 0), ml_kelly, bt_ml_pct)
             ml_label, ml_color = _edge_label(ml_score)
 
-            # Also check if dog has value
+            # Only pick the dog if the model actually disagrees about WHO wins
+            # (model has dog >45%). Don't pick dogs just on EV math with unreliable probs.
             dog_ev = _ev(dog_prob, v_ml_dog)
-            if dog_ev > ml_ev and dog_ev > 0:
+            if dog_ev > ml_ev and dog_ev > 0 and dog_prob > 0.45:
                 dog_implied = _implied_prob(v_ml_dog)
                 dog_kelly = _kelly(dog_prob, v_ml_dog)
                 dog_edge = dog_prob - dog_implied
