@@ -1071,6 +1071,32 @@ def _team_logo_img(tid, espn_map, size=18):
     )
 
 
+TEAM_COLORS = {
+    1104: "#9E1B32", 1103: "#041E42", 1112: "#CC0033", 1116: "#9D2235",
+    1140: "#002E5D", 1155: "#F56600", 1163: "#000E2F", 1181: "#003087",
+    1196: "#0021A5", 1202: "#582C83", 1208: "#BA0C2F", 1211: "#002967",
+    1218: "#024731", 1219: "#330072", 1220: "#00529C", 1222: "#C8102E",
+    1224: "#003A63", 1225: "#B5A36A", 1228: "#13294B", 1234: "#FFCD00",
+    1235: "#C8102E", 1242: "#0051BA", 1244: "#FDBB30", 1246: "#0033A0",
+    1250: "#653819", 1254: "#00508F", 1257: "#AD0000", 1270: "#00527C",
+    1274: "#F47321", 1275: "#B61E2E", 1276: "#00274C", 1277: "#18453B",
+    1281: "#F1B82D", 1295: "#006A31", 1301: "#CC0000", 1304: "#E41C38",
+    1314: "#7BAFD4", 1320: "#4B116F", 1326: "#BB0000", 1335: "#011F5B",
+    1341: "#4F2D7F", 1345: "#CEB888", 1365: "#862633", 1373: "#006747",
+    1374: "#CC0035", 1378: "#006747", 1385: "#BA0C2F", 1387: "#003DA5",
+    1388: "#003DA5", 1395: "#4D1979", 1397: "#FF8200", 1398: "#00539F",
+    1400: "#BF5700", 1401: "#500000", 1403: "#CC0000", 1407: "#8B2332",
+    1416: "#BA9B37", 1417: "#2D68C4", 1420: "#000000", 1429: "#00263A",
+    1433: "#F8B800", 1435: "#866D4B", 1437: "#003366", 1438: "#232D4B",
+    1458: "#C5050C", 1460: "#006A4E", 1465: "#002554", 1474: "#002D6C",
+}
+
+
+def _team_color(tid):
+    """Return team's primary color hex, or a neutral gray fallback."""
+    return TEAM_COLORS.get(tid, "#666")
+
+
 def matchup_html(t1, t2, t1_prob, winner, teams, team_seed_map, game_state=None, espn_map=None):
     """Render a bracket matchup card with team logos and seeds."""
     espn_map = espn_map or {}
@@ -1265,6 +1291,7 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
     conf_vals = {conf_display(k): v for k, v in conf_vals_raw.items()}
 
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
+    espn_map = _build_espn_id_map(teams, prefix)
 
     rows = []
     for tid in stats.index:
@@ -1333,7 +1360,9 @@ def page_rankings(prefix, teams, seeds_df, conferences, massey_ranks):
 
         html += f'<tr>'
         html += f'<td class="rank-cell">{i}</td>'
-        html += f'<td class="team-cell">{r["Team"]}</td>'
+        logo = _team_logo_img(r["tid"], espn_map, size=16)
+        tc = _team_color(r["tid"])
+        html += f'<td class="team-cell" style="border-left:3px solid {tc}; padding-left:8px;">{logo}{r["Team"]}</td>'
         conf_str = conf_vals.get(r["Conf"], 0.5)
         conf_color = "#4ade80" if conf_str >= 0.55 else "#f87171" if conf_str < 0.48 else "#888"
         html += f'<td style="color:{conf_color}; font-weight:600;" title="Conf Avg Win%: {conf_str:.1%}">{r["Conf"]}</td>'
@@ -1382,6 +1411,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
+    espn_map = _build_espn_id_map(teams, prefix)
     neighbors_map, game_results = knn_data
 
     id_range = range(1101, 1482) if prefix == "M" else range(3101, 3482)
@@ -1415,18 +1445,18 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     st.markdown(
         f'<div style="display:flex; align-items:center; justify-content:center; gap:20px; margin:20px 0;">'
         # Team 1
-        f'<div class="vp-metric" style="flex:1; border-top:3px solid {color1};">'
+        f'<div class="vp-metric" style="flex:1; border-top:3px solid {_team_color(t1)};">'
         f'<div class="big-prob" style="color:{color1}; margin:4px 0;">{p*100:.1f}%</div>'
-        f'<div style="text-align:center; font-size:18px; font-weight:700;">{s1_txt}{n1}</div>'
+        f'<div style="text-align:center; font-size:18px; font-weight:700;">{s1_txt}{_team_logo_img(t1, espn_map, size=22)}{n1}</div>'
         f'</div>'
         # VS
         f'<div style="text-align:center; padding:0 8px;">'
         f'<div style="font-size:12px; color:#444; font-weight:700; letter-spacing:2px;">VS</div>'
         f'</div>'
         # Team 2
-        f'<div class="vp-metric" style="flex:1; border-top:3px solid {color2};">'
+        f'<div class="vp-metric" style="flex:1; border-top:3px solid {_team_color(t2)};">'
         f'<div class="big-prob" style="color:{color2}; margin:4px 0;">{(1-p)*100:.1f}%</div>'
-        f'<div style="text-align:center; font-size:18px; font-weight:700;">{n2}{s2_txt}</div>'
+        f'<div style="text-align:center; font-size:18px; font-weight:700;">{_team_logo_img(t2, espn_map, size=22)}{n2}{s2_txt}</div>'
         f'</div>'
         f'</div>',
         unsafe_allow_html=True,
@@ -1505,7 +1535,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
     # Projected score
     st.markdown(
         f'<div style="text-align:center; margin:12px 0; font-size:20px; font-weight:700; color:#e2e8f0;">'
-        f'Projected Score: {n1} {lines["t1_pts"]:.0f} — {n2} {lines["t2_pts"]:.0f}'
+        f'Projected Score: {_team_logo_img(t1, espn_map, size=18)}{n1} {lines["t1_pts"]:.0f} — {_team_logo_img(t2, espn_map, size=18)}{n2} {lines["t2_pts"]:.0f}'
         f'</div>',
         unsafe_allow_html=True,
     )
@@ -1530,7 +1560,7 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
                     )
                 st.markdown(
                     f'<div style="background:#1a1d24; border:1px solid #333; border-radius:8px; padding:12px;">'
-                    f'<div style="font-weight:700; margin-bottom:8px; color:#60a5fa;">{team_name}</div>'
+                    f'<div style="font-weight:700; margin-bottom:8px; color:#60a5fa;">{_team_logo_img(tid, espn_map, size=16)}{team_name}</div>'
                     f'{prop_rows}</div>',
                     unsafe_allow_html=True,
                 )
@@ -1625,9 +1655,9 @@ def page_h2h(prefix, teams, seeds_df, preds, coach_info, knn_data, h2h_history, 
             f'<div style="border-radius:10px; border:1px solid #2a2d36; overflow:hidden; max-width:560px; margin:auto;">'
             f'<table class="vp-table" style="margin:0;">'
             f'<thead><tr>'
-            f'<th style="text-align:right; width:40%;">{tname(teams, t1)}</th>'
+            f'<th style="text-align:right; width:40%;">{_team_logo_img(t1, espn_map, size=18)}{tname(teams, t1)}</th>'
             f'<th style="text-align:center; width:20%; color:#FF6B35;">STAT</th>'
-            f'<th style="text-align:left; width:40%;">{tname(teams, t2)}</th>'
+            f'<th style="text-align:left; width:40%;">{_team_logo_img(t2, espn_map, size=18)}{tname(teams, t2)}</th>'
             f'</tr></thead><tbody>'
             f'{rows_html}</tbody></table></div>',
             unsafe_allow_html=True,
@@ -1794,6 +1824,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
     elo = compute_elo(prefix)
     massey_ranks = load_massey_ranks() if prefix == "M" else {}
     has_massey = bool(massey_ranks)
+    espn_map = _build_espn_id_map(teams, prefix)
 
     # Build set of eliminated teams from ESPN final results
     espn_data = _load_cached_espn()
@@ -1815,6 +1846,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
             continue
         row_data = {
             "Team": tname(teams, tid),
+            "tid": tid,
             "Seed": team_seeds.get(tid, 99),
             "Elo": int(elo.get(tid, 1500)),
         }
@@ -1854,6 +1886,7 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
         tid = name_to_tid.get(row["Team"])
         fr_entry = {
             "Team": row["Team"],
+            "_tid": tid,
             "Seed": row["Seed"],
             "Champ %": f"{cp*100:.1f}%",
             "Futures Odds": ml,
@@ -1917,8 +1950,9 @@ def page_odds(prefix, teams, seeds_df, slots_df, preds):
             f'transition:background 0.15s;" onmouseover="this.style.background=\'rgba(255,107,53,0.08)\'" '
             f'onmouseout="this.style.background=\'{bg}\'">'
             f'<div style="display:flex; align-items:center; gap:8px;">'
-            f'<span style="color:#FF6B35; font-weight:800; font-size:13px; min-width:20px;">{rank}</span>'
+            f'<span style="color:{_team_color(fr.get("_tid"))}; font-weight:800; font-size:13px; min-width:20px;">{rank}</span>'
             f'{seed_txt}'
+            f'{_team_logo_img(fr.get("_tid"), espn_map, size=18)}'
             f'<span style="font-weight:600;">{fr["Team"]}</span></div>'
             f'<div style="display:flex; gap:16px; align-items:center;">'
             f'<span style="color:{elo_color}; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; min-width:36px; text-align:right;">{elo_val}</span>'
@@ -3000,6 +3034,7 @@ def page_picks(prefix, teams, seeds_df, preds):
     stats = compute_season_stats(prefix)
     elo = compute_elo(prefix)
     team_seeds = dict(zip(seeds_df.TeamID, seeds_df.SeedNum))
+    espn_map = _build_espn_id_map(teams, prefix)
 
     # Load backtest for historical accuracy by confidence tier
     bt = run_backtest(prefix)
@@ -3078,10 +3113,10 @@ def page_picks(prefix, teams, seeds_df, preds):
                     f'<div class="vp-card" style="border-left:3px solid #fbbf24;">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-weight:600;">'
-                    f'{away_seed}<span style="color:#aaa;">{g["away_team"]}</span> '
+                    f'{away_seed}{_team_logo_img(away_tid, espn_map, size=16)}<span style="color:#aaa;">{g["away_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["away_score"]}</span>'
                     f'<span style="color:#444; margin:0 10px; font-size:12px;">@</span>'
-                    f'{home_seed}<span style="color:#aaa;">{g["home_team"]}</span> '
+                    f'{home_seed}{_team_logo_img(home_tid, espn_map, size=16)}<span style="color:#aaa;">{g["home_team"]}</span> '
                     f'<span style="font-size:20px; font-weight:900; color:#FAFAFA;">{g["home_score"]}</span></div>'
                     f'<div style="display:flex; align-items:center; gap:6px;">'
                     f'{tv_html}'
@@ -3123,15 +3158,17 @@ def page_picks(prefix, teams, seeds_df, preds):
                         f'{ml_icon} {fav_name_g} ({fav_prob_g*100:.0f}%)</div>'
                     )
 
+                winner_tid_g = home_tid if home_score > away_score else away_tid
+                border_c = _team_color(winner_tid_g) if winner_tid_g else "rgba(74, 222, 128, 0.3)"
                 grid_html += (
                     f'<div style="background:#14161c; border:1px solid #1e2028; border-radius:6px; '
-                    f'padding:8px 12px; border-left:3px solid rgba(74, 222, 128, 0.3);">'
+                    f'padding:8px 12px; border-left:3px solid {border_c};">'
                     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
                     f'<div style="font-size:12px;">'
-                    f'{away_seed}<span style="{a_bold}">{g["away_team"]}</span> '
+                    f'{away_seed}{_team_logo_img(away_tid, espn_map, size=14)}<span style="{a_bold}">{g["away_team"]}</span> '
                     f'<span style="font-size:15px; {a_bold}">{g["away_score"]}</span>'
                     f'<span style="color:#333; margin:0 6px; font-size:10px;">@</span>'
-                    f'{home_seed}<span style="{h_bold}">{g["home_team"]}</span> '
+                    f'{home_seed}{_team_logo_img(home_tid, espn_map, size=14)}<span style="{h_bold}">{g["home_team"]}</span> '
                     f'<span style="font-size:15px; {h_bold}">{g["home_score"]}</span></div>'
                     f'<span class="vp-badge vp-badge-final">F</span>'
                     f'</div>'
@@ -3385,6 +3422,7 @@ def page_picks(prefix, teams, seeds_df, preds):
 
         card = {
             "game": f"{s1t}{n1} vs {s2t}{n2}",
+            "t1": t1, "t2": t2, "n1": n1, "n2": n2, "s1t": s1t, "s2t": s2t,
             "ml": None, "spread": None, "total": None,
             "best_rating": 0,
             "commence_time": commence_time,
@@ -3641,7 +3679,9 @@ def page_picks(prefix, teams, seeds_df, preds):
             f'<div class="vp-bet-card" style="border-left:4px solid {border_color}; border-color:{border_color};">'
             f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">'
             f'<div>'
-            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">{card["game"]}{upset_badge}</div>'
+            f'<div style="font-weight:700; font-size:16px; letter-spacing:-0.3px;">'
+            f'{card["s1t"]}{_team_logo_img(card.get("t1"), espn_map, size=18)}{card["n1"]} vs '
+            f'{card["s2t"]}{_team_logo_img(card.get("t2"), espn_map, size=18)}{card["n2"]}{upset_badge}</div>'
             f'{info_line}'
             f'</div>'
             f'{badge_html}'
