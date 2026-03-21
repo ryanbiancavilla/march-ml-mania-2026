@@ -479,13 +479,13 @@
     {
       "game_id": "401856530",
       "name": "TCU Horned Frogs at Duke Blue Devils",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "8:57 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Duke Blue Devils",
-      "home_score": 60,
+      "home_score": 81,
       "home_id": "150",
       "away_team": "TCU Horned Frogs",
-      "away_score": 50,
+      "away_score": 58,
       "away_id": "2628",
       "broadcast": "CBS",
       "start_time": "2026-03-21T21:25Z"
@@ -493,13 +493,13 @@
     {
       "game_id": "401856535",
       "name": "Texas A&M Aggies at Houston Cougars",
-      "status": "STATUS_HALFTIME",
-      "status_detail": "Halftime",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "13:40 - 2nd",
       "home_team": "Houston Cougars",
-      "home_score": 46,
+      "home_score": 61,
       "home_id": "248",
       "away_team": "Texas A&M Aggies",
-      "away_score": 28,
+      "away_score": 37,
       "away_id": "245",
       "broadcast": "TNT",
       "start_time": "2026-03-21T22:10Z"
@@ -508,12 +508,12 @@
       "game_id": "401856537",
       "name": "Texas Longhorns at Gonzaga Bulldogs",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:34 - 1st",
+      "status_detail": "3:57 - 1st",
       "home_team": "Gonzaga Bulldogs",
-      "home_score": 6,
+      "home_score": 28,
       "home_id": "2250",
       "away_team": "Texas Longhorns",
-      "away_score": 4,
+      "away_score": 22,
       "away_id": "251",
       "broadcast": "truTV, TBS",
       "start_time": "2026-03-21T23:10Z"
@@ -522,7 +522,7 @@
       "game_id": "401856533",
       "name": "VCU Rams at Illinois Fighting Illini",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/21 - 7:50 PM EDT",
+      "status_detail": "3/21 - 8:15 PM EDT",
       "home_team": "Illinois Fighting Illini",
       "home_score": 0,
       "home_id": "356",
@@ -530,7 +530,7 @@
       "away_score": 0,
       "away_id": "2670",
       "broadcast": "CBS",
-      "start_time": "2026-03-21T23:50Z"
+      "start_time": "2026-03-22T00:15Z"
     },
     {
       "game_id": "401856534",
@@ -561,5 +561,5 @@
       "start_time": "2026-03-22T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-21T23:17:28.152228+00:00"
+  "fetched_at": "2026-03-21T23:45:35.405895+00:00"
 }
