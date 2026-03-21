@@ -466,12 +466,12 @@
       "game_id": "401856531",
       "name": "Louisville Cardinals at Michigan State Spartans",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "0:42 - 1st",
+      "status_detail": "7:12 - 2nd",
       "home_team": "Michigan State Spartans",
-      "home_score": 36,
+      "home_score": 60,
       "home_id": "127",
       "away_team": "Louisville Cardinals",
-      "away_score": 30,
+      "away_score": 50,
       "away_id": "97",
       "broadcast": "CBS",
       "start_time": "2026-03-21T18:45Z"
@@ -561,5 +561,5 @@
       "start_time": "2026-03-22T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-21T19:31:59.526509+00:00"
+  "fetched_at": "2026-03-21T20:36:02.296406+00:00"
 }
