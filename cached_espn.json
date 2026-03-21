@@ -395,13 +395,13 @@
     {
       "game_id": "401856523",
       "name": "Prairie View A&M Panthers at Florida Gators",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:53 - 1st",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Florida Gators",
-      "home_score": 48,
+      "home_score": 114,
       "home_id": "57",
       "away_team": "Prairie View A&M Panthers",
-      "away_score": 21,
+      "away_score": 55,
       "away_id": "2504",
       "broadcast": "TNT",
       "start_time": "2026-03-21T01:25Z"
@@ -409,13 +409,13 @@
     {
       "game_id": "401856495",
       "name": "California Baptist Lancers at Kansas Jayhawks",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "12:01 - 1st",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Kansas Jayhawks",
-      "home_score": 10,
+      "home_score": 68,
       "home_id": "2305",
       "away_team": "California Baptist Lancers",
-      "away_score": 5,
+      "away_score": 60,
       "away_id": "2856",
       "broadcast": "CBS",
       "start_time": "2026-03-21T02:07Z"
@@ -423,13 +423,13 @@
     {
       "game_id": "401856497",
       "name": "Furman Paladins at UConn Huskies",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/20 - 10:31 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "9:37 - 2nd",
       "home_team": "UConn Huskies",
-      "home_score": 0,
+      "home_score": 65,
       "home_id": "41",
       "away_team": "Furman Paladins",
-      "away_score": 0,
+      "away_score": 55,
       "away_id": "231",
       "broadcast": "TBS",
       "start_time": "2026-03-21T02:31Z"
@@ -438,16 +438,16 @@
       "game_id": "401856518",
       "name": "Missouri Tigers at Miami Hurricanes",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "11:38 - 1st",
+      "status_detail": "2:43 - 2nd",
       "home_team": "Miami Hurricanes",
-      "home_score": 12,
+      "home_score": 68,
       "home_id": "2390",
       "away_team": "Missouri Tigers",
-      "away_score": 10,
+      "away_score": 61,
       "away_id": "142",
       "broadcast": "truTV",
       "start_time": "2026-03-21T02:07Z"
     }
   ],
-  "fetched_at": "2026-03-21T02:25:22.056933+00:00"
+  "fetched_at": "2026-03-21T04:17:13.796299+00:00"
 }
