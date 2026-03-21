@@ -480,12 +480,12 @@
       "game_id": "401856530",
       "name": "TCU Horned Frogs at Duke Blue Devils",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "16:00 - 1st",
+      "status_detail": "3:40 - 1st",
       "home_team": "Duke Blue Devils",
-      "home_score": 7,
+      "home_score": 33,
       "home_id": "150",
       "away_team": "TCU Horned Frogs",
-      "away_score": 7,
+      "away_score": 27,
       "away_id": "2628",
       "broadcast": "CBS",
       "start_time": "2026-03-21T21:25Z"
@@ -493,13 +493,13 @@
     {
       "game_id": "401856535",
       "name": "Texas A&M Aggies at Houston Cougars",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/21 - 6:10 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "16:58 - 1st",
       "home_team": "Houston Cougars",
-      "home_score": 0,
+      "home_score": 4,
       "home_id": "248",
       "away_team": "Texas A&M Aggies",
-      "away_score": 0,
+      "away_score": 5,
       "away_id": "245",
       "broadcast": "TNT",
       "start_time": "2026-03-21T22:10Z"
@@ -561,5 +561,5 @@
       "start_time": "2026-03-22T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-21T21:32:47.022382+00:00"
+  "fetched_at": "2026-03-21T22:16:18.443805+00:00"
 }
