@@ -452,12 +452,12 @@
       "game_id": "401856532",
       "name": "Saint Louis Billikens at Michigan Wolverines",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "7:28 - 1st",
+      "status_detail": "15:33 - 2nd",
       "home_team": "Michigan Wolverines",
-      "home_score": 30,
+      "home_score": 59,
       "home_id": "130",
       "away_team": "Saint Louis Billikens",
-      "away_score": 29,
+      "away_score": 53,
       "away_id": "139",
       "broadcast": "CBS",
       "start_time": "2026-03-21T16:10Z"
@@ -561,5 +561,5 @@
       "start_time": "2026-03-22T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-21T16:39:09.071917+00:00"
+  "fetched_at": "2026-03-21T17:32:35.052047+00:00"
 }
