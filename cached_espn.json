@@ -563,13 +563,13 @@
     {
       "game_id": "401856564",
       "name": "Miami Hurricanes at Purdue Boilermakers",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:19 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Purdue Boilermakers",
-      "home_score": 47,
+      "home_score": 79,
       "home_id": "2509",
       "away_team": "Miami Hurricanes",
-      "away_score": 45,
+      "away_score": 69,
       "away_id": "2390",
       "broadcast": "CBS",
       "start_time": "2026-03-22T16:10Z"
@@ -673,5 +673,5 @@
       "start_time": "2026-03-23T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-22T17:32:56.091966+00:00"
+  "fetched_at": "2026-03-22T18:49:22.330717+00:00"
 }
