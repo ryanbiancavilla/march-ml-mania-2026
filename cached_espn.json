@@ -577,13 +577,13 @@
     {
       "game_id": "401856561",
       "name": "Kentucky Wildcats at Iowa State Cyclones",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/22 - 2:45 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "2:52 - 1st",
       "home_team": "Iowa State Cyclones",
-      "home_score": 0,
+      "home_score": 23,
       "home_id": "66",
       "away_team": "Kentucky Wildcats",
-      "away_score": 0,
+      "away_score": 28,
       "away_id": "96",
       "broadcast": "CBS",
       "start_time": "2026-03-22T18:45Z"
@@ -673,5 +673,5 @@
       "start_time": "2026-03-23T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-22T18:49:22.330717+00:00"
+  "fetched_at": "2026-03-22T19:33:28.024348+00:00"
 }
