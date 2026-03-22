@@ -591,13 +591,13 @@
     {
       "game_id": "401856558",
       "name": "St. John's Red Storm at Kansas Jayhawks",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "5:19 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Kansas Jayhawks",
-      "home_score": 50,
+      "home_score": 65,
       "home_id": "2305",
       "away_team": "St. John's Red Storm",
-      "away_score": 58,
+      "away_score": 67,
       "away_id": "2599",
       "broadcast": "CBS",
       "start_time": "2026-03-22T21:15Z"
@@ -605,13 +605,13 @@
     {
       "game_id": "401856562",
       "name": "Tennessee Volunteers at Virginia Cavaliers",
-      "status": "STATUS_HALFTIME",
-      "status_detail": "Halftime",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "10:31 - 2nd",
       "home_team": "Virginia Cavaliers",
-      "home_score": 31,
+      "home_score": 48,
       "home_id": "258",
       "away_team": "Tennessee Volunteers",
-      "away_score": 36,
+      "away_score": 57,
       "away_id": "2633",
       "broadcast": "TNT",
       "start_time": "2026-03-22T22:10Z"
@@ -620,12 +620,12 @@
       "game_id": "401856563",
       "name": "Iowa Hawkeyes at Florida Gators",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:19 - 1st",
+      "status_detail": "6:07 - 1st",
       "home_team": "Florida Gators",
-      "home_score": 11,
+      "home_score": 18,
       "home_id": "57",
       "away_team": "Iowa Hawkeyes",
-      "away_score": 8,
+      "away_score": 24,
       "away_id": "2294",
       "broadcast": "TBS",
       "start_time": "2026-03-22T23:10Z"
@@ -634,7 +634,7 @@
       "game_id": "401856565",
       "name": "Utah State Aggies at Arizona Wildcats",
       "status": "STATUS_SCHEDULED",
-      "status_detail": "3/22 - 7:50 PM EDT",
+      "status_detail": "3/22 - 8:11 PM EDT",
       "home_team": "Arizona Wildcats",
       "home_score": 0,
       "home_id": "12",
@@ -642,7 +642,7 @@
       "away_score": 0,
       "away_id": "328",
       "broadcast": "truTV",
-      "start_time": "2026-03-22T23:50Z"
+      "start_time": "2026-03-23T00:11Z"
     },
     {
       "game_id": "401856559",
@@ -673,5 +673,5 @@
       "start_time": "2026-03-23T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-22T23:20:02.165460+00:00"
+  "fetched_at": "2026-03-22T23:49:04.379190+00:00"
 }
