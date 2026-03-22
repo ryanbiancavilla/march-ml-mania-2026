@@ -535,13 +535,13 @@
     {
       "game_id": "401856534",
       "name": "Vanderbilt Commodores at Nebraska Cornhuskers",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "12:00 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Nebraska Cornhuskers",
-      "home_score": 50,
+      "home_score": 74,
       "home_id": "158",
       "away_team": "Vanderbilt Commodores",
-      "away_score": 47,
+      "away_score": 72,
       "away_id": "238",
       "broadcast": "TNT",
       "start_time": "2026-03-22T01:02Z"
@@ -549,17 +549,17 @@
     {
       "game_id": "401856536",
       "name": "High Point Panthers at Arkansas Razorbacks",
-      "status": "STATUS_HALFTIME",
-      "status_detail": "Halftime",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Arkansas Razorbacks",
-      "home_score": 43,
+      "home_score": 94,
       "home_id": "8",
       "away_team": "High Point Panthers",
-      "away_score": 42,
+      "away_score": 88,
       "away_id": "2272",
       "broadcast": "truTV, TBS",
       "start_time": "2026-03-22T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-22T02:40:06.265311+00:00"
+  "fetched_at": "2026-03-22T04:56:18.313896+00:00"
 }
