@@ -592,12 +592,12 @@
       "game_id": "401856558",
       "name": "St. John's Red Storm at Kansas Jayhawks",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "15:43 - 2nd",
+      "status_detail": "5:19 - 2nd",
       "home_team": "Kansas Jayhawks",
-      "home_score": 32,
+      "home_score": 50,
       "home_id": "2305",
       "away_team": "St. John's Red Storm",
-      "away_score": 39,
+      "away_score": 58,
       "away_id": "2599",
       "broadcast": "CBS",
       "start_time": "2026-03-22T21:15Z"
@@ -605,13 +605,13 @@
     {
       "game_id": "401856562",
       "name": "Tennessee Volunteers at Virginia Cavaliers",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:16 - 1st",
+      "status": "STATUS_HALFTIME",
+      "status_detail": "Halftime",
       "home_team": "Virginia Cavaliers",
-      "home_score": 25,
+      "home_score": 31,
       "home_id": "258",
       "away_team": "Tennessee Volunteers",
-      "away_score": 33,
+      "away_score": 36,
       "away_id": "2633",
       "broadcast": "TNT",
       "start_time": "2026-03-22T22:10Z"
@@ -619,13 +619,13 @@
     {
       "game_id": "401856563",
       "name": "Iowa Hawkeyes at Florida Gators",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/22 - 7:10 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "15:19 - 1st",
       "home_team": "Florida Gators",
-      "home_score": 0,
+      "home_score": 11,
       "home_id": "57",
       "away_team": "Iowa Hawkeyes",
-      "away_score": 0,
+      "away_score": 8,
       "away_id": "2294",
       "broadcast": "TBS",
       "start_time": "2026-03-22T23:10Z"
@@ -673,5 +673,5 @@
       "start_time": "2026-03-23T01:45Z"
     }
   ],
-  "fetched_at": "2026-03-22T22:49:56.000768+00:00"
+  "fetched_at": "2026-03-22T23:20:02.165460+00:00"
 }
