@@ -671,7 +671,63 @@
       "away_id": "2641",
       "broadcast": "TBS",
       "start_time": "2026-03-23T02:08Z"
+    },
+    {
+      "game_id": "401856568",
+      "name": "Texas Longhorns at Purdue Boilermakers",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/26 - 7:10 PM EDT",
+      "home_team": "Purdue Boilermakers",
+      "home_score": 0,
+      "home_id": "2509",
+      "away_team": "Texas Longhorns",
+      "away_score": 0,
+      "away_id": "251",
+      "broadcast": "CBS",
+      "start_time": "2026-03-26T23:10Z"
+    },
+    {
+      "game_id": "401856567",
+      "name": "Iowa Hawkeyes at Nebraska Cornhuskers",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/26 - 7:30 PM EDT",
+      "home_team": "Nebraska Cornhuskers",
+      "home_score": 0,
+      "home_id": "158",
+      "away_team": "Iowa Hawkeyes",
+      "away_score": 0,
+      "away_id": "2294",
+      "broadcast": "TBS, truTV",
+      "start_time": "2026-03-26T23:30Z"
+    },
+    {
+      "game_id": "401856569",
+      "name": "Arkansas Razorbacks at Arizona Wildcats",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/26 - 9:45 PM EDT",
+      "home_team": "Arizona Wildcats",
+      "home_score": 0,
+      "home_id": "12",
+      "away_team": "Arkansas Razorbacks",
+      "away_score": 0,
+      "away_id": "8",
+      "broadcast": "CBS",
+      "start_time": "2026-03-27T01:45Z"
+    },
+    {
+      "game_id": "401856566",
+      "name": "Illinois Fighting Illini at Houston Cougars",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/26 - 10:05 PM EDT",
+      "home_team": "Houston Cougars",
+      "home_score": 0,
+      "home_id": "248",
+      "away_team": "Illinois Fighting Illini",
+      "away_score": 0,
+      "away_id": "356",
+      "broadcast": "TBS, truTV",
+      "start_time": "2026-03-27T02:05Z"
     }
   ],
-  "fetched_at": "2026-03-23T05:07:16.067301+00:00"
+  "fetched_at": "2026-03-23T17:02:01.393106+00:00"
 }
