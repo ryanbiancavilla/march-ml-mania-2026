@@ -676,12 +676,12 @@
       "game_id": "401856568",
       "name": "Texas Longhorns at Purdue Boilermakers",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "10:48 - 1st",
+      "status_detail": "1:30 - 1st",
       "home_team": "Purdue Boilermakers",
-      "home_score": 18,
+      "home_score": 37,
       "home_id": "2509",
       "away_team": "Texas Longhorns",
-      "away_score": 20,
+      "away_score": 32,
       "away_id": "251",
       "broadcast": "CBS",
       "start_time": "2026-03-26T23:10Z"
@@ -689,13 +689,13 @@
     {
       "game_id": "401856567",
       "name": "Iowa Hawkeyes at Nebraska Cornhuskers",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/26 - 7:30 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "10:27 - 1st",
       "home_team": "Nebraska Cornhuskers",
-      "home_score": 0,
+      "home_score": 27,
       "home_id": "158",
       "away_team": "Iowa Hawkeyes",
-      "away_score": 0,
+      "away_score": 23,
       "away_id": "2294",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-26T23:30Z"
@@ -729,5 +729,5 @@
       "start_time": "2026-03-27T02:05Z"
     }
   ],
-  "fetched_at": "2026-03-26T23:24:29.311341+00:00"
+  "fetched_at": "2026-03-26T23:55:04.660694+00:00"
 }
