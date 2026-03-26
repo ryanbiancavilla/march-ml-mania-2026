@@ -675,13 +675,13 @@
     {
       "game_id": "401856568",
       "name": "Texas Longhorns at Purdue Boilermakers",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/26 - 7:10 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "10:48 - 1st",
       "home_team": "Purdue Boilermakers",
-      "home_score": 0,
+      "home_score": 18,
       "home_id": "2509",
       "away_team": "Texas Longhorns",
-      "away_score": 0,
+      "away_score": 20,
       "away_id": "251",
       "broadcast": "CBS",
       "start_time": "2026-03-26T23:10Z"
@@ -729,5 +729,5 @@
       "start_time": "2026-03-27T02:05Z"
     }
   ],
-  "fetched_at": "2026-03-26T22:54:32.117863+00:00"
+  "fetched_at": "2026-03-26T23:24:29.311341+00:00"
 }
