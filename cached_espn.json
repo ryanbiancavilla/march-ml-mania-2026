@@ -703,13 +703,13 @@
     {
       "game_id": "401856569",
       "name": "Arkansas Razorbacks at Arizona Wildcats",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:58 - 1st",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Arizona Wildcats",
-      "home_score": 44,
+      "home_score": 109,
       "home_id": "12",
       "away_team": "Arkansas Razorbacks",
-      "away_score": 31,
+      "away_score": 88,
       "away_id": "8",
       "broadcast": "CBS",
       "start_time": "2026-03-27T02:06Z"
@@ -717,17 +717,17 @@
     {
       "game_id": "401856566",
       "name": "Illinois Fighting Illini at Houston Cougars",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "2:04 - 1st",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Houston Cougars",
-      "home_score": 19,
+      "home_score": 55,
       "home_id": "248",
       "away_team": "Illinois Fighting Illini",
-      "away_score": 24,
+      "away_score": 65,
       "away_id": "356",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-27T02:05Z"
     }
   ],
-  "fetched_at": "2026-03-27T02:46:58.644255+00:00"
+  "fetched_at": "2026-03-27T05:11:26.826975+00:00"
 }
