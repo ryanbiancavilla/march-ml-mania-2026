@@ -783,7 +783,35 @@
       "away_id": "2633",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-28T02:35Z"
+    },
+    {
+      "game_id": "401856574",
+      "name": "Iowa Hawkeyes at Illinois Fighting Illini",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/28 - 6:09 PM EDT",
+      "home_team": "Illinois Fighting Illini",
+      "home_score": 0,
+      "home_id": "356",
+      "away_team": "Iowa Hawkeyes",
+      "away_score": 0,
+      "away_id": "2294",
+      "broadcast": "TBS, truTV",
+      "start_time": "2026-03-28T22:09Z"
+    },
+    {
+      "game_id": "401856575",
+      "name": "Purdue Boilermakers at Arizona Wildcats",
+      "status": "STATUS_SCHEDULED",
+      "status_detail": "3/28 - 8:49 PM EDT",
+      "home_team": "Arizona Wildcats",
+      "home_score": 0,
+      "home_id": "12",
+      "away_team": "Purdue Boilermakers",
+      "away_score": 0,
+      "away_id": "2509",
+      "broadcast": "TBS, truTV",
+      "start_time": "2026-03-29T00:49Z"
     }
   ],
-  "fetched_at": "2026-03-28T04:57:17.363032+00:00"
+  "fetched_at": "2026-03-28T16:43:51.321511+00:00"
 }
