@@ -787,13 +787,13 @@
     {
       "game_id": "401856574",
       "name": "Iowa Hawkeyes at Illinois Fighting Illini",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/28 - 6:09 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "14:28 - 1st",
       "home_team": "Illinois Fighting Illini",
-      "home_score": 0,
+      "home_score": 3,
       "home_id": "356",
       "away_team": "Iowa Hawkeyes",
-      "away_score": 0,
+      "away_score": 12,
       "away_id": "2294",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-28T22:09Z"
@@ -813,5 +813,5 @@
       "start_time": "2026-03-29T00:49Z"
     }
   ],
-  "fetched_at": "2026-03-28T21:37:32.674900+00:00"
+  "fetched_at": "2026-03-28T22:21:13.880751+00:00"
 }
