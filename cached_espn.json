@@ -759,13 +759,13 @@
     {
       "game_id": "401856571",
       "name": "Michigan State Spartans at UConn Huskies",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "6:51 - 1st",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "UConn Huskies",
-      "home_score": 27,
+      "home_score": 67,
       "home_id": "41",
       "away_team": "Michigan State Spartans",
-      "away_score": 14,
+      "away_score": 63,
       "away_id": "127",
       "broadcast": "CBS",
       "start_time": "2026-03-28T01:55Z"
@@ -773,17 +773,17 @@
     {
       "game_id": "401856573",
       "name": "Tennessee Volunteers at Iowa State Cyclones",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "3/27 - 10:35 PM EDT",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Iowa State Cyclones",
-      "home_score": 0,
+      "home_score": 62,
       "home_id": "66",
       "away_team": "Tennessee Volunteers",
-      "away_score": 0,
+      "away_score": 76,
       "away_id": "2633",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-28T02:35Z"
     }
   ],
-  "fetched_at": "2026-03-28T02:35:47.190409+00:00"
+  "fetched_at": "2026-03-28T04:57:17.363032+00:00"
 }
