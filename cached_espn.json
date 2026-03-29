@@ -829,17 +829,17 @@
     {
       "game_id": "401856577",
       "name": "UConn Huskies at Duke Blue Devils",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "7:15 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Duke Blue Devils",
-      "home_score": 62,
+      "home_score": 72,
       "home_id": "150",
       "away_team": "UConn Huskies",
-      "away_score": 52,
+      "away_score": 73,
       "away_id": "41",
       "broadcast": "CBS",
       "start_time": "2026-03-29T21:05Z"
     }
   ],
-  "fetched_at": "2026-03-29T22:56:41.135523+00:00"
+  "fetched_at": "2026-03-29T23:28:35.202013+00:00"
 }
