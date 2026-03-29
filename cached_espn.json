@@ -801,17 +801,17 @@
     {
       "game_id": "401856575",
       "name": "Purdue Boilermakers at Arizona Wildcats",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "6:23 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Arizona Wildcats",
-      "home_score": 64,
+      "home_score": 79,
       "home_id": "12",
       "away_team": "Purdue Boilermakers",
-      "away_score": 53,
+      "away_score": 64,
       "away_id": "2509",
       "broadcast": "TBS, truTV",
       "start_time": "2026-03-29T00:59Z"
     }
   ],
-  "fetched_at": "2026-03-29T02:50:33.721076+00:00"
+  "fetched_at": "2026-03-29T05:16:11.075276+00:00"
 }
