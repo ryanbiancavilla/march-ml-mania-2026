@@ -844,12 +844,12 @@
       "game_id": "401856598",
       "name": "Illinois Fighting Illini at UConn Huskies",
       "status": "STATUS_IN_PROGRESS",
-      "status_detail": "3:04 - 1st",
+      "status_detail": "19:27 - 2nd",
       "home_team": "UConn Huskies",
-      "home_score": 28,
+      "home_score": 39,
       "home_id": "41",
       "away_team": "Illinois Fighting Illini",
-      "away_score": 24,
+      "away_score": 31,
       "away_id": "356",
       "broadcast": "TBS, truTV, HBO Max",
       "start_time": "2026-04-04T22:09Z"
@@ -869,5 +869,5 @@
       "start_time": "2026-04-05T00:49Z"
     }
   ],
-  "fetched_at": "2026-04-04T22:54:36.843822+00:00"
+  "fetched_at": "2026-04-04T23:23:34.242128+00:00"
 }
