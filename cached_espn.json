@@ -843,13 +843,13 @@
     {
       "game_id": "401856598",
       "name": "Illinois Fighting Illini at UConn Huskies",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "8:00 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "UConn Huskies",
-      "home_score": 57,
+      "home_score": 71,
       "home_id": "41",
       "away_team": "Illinois Fighting Illini",
-      "away_score": 49,
+      "away_score": 62,
       "away_id": "356",
       "broadcast": "TBS, truTV, HBO Max",
       "start_time": "2026-04-04T22:09Z"
@@ -857,17 +857,17 @@
     {
       "game_id": "401856599",
       "name": "Michigan Wolverines at Arizona Wildcats",
-      "status": "STATUS_SCHEDULED",
-      "status_detail": "4/4 - 8:49 PM EDT",
+      "status": "STATUS_IN_PROGRESS",
+      "status_detail": "14:05 - 2nd",
       "home_team": "Arizona Wildcats",
-      "home_score": 0,
+      "home_score": 44,
       "home_id": "12",
       "away_team": "Michigan Wolverines",
-      "away_score": 0,
+      "away_score": 64,
       "away_id": "130",
       "broadcast": "TBS, truTV, HBO Max",
-      "start_time": "2026-04-05T00:49Z"
+      "start_time": "2026-04-05T01:19Z"
     }
   ],
-  "fetched_at": "2026-04-04T23:53:03.030010+00:00"
+  "fetched_at": "2026-04-05T02:52:39.564313+00:00"
 }
