@@ -20819,11 +20819,11 @@
         {
           "key": "draftkings",
           "title": "DraftKings",
-          "last_update": "2026-04-05T22:21:58Z",
+          "last_update": "2026-04-05T22:56:51Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20837,7 +20837,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20853,7 +20853,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -20872,11 +20872,11 @@
         {
           "key": "fanduel",
           "title": "FanDuel",
-          "last_update": "2026-04-05T22:21:39Z",
+          "last_update": "2026-04-05T22:56:50Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20890,7 +20890,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20906,7 +20906,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -20925,11 +20925,11 @@
         {
           "key": "betonlineag",
           "title": "BetOnline.ag",
-          "last_update": "2026-04-05T22:21:30Z",
+          "last_update": "2026-04-05T22:57:14Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20943,7 +20943,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20959,7 +20959,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -20978,11 +20978,11 @@
         {
           "key": "lowvig",
           "title": "LowVig.ag",
-          "last_update": "2026-04-05T22:21:59Z",
+          "last_update": "2026-04-05T22:56:10Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20996,7 +20996,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21012,7 +21012,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21031,11 +21031,11 @@
         {
           "key": "betrivers",
           "title": "BetRivers",
-          "last_update": "2026-04-05T22:21:26Z",
+          "last_update": "2026-04-05T22:57:14Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:26Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21049,7 +21049,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:26Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21065,7 +21065,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:26Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21084,11 +21084,11 @@
         {
           "key": "betmgm",
           "title": "BetMGM",
-          "last_update": "2026-04-05T22:21:47Z",
+          "last_update": "2026-04-05T22:56:09Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21102,7 +21102,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21118,7 +21118,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21137,11 +21137,11 @@
         {
           "key": "bovada",
           "title": "Bovada",
-          "last_update": "2026-04-05T22:19:59Z",
+          "last_update": "2026-04-05T22:55:54Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:19:59Z",
+              "last_update": "2026-04-05T22:55:54Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21155,7 +21155,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:19:59Z",
+              "last_update": "2026-04-05T22:55:54Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21171,7 +21171,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:19:59Z",
+              "last_update": "2026-04-05T22:55:54Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21190,11 +21190,11 @@
         {
           "key": "mybookieag",
           "title": "MyBookie.ag",
-          "last_update": "2026-04-05T22:21:05Z",
+          "last_update": "2026-04-05T22:57:02Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:05Z",
+              "last_update": "2026-04-05T22:57:02Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21208,7 +21208,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:05Z",
+              "last_update": "2026-04-05T22:57:02Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21224,7 +21224,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:05Z",
+              "last_update": "2026-04-05T22:57:02Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21243,11 +21243,11 @@
         {
           "key": "betus",
           "title": "BetUS",
-          "last_update": "2026-04-05T22:21:37Z",
+          "last_update": "2026-04-05T22:56:09Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21261,7 +21261,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21277,7 +21277,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21478,11 +21478,11 @@
         {
           "key": "betonlineag",
           "title": "BetOnline.ag",
-          "last_update": "2026-04-05T22:21:30Z",
+          "last_update": "2026-04-05T22:57:14Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21496,32 +21496,32 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
-                  "price": -110,
+                  "price": -107,
                   "point": -6.0
                 },
                 {
                   "name": "Tulsa Golden Hurricane",
-                  "price": -110,
+                  "price": -113,
                   "point": 6.0
                 }
               ]
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:30Z",
+              "last_update": "2026-04-05T22:57:14Z",
               "outcomes": [
                 {
                   "name": "Over",
-                  "price": -110,
+                  "price": -112,
                   "point": 159.5
                 },
                 {
                   "name": "Under",
-                  "price": -110,
+                  "price": -108,
                   "point": 159.5
                 }
               ]
@@ -21531,11 +21531,11 @@
         {
           "key": "lowvig",
           "title": "LowVig.ag",
-          "last_update": "2026-04-05T22:21:59Z",
+          "last_update": "2026-04-05T22:56:10Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21549,32 +21549,32 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
-                  "price": -106,
+                  "price": -103,
                   "point": -6.0
                 },
                 {
                   "name": "Tulsa Golden Hurricane",
-                  "price": -106,
+                  "price": -109,
                   "point": 6.0
                 }
               ]
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:59Z",
+              "last_update": "2026-04-05T22:56:10Z",
               "outcomes": [
                 {
                   "name": "Over",
-                  "price": -108,
+                  "price": -110,
                   "point": 159.5
                 },
                 {
                   "name": "Under",
-                  "price": -108,
+                  "price": -106,
                   "point": 159.5
                 }
               ]
@@ -21584,11 +21584,11 @@
         {
           "key": "fanduel",
           "title": "FanDuel",
-          "last_update": "2026-04-05T22:21:39Z",
+          "last_update": "2026-04-05T22:56:50Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21602,7 +21602,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21618,7 +21618,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21637,11 +21637,11 @@
         {
           "key": "betmgm",
           "title": "BetMGM",
-          "last_update": "2026-04-05T22:21:47Z",
+          "last_update": "2026-04-05T22:56:09Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21655,23 +21655,23 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
-                  "price": -118,
+                  "price": -115,
                   "point": -5.5
                 },
                 {
                   "name": "Tulsa Golden Hurricane",
-                  "price": -102,
+                  "price": -105,
                   "point": 5.5
                 }
               ]
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:47Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21690,11 +21690,11 @@
         {
           "key": "draftkings",
           "title": "DraftKings",
-          "last_update": "2026-04-05T22:21:58Z",
+          "last_update": "2026-04-05T22:56:51Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21708,7 +21708,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21724,7 +21724,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21743,11 +21743,11 @@
         {
           "key": "betus",
           "title": "BetUS",
-          "last_update": "2026-04-05T22:21:37Z",
+          "last_update": "2026-04-05T22:56:09Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21761,7 +21761,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Auburn Tigers",
@@ -21777,7 +21777,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:37Z",
+              "last_update": "2026-04-05T22:56:09Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21806,51 +21806,51 @@
         {
           "key": "fanduel",
           "title": "FanDuel",
-          "last_update": "2026-04-05T22:21:39Z",
+          "last_update": "2026-04-05T22:56:50Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Oklahoma Sooners",
-                  "price": -245
+                  "price": -770
                 },
                 {
                   "name": "West Virginia Mountaineers",
-                  "price": 186
+                  "price": 470
                 }
               ]
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Oklahoma Sooners",
-                  "price": -114,
-                  "point": -4.5
+                  "price": -120,
+                  "point": -7.5
                 },
                 {
                   "name": "West Virginia Mountaineers",
-                  "price": -114,
-                  "point": 4.5
+                  "price": -110,
+                  "point": 7.5
                 }
               ]
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:39Z",
+              "last_update": "2026-04-05T22:56:50Z",
               "outcomes": [
                 {
                   "name": "Over",
-                  "price": -110,
-                  "point": 153.5
+                  "price": -118,
+                  "point": 160.5
                 },
                 {
                   "name": "Under",
-                  "price": -120,
-                  "point": 153.5
+                  "price": -112,
+                  "point": 160.5
                 }
               ]
             }
@@ -21859,51 +21859,51 @@
         {
           "key": "draftkings",
           "title": "DraftKings",
-          "last_update": "2026-04-05T22:21:58Z",
+          "last_update": "2026-04-05T22:56:51Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Oklahoma Sooners",
-                  "price": -270
+                  "price": -920
                 },
                 {
                   "name": "West Virginia Mountaineers",
-                  "price": 200
+                  "price": 550
                 }
               ]
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Oklahoma Sooners",
-                  "price": -115,
-                  "point": -4.5
+                  "price": -110,
+                  "point": -8.5
                 },
                 {
                   "name": "West Virginia Mountaineers",
-                  "price": -115,
-                  "point": 4.5
+                  "price": -120,
+                  "point": 8.5
                 }
               ]
             },
             {
               "key": "totals",
-              "last_update": "2026-04-05T22:21:58Z",
+              "last_update": "2026-04-05T22:56:51Z",
               "outcomes": [
                 {
                   "name": "Over",
-                  "price": -115,
-                  "point": 153.5
+                  "price": -105,
+                  "point": 162.5
                 },
                 {
                   "name": "Under",
-                  "price": -115,
-                  "point": 153.5
+                  "price": -125,
+                  "point": 162.5
                 }
               ]
             }
@@ -21912,6 +21912,6 @@
       ]
     }
   ],
-  "remaining": "350",
-  "fetched_at": "2026-04-05T22:22:04.323547+00:00"
+  "remaining": "347",
+  "fetched_at": "2026-04-05T22:57:17.150870+00:00"
 }
