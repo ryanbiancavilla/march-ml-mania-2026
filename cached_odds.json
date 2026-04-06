@@ -20819,11 +20819,11 @@
         {
           "key": "draftkings",
           "title": "DraftKings",
-          "last_update": "2026-04-06T17:55:29Z",
+          "last_update": "2026-04-06T19:13:36Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:55:29Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20837,7 +20837,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:55:29Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20853,16 +20853,16 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:55:29Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Over",
-                  "price": -108,
+                  "price": -115,
                   "point": 145.5
                 },
                 {
                   "name": "Under",
-                  "price": -112,
+                  "price": -105,
                   "point": 145.5
                 }
               ]
@@ -20872,25 +20872,25 @@
         {
           "key": "fanduel",
           "title": "FanDuel",
-          "last_update": "2026-04-06T17:56:41Z",
+          "last_update": "2026-04-06T19:14:12Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:56:41Z",
+              "last_update": "2026-04-06T19:14:12Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
-                  "price": -315
+                  "price": -310
                 },
                 {
                   "name": "UConn Huskies",
-                  "price": 250
+                  "price": 245
                 }
               ]
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:56:41Z",
+              "last_update": "2026-04-06T19:14:12Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20906,7 +20906,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:56:41Z",
+              "last_update": "2026-04-06T19:14:12Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -20925,11 +20925,11 @@
         {
           "key": "betonlineag",
           "title": "BetOnline.ag",
-          "last_update": "2026-04-06T17:56:38Z",
+          "last_update": "2026-04-06T19:13:50Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20943,7 +20943,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20959,7 +20959,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -20978,11 +20978,11 @@
         {
           "key": "lowvig",
           "title": "LowVig.ag",
-          "last_update": "2026-04-06T17:56:38Z",
+          "last_update": "2026-04-06T19:13:36Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -20996,7 +20996,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21012,7 +21012,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21031,11 +21031,11 @@
         {
           "key": "betrivers",
           "title": "BetRivers",
-          "last_update": "2026-04-06T17:56:38Z",
+          "last_update": "2026-04-06T19:13:59Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:59Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21049,7 +21049,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:59Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21065,7 +21065,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:56:38Z",
+              "last_update": "2026-04-06T19:13:59Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21084,11 +21084,11 @@
         {
           "key": "betmgm",
           "title": "BetMGM",
-          "last_update": "2026-04-06T17:55:53Z",
+          "last_update": "2026-04-06T19:14:11Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:55:53Z",
+              "last_update": "2026-04-06T19:14:11Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21102,7 +21102,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:55:53Z",
+              "last_update": "2026-04-06T19:14:11Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21118,7 +21118,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:55:53Z",
+              "last_update": "2026-04-06T19:14:11Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21137,25 +21137,25 @@
         {
           "key": "bovada",
           "title": "Bovada",
-          "last_update": "2026-04-06T17:53:23Z",
+          "last_update": "2026-04-06T19:13:55Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:53:23Z",
+              "last_update": "2026-04-06T19:13:55Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
-                  "price": -300
+                  "price": -310
                 },
                 {
                   "name": "UConn Huskies",
-                  "price": 250
+                  "price": 255
                 }
               ]
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:53:23Z",
+              "last_update": "2026-04-06T19:13:55Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21171,7 +21171,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:53:23Z",
+              "last_update": "2026-04-06T19:13:55Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21190,11 +21190,11 @@
         {
           "key": "mybookieag",
           "title": "MyBookie.ag",
-          "last_update": "2026-04-06T17:55:04Z",
+          "last_update": "2026-04-06T19:13:50Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:55:04Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21202,13 +21202,13 @@
                 },
                 {
                   "name": "UConn Huskies",
-                  "price": 233
+                  "price": 234
                 }
               ]
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:55:04Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21224,7 +21224,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:55:04Z",
+              "last_update": "2026-04-06T19:13:50Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21243,11 +21243,11 @@
         {
           "key": "betus",
           "title": "BetUS",
-          "last_update": "2026-04-06T17:56:26Z",
+          "last_update": "2026-04-06T19:13:36Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-04-06T17:56:26Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21261,7 +21261,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-04-06T17:56:26Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Michigan Wolverines",
@@ -21277,7 +21277,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-04-06T17:56:26Z",
+              "last_update": "2026-04-06T19:13:36Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21866,6 +21866,6 @@
       ]
     }
   ],
-  "remaining": "332",
-  "fetched_at": "2026-04-06T17:57:08.653896+00:00"
+  "remaining": "329",
+  "fetched_at": "2026-04-06T19:14:16.986837+00:00"
 }
