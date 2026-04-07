@@ -871,17 +871,17 @@
     {
       "game_id": "401856600",
       "name": "UConn Huskies at Michigan Wolverines",
-      "status": "STATUS_IN_PROGRESS",
-      "status_detail": "6:30 - 2nd",
+      "status": "STATUS_FINAL",
+      "status_detail": "Final",
       "home_team": "Michigan Wolverines",
-      "home_score": 52,
+      "home_score": 69,
       "home_id": "130",
       "away_team": "UConn Huskies",
-      "away_score": 45,
+      "away_score": 63,
       "away_id": "41",
       "broadcast": "TBS, truTV, HBO Max",
       "start_time": "2026-04-07T00:50Z"
     }
   ],
-  "fetched_at": "2026-04-07T02:47:47.918742+00:00"
+  "fetched_at": "2026-04-07T05:13:56.052047+00:00"
 }
