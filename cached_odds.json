@@ -21717,11 +21717,11 @@
         {
           "key": "draftkings",
           "title": "DraftKings",
-          "last_update": "2026-10-25T03:54:16Z",
+          "last_update": "2026-10-25T18:50:53Z",
           "markets": [
             {
               "key": "h2h",
-              "last_update": "2026-10-25T03:54:16Z",
+              "last_update": "2026-10-25T18:50:53Z",
               "outcomes": [
                 {
                   "name": "Notre Dame Fighting Irish",
@@ -21735,7 +21735,7 @@
             },
             {
               "key": "spreads",
-              "last_update": "2026-10-25T03:54:16Z",
+              "last_update": "2026-10-25T18:50:53Z",
               "outcomes": [
                 {
                   "name": "Notre Dame Fighting Irish",
@@ -21751,7 +21751,7 @@
             },
             {
               "key": "totals",
-              "last_update": "2026-10-25T03:54:16Z",
+              "last_update": "2026-10-25T18:50:53Z",
               "outcomes": [
                 {
                   "name": "Over",
@@ -21770,6 +21770,6 @@
       ]
     }
   ],
-  "remaining": "485",
-  "fetched_at": "2026-10-25T03:54:53.544874+00:00"
+  "remaining": "482",
+  "fetched_at": "2026-10-25T18:51:14.141090+00:00"
 }
